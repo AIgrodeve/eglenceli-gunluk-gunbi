@@ -35,7 +35,7 @@ class RewardsPage extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.86,
+                mainAxisExtent: 188,
               ),
               itemBuilder: (context, index) {
                 return _BadgeCard(badge: badges[index]);
@@ -72,32 +72,51 @@ class _BadgeCard extends StatelessWidget {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
                 isUnlocked ? badge.emoji : '🔒',
-                style: const TextStyle(fontSize: 42),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                badge.title,
-                textAlign: TextAlign.center,
-                style: textTheme.titleLarge,
+                style: const TextStyle(fontSize: 36),
               ),
               const SizedBox(height: 8),
               Text(
-                isUnlocked ? badge.description : 'Biraz daha yazınca açılacak.',
+                badge.title,
                 textAlign: TextAlign.center,
-                maxLines: 3,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium,
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                isUnlocked
+                    ? _shortUnlockedDescription(badge)
+                    : 'Biraz daha yazınca açılacak.',
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.bodySmall?.copyWith(height: 1.25),
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  String _shortUnlockedDescription(Badge badge) {
+    return switch (badge.id) {
+      'first_seed' => 'İlk yazını ekledin.',
+      'rainy_day' => 'Hüzünlü bir günde yazdın.',
+      'colorful' => 'Farklı duygularla yazdın.',
+      'writer' => '10 yazı biriktirdin.',
+      'night_owl' => 'Gece yazısı yazdın.',
+      'morning_writer' => 'Sabah yazısı yazdın.',
+      'long_letter' => 'Uzun bir yazı yazdın.',
+      _ => badge.description,
+    };
   }
 }
