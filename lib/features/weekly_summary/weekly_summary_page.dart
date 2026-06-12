@@ -99,6 +99,13 @@ class _WeeklySummaryContent extends StatelessWidget {
           value: '${summary.distinctMoodCount}',
           message: 'Bu hafta ${summary.distinctMoodCount} farklı duygu seçtin.',
         ),
+        _SummaryCard(
+          icon: Icons.local_fire_department_rounded,
+          title: 'Yazdığın günler',
+          value: '${summary.writtenDayCount}',
+          message:
+              'Bu hafta yazı yazdığın gün sayısı: ${summary.writtenDayCount}',
+        ),
       ],
     );
   }

@@ -16,6 +16,7 @@ class WeeklySummaryService {
     final moodCounts = <String, int>{};
     final moodEmojis = <String, String>{};
     final moodLabels = <String>{};
+    final writtenDays = <DateTime>{};
     var totalWordCount = 0;
     var longestEntryWordCount = 0;
 
@@ -29,6 +30,7 @@ class WeeklySummaryService {
       moodLabels.add(entry.moodLabel);
       moodCounts[entry.moodLabel] = (moodCounts[entry.moodLabel] ?? 0) + 1;
       moodEmojis[entry.moodLabel] = entry.moodEmoji;
+      writtenDays.add(_dateOnly(entry.createdAt.toLocal()));
     }
 
     String? mostFrequentMoodLabel;
@@ -49,9 +51,14 @@ class WeeklySummaryService {
           : moodEmojis[mostFrequentMoodLabel],
       longestEntryWordCount: longestEntryWordCount,
       distinctMoodCount: moodLabels.length,
+      writtenDayCount: writtenDays.length,
       weekStart: weekStart,
       weekEnd: weekEnd.subtract(const Duration(milliseconds: 1)),
     );
+  }
+
+  DateTime _dateOnly(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
 
   DateTime _startOfWeek(DateTime dateTime) {

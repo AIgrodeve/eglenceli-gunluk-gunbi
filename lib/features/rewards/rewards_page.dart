@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Badge;
 
 import '../../core/theme/app_theme.dart';
 import '../journal/data/journal_repository.dart';
+import '../streak/services/streak_service.dart';
 import 'models/badge.dart';
 import 'models/journal_stats.dart';
 import 'services/badge_service.dart';
@@ -13,15 +14,18 @@ class RewardsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const repository = JournalRepository();
     const badgeService = BadgeService();
+    const streakService = StreakService();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Rozetlerim')),
       body: SafeArea(
         child: FutureBuilder<List<Badge>>(
-          future: repository.loadEntries().then(
-            (entries) =>
-                badgeService.evaluate(JournalStats.fromEntries(entries)),
-          ),
+          future: repository.loadEntries().then((entries) {
+            return badgeService.evaluate(
+              JournalStats.fromEntries(entries),
+              streakStats: streakService.calculate(entries),
+            );
+          }),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -94,7 +98,7 @@ class _BadgeCard extends StatelessWidget {
               Text(
                 isUnlocked
                     ? _shortUnlockedDescription(badge)
-                    : 'Biraz daha yazınca açılacak.',
+                    : _lockedDescription(badge),
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
@@ -107,6 +111,15 @@ class _BadgeCard extends StatelessWidget {
     );
   }
 
+  String _lockedDescription(Badge badge) {
+    return switch (badge.id) {
+      'three_day_streak' => '3 gün üst üste yazınca açılacak.',
+      'week_writer' => '7 gün üst üste yazınca açılacak.',
+      'gunbi_friend' => '30 gün üst üste yazınca açılacak.',
+      _ => 'Biraz daha yazınca açılacak.',
+    };
+  }
+
   String _shortUnlockedDescription(Badge badge) {
     return switch (badge.id) {
       'first_seed' => 'İlk yazını ekledin.',
@@ -116,6 +129,9 @@ class _BadgeCard extends StatelessWidget {
       'night_owl' => 'Gece yazısı yazdın.',
       'morning_writer' => 'Sabah yazısı yazdın.',
       'long_letter' => 'Uzun bir yazı yazdın.',
+      'three_day_streak' => '3 gün üst üste yazdın.',
+      'week_writer' => '7 gün üst üste yazdın.',
+      'gunbi_friend' => '30 gün üst üste yazdın.',
       _ => badge.description,
     };
   }

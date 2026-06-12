@@ -9,6 +9,7 @@ import 'services/writing_coach_service.dart';
 import 'services/writing_prompt_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/services/badge_service.dart';
+import '../streak/services/streak_service.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({
@@ -33,6 +34,7 @@ class _JournalPageState extends State<JournalPage> {
   final TextEditingController _textController = TextEditingController();
   final JournalRepository _repository = const JournalRepository();
   final BadgeService _badgeService = const BadgeService();
+  final StreakService _streakService = const StreakService();
   final WritingCoachService _coachService = const WritingCoachService();
   final WritingPromptService _promptService = WritingPromptService();
 
@@ -77,6 +79,7 @@ class _JournalPageState extends State<JournalPage> {
 
     final previousEntries = await _repository.loadEntries();
     final previousStats = JournalStats.fromEntries(previousEntries);
+    final previousStreak = _streakService.calculate(previousEntries);
     final entry = JournalEntry.create(
       childName: widget.childName,
       moodLabel: widget.moodLabel,
@@ -86,10 +89,18 @@ class _JournalPageState extends State<JournalPage> {
       promptText: _promptText,
     );
     await _repository.addEntry(entry);
-    final newStats = JournalStats.fromEntries([entry, ...previousEntries]);
+    final newEntries = [entry, ...previousEntries];
+    final newStats = JournalStats.fromEntries(newEntries);
+    final newStreak = _streakService.calculate(newEntries);
     final newlyUnlockedBadges = _badgeService.newlyUnlocked(
       before: previousStats,
       after: newStats,
+      beforeStreak: previousStreak,
+      afterStreak: newStreak,
+    );
+    final streakMessages = _newStreakMessages(
+      previousStreak.currentStreak,
+      newStreak.currentStreak,
     );
 
     if (!mounted) {
@@ -101,6 +112,7 @@ class _JournalPageState extends State<JournalPage> {
         builder: (_) => JournalEntriesPage(
           showSavedMessage: true,
           newlyUnlockedBadges: newlyUnlockedBadges,
+          streakMessages: streakMessages,
         ),
       ),
       (route) => route.isFirst,
@@ -215,6 +227,19 @@ class _JournalPageState extends State<JournalPage> {
       AgeGroup.sixToEight => 'Yazına küçük bir başlık...',
       AgeGroup.nineToEleven => 'Yazına bir başlık verebilirsin...',
     };
+  }
+
+  List<String> _newStreakMessages(int previousStreak, int newStreak) {
+    if (previousStreak < 3 && newStreak >= 3) {
+      return const ['🔥 Üst üste 3 gün! Harika gidiyorsun!'];
+    }
+    if (previousStreak < 7 && newStreak >= 7) {
+      return const ['⭐ Bir hafta! Sen artık gerçek bir yazar gibisin!'];
+    }
+    if (previousStreak < 30 && newStreak >= 30) {
+      return const ["👑 30 gün! Günbi'nin en yakın yazı arkadaşısın!"];
+    }
+    return const [];
   }
 }
 

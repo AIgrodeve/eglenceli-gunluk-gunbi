@@ -6,6 +6,7 @@ class WeeklySummary {
     required this.mostFrequentMoodEmoji,
     required this.longestEntryWordCount,
     required this.distinctMoodCount,
+    required this.writtenDayCount,
     required this.weekStart,
     required this.weekEnd,
   });
@@ -16,6 +17,7 @@ class WeeklySummary {
   final String? mostFrequentMoodEmoji;
   final int longestEntryWordCount;
   final int distinctMoodCount;
+  final int writtenDayCount;
   final DateTime weekStart;
   final DateTime weekEnd;
 

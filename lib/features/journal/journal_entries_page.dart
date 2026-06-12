@@ -10,10 +10,12 @@ class JournalEntriesPage extends StatefulWidget {
     super.key,
     this.showSavedMessage = false,
     this.newlyUnlockedBadges = const [],
+    this.streakMessages = const [],
   });
 
   final bool showSavedMessage;
   final List<reward_badge.Badge> newlyUnlockedBadges;
+  final List<String> streakMessages;
 
   @override
   State<JournalEntriesPage> createState() => _JournalEntriesPageState();
@@ -39,7 +41,15 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
           ),
         );
 
-        if (widget.newlyUnlockedBadges.isEmpty) {
+        final followUpMessages = [
+          ...widget.streakMessages,
+          if (widget.newlyUnlockedBadges.isNotEmpty)
+            widget.newlyUnlockedBadges.length == 1
+                ? 'Yeni bir rozet kazandın: ${_badgeText(widget.newlyUnlockedBadges)}'
+                : 'Yeni rozetler kazandın: ${_badgeText(widget.newlyUnlockedBadges)}',
+        ];
+
+        if (followUpMessages.isEmpty) {
           return;
         }
 
@@ -48,14 +58,16 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
           return;
         }
 
-        final badgeText = widget.newlyUnlockedBadges
-            .map((badge) => '${badge.emoji} ${badge.title}')
-            .join(', ');
-        final message = widget.newlyUnlockedBadges.length == 1
-            ? 'Yeni bir rozet kazandın: $badgeText'
-            : 'Yeni rozetler kazandın: $badgeText';
+        messenger.showSnackBar(SnackBar(content: Text(followUpMessages.first)));
+        if (followUpMessages.length < 2) {
+          return;
+        }
 
-        messenger.showSnackBar(SnackBar(content: Text(message)));
+        await Future<void>.delayed(const Duration(milliseconds: 1400));
+        if (!mounted) {
+          return;
+        }
+        messenger.showSnackBar(SnackBar(content: Text(followUpMessages[1])));
       });
     }
 
@@ -87,6 +99,10 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
       ),
     );
   }
+}
+
+String _badgeText(List<reward_badge.Badge> badges) {
+  return badges.map((badge) => '${badge.emoji} ${badge.title}').join(', ');
 }
 
 class _JournalEntryCard extends StatelessWidget {

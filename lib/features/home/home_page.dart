@@ -8,6 +8,8 @@ import '../journal/journal_entries_page.dart';
 import '../journal/mood_selection_page.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/rewards_page.dart';
+import '../streak/models/streak_stats.dart';
+import '../streak/services/streak_service.dart';
 import '../weekly_summary/weekly_summary_page.dart';
 import 'gunbi_page.dart';
 
@@ -23,21 +25,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final JournalRepository _repository = const JournalRepository();
-  late Future<JournalStats> _statsFuture;
+  final StreakService _streakService = const StreakService();
+  late Future<(JournalStats, StreakStats)> _dashboardFuture;
 
   @override
   void initState() {
     super.initState();
-    _statsFuture = _loadStats();
+    _dashboardFuture = _loadDashboardStats();
   }
 
-  Future<JournalStats> _loadStats() async {
+  Future<(JournalStats, StreakStats)> _loadDashboardStats() async {
     final entries = await _repository.loadEntries();
-    return JournalStats.fromEntries(entries);
+    return (
+      JournalStats.fromEntries(entries),
+      _streakService.calculate(entries),
+    );
   }
 
   void _refreshStats() {
-    setState(() => _statsFuture = _loadStats());
+    setState(() => _dashboardFuture = _loadDashboardStats());
   }
 
   Future<void> _openAndRefresh(Widget page) async {
@@ -69,7 +75,9 @@ class _HomePageState extends State<HomePage> {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 18),
-            _GunbiPromptCard(statsFuture: _statsFuture),
+            _GunbiPromptCard(dashboardFuture: _dashboardFuture),
+            const SizedBox(height: 12),
+            _StreakCard(dashboardFuture: _dashboardFuture),
             const SizedBox(height: 24),
             _HomeActionGrid(
               actions: [
@@ -118,9 +126,9 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _GunbiPromptCard extends StatelessWidget {
-  const _GunbiPromptCard({required this.statsFuture});
+  const _GunbiPromptCard({required this.dashboardFuture});
 
-  final Future<JournalStats> statsFuture;
+  final Future<(JournalStats, StreakStats)> dashboardFuture;
 
   @override
   Widget build(BuildContext context) {
@@ -137,7 +145,7 @@ class _GunbiPromptCard extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: FutureBuilder<JournalStats>(
-              future: statsFuture,
+              future: dashboardFuture.then((value) => value.$1),
               builder: (context, snapshot) {
                 final totalEntries = snapshot.data?.totalEntries ?? 0;
                 final message = totalEntries == 0
@@ -153,6 +161,96 @@ class _GunbiPromptCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _StreakCard extends StatelessWidget {
+  const _StreakCard({required this.dashboardFuture});
+
+  final Future<(JournalStats, StreakStats)> dashboardFuture;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<(JournalStats, StreakStats)>(
+      future: dashboardFuture,
+      builder: (context, snapshot) {
+        final streakStats = snapshot.data?.$2 ?? const StreakStats.empty();
+
+        return Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.lightOrange, width: 1.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Yazı Serin', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              Text(
+                _streakMessage(streakStats),
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 10,
+                runSpacing: 8,
+                children: [
+                  _MiniStreakInfo(
+                    text: 'En iyi seri: ${streakStats.bestStreak} gün',
+                  ),
+                  _MiniStreakInfo(
+                    text:
+                        'Yazı yazdığın gün sayısı: ${streakStats.totalWrittenDays}',
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  String _streakMessage(StreakStats streakStats) {
+    if (!streakStats.hasAnyEntry) {
+      return 'İlk yazını yazınca serin başlayacak.';
+    }
+    if (streakStats.hasWrittenToday && streakStats.currentStreak >= 3) {
+      return 'Üst üste ${streakStats.currentStreak} gün yazdın. Harika gidiyorsun!';
+    }
+    if (streakStats.hasWrittenToday && streakStats.currentStreak == 1) {
+      return 'Güzel başlangıç! Bugün yazı yolculuğun başladı.';
+    }
+    if (streakStats.hasWrittenToday) {
+      return 'Bugün yazdın! Günbi çok sevindi.';
+    }
+    if (streakStats.currentStreak >= 3) {
+      return 'Üst üste ${streakStats.currentStreak} gün yazdın. Harika gidiyorsun!';
+    }
+    if (streakStats.hasWrittenYesterday) {
+      return 'Günbi bugün de seni bekliyor. Küçük bir yazı yeter.';
+    }
+    return 'Olur, bazen ara vermek de gerekir. Bugün yeni bir başlangıç yapabiliriz.';
+  }
+}
+
+class _MiniStreakInfo extends StatelessWidget {
+  const _MiniStreakInfo({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppTheme.pastelYellow.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
     );
   }
 }

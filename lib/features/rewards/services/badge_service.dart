@@ -1,10 +1,14 @@
+import '../../streak/models/streak_stats.dart';
 import '../models/badge.dart';
 import '../models/journal_stats.dart';
 
 class BadgeService {
   const BadgeService();
 
-  List<Badge> evaluate(JournalStats stats) {
+  List<Badge> evaluate(
+    JournalStats stats, {
+    StreakStats streakStats = const StreakStats.empty(),
+  }) {
     return [
       Badge(
         id: 'first_seed',
@@ -69,18 +73,48 @@ class BadgeService {
             : 'Uzun bir yazı yazınca açılacak.',
         isUnlocked: stats.hasLongEntry,
       ),
+      Badge(
+        id: 'three_day_streak',
+        emoji: '🔥',
+        title: '3 Günlük Seri',
+        description: streakStats.bestStreak >= 3
+            ? '3 gün üst üste yazdın.'
+            : '3 gün üst üste yazınca açılacak.',
+        isUnlocked: streakStats.bestStreak >= 3,
+      ),
+      Badge(
+        id: 'week_writer',
+        emoji: '⭐',
+        title: 'Bir Haftalık Yazar',
+        description: streakStats.bestStreak >= 7
+            ? '7 gün üst üste yazdın.'
+            : '7 gün üst üste yazınca açılacak.',
+        isUnlocked: streakStats.bestStreak >= 7,
+      ),
+      Badge(
+        id: 'gunbi_friend',
+        emoji: '👑',
+        title: "Günbi'nin Dostu",
+        description: streakStats.bestStreak >= 30
+            ? '30 gün üst üste yazdın.'
+            : '30 gün üst üste yazınca açılacak.',
+        isUnlocked: streakStats.bestStreak >= 30,
+      ),
     ];
   }
 
   List<Badge> newlyUnlocked({
     required JournalStats before,
     required JournalStats after,
+    StreakStats beforeStreak = const StreakStats.empty(),
+    StreakStats afterStreak = const StreakStats.empty(),
   }) {
     final beforeUnlockedIds = evaluate(
       before,
+      streakStats: beforeStreak,
     ).where((badge) => badge.isUnlocked).map((badge) => badge.id).toSet();
 
-    return evaluate(after)
+    return evaluate(after, streakStats: afterStreak)
         .where((badge) => badge.isUnlocked)
         .where((badge) => !beforeUnlockedIds.contains(badge.id))
         .take(2)
