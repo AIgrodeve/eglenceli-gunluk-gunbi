@@ -6,6 +6,7 @@ import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../journal/journal_entries_page.dart';
 import '../journal/mood_selection_page.dart';
+import '../parent/parent_page.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/rewards_page.dart';
 import '../streak/models/streak_stats.dart';
@@ -114,6 +115,13 @@ class _HomePageState extends State<HomePage> {
                       childName: widget.childName,
                       ageGroup: ageGroup,
                     ),
+                  ),
+                ),
+                _HomeAction(
+                  icon: Icons.family_restroom_rounded,
+                  label: 'Ebeveyn Alanı',
+                  onPressed: () => _openAndRefresh(
+                    ParentPage(childName: widget.childName, ageGroup: ageGroup),
                   ),
                 ),
               ],
