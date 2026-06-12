@@ -34,6 +34,7 @@ class GunbiPage extends StatelessWidget {
                     MascotWidget(
                       size: 170,
                       mood: _moodForEntryCount(stats.totalEntries),
+                      animationType: MascotAnimationType.lottie,
                     ),
                     const SizedBox(height: 28),
                     Text(

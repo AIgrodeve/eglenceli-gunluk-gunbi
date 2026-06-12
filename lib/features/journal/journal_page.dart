@@ -264,6 +264,7 @@ class _WritingMascotCard extends StatelessWidget {
             size: 66,
             mood: MascotMood.writing,
             showShadow: false,
+            animationType: MascotAnimationType.lottie,
           ),
           const SizedBox(width: 12),
           Expanded(

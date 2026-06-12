@@ -7,7 +7,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const FunJournalApp());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Merhaba! Ben Günbi!'), findsOneWidget);
     expect(find.text('Başlayalım!'), findsOneWidget);

@@ -168,7 +168,10 @@ class _WelcomeStep extends StatelessWidget {
       title: 'Merhaba! Ben Günbi!',
       message:
           'Senin yazı arkadaşınım. Birlikte gününü anlatmanın eğlenceli yollarını bulacağız.',
-      child: MascotWidget(mood: MascotMood.excited),
+      child: MascotWidget(
+        mood: MascotMood.excited,
+        animationType: MascotAnimationType.lottie,
+      ),
     );
   }
 }

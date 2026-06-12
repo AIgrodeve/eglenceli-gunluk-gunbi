@@ -153,6 +153,7 @@ class _CelebrationBanner extends StatelessWidget {
             size: 72,
             mood: MascotMood.celebration,
             showShadow: false,
+            animationType: MascotAnimationType.lottie,
           ),
           const SizedBox(width: 12),
           Expanded(

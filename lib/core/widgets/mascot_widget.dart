@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:lottie/lottie.dart';
+import 'package:rive/rive.dart';
 
 import '../theme/app_theme.dart';
 
@@ -13,6 +16,8 @@ enum MascotMood {
   celebration,
 }
 
+enum MascotAnimationType { none, rive, lottie }
+
 class MascotWidget extends StatelessWidget {
   const MascotWidget({
     super.key,
@@ -20,12 +25,18 @@ class MascotWidget extends StatelessWidget {
     this.mood = MascotMood.happy,
     this.showShadow = true,
     this.showSparkles,
+    this.animationType = MascotAnimationType.none,
+    this.animationAsset,
+    this.fallbackToStatic = true,
   });
 
   final double size;
   final MascotMood mood;
   final bool showShadow;
   final bool? showSparkles;
+  final MascotAnimationType animationType;
+  final String? animationAsset;
+  final bool fallbackToStatic;
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +47,129 @@ class MascotWidget extends StatelessWidget {
         duration: const Duration(milliseconds: 260),
         scale: _scale,
         curve: Curves.easeOutBack,
-        child: _StaticGunbiDrawing(
-          size: size,
-          mood: mood,
-          showShadow: showShadow,
-          showSparkles: showSparkles ?? _defaultSparkles,
+        child: _buildMascot(),
+      ),
+    );
+  }
+
+  Widget _buildMascot() {
+    final asset = _resolvedAnimationAsset;
+
+    return switch (animationType) {
+      MascotAnimationType.none => _buildStaticMascot(),
+      MascotAnimationType.rive =>
+        asset == null
+            ? _buildFallbackMascot('Rive animasyon dosyası seçilmedi.')
+            : _buildRiveMascot(asset),
+      MascotAnimationType.lottie =>
+        asset == null
+            ? _buildFallbackMascot('Lottie animasyon dosyası seçilmedi.')
+            : _buildLottieMascot(asset),
+    };
+  }
+
+  Widget _buildStaticMascot() {
+    return _StaticGunbiDrawing(
+      size: size,
+      mood: mood,
+      showShadow: showShadow,
+      showSparkles: showSparkles ?? _defaultSparkles,
+    );
+  }
+
+  Widget _buildRiveMascot(String asset) {
+    return _AnimationAssetGuard(
+      asset: asset,
+      fallback: _buildSilentFallbackMascot(),
+      debugMessage: _fallbackDebugMessage(
+        'Rive animasyonu yüklenemedi: $asset',
+      ),
+      builder: (_) => SizedBox(
+        width: size,
+        height: size,
+        child: RiveAnimation.asset(
+          asset,
+          fit: BoxFit.contain,
+          // İleride gerekirse stateMachines: ['GunbiStateMachine'] eklenebilir.
         ),
       ),
     );
+  }
+
+  Widget _buildLottieMascot(String asset) {
+    return _AnimationAssetGuard(
+      asset: asset,
+      fallback: _buildSilentFallbackMascot(),
+      debugMessage: _fallbackDebugMessage(
+        'Lottie animasyonu yüklenemedi: $asset',
+      ),
+      builder: (_) => SizedBox(
+        width: size,
+        height: size,
+        child: Lottie.asset(
+          asset,
+          fit: BoxFit.contain,
+          repeat: true,
+          animate: true,
+          errorBuilder: (_, error, stackTrace) {
+            debugPrint('Günbi Lottie animasyonu açılamadı: $error');
+            return _buildFallbackMascot('Lottie animasyonu açılamadı: $asset');
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackMascot(String debugMessage) {
+    if (!fallbackToStatic) {
+      debugPrint(debugMessage);
+      return SizedBox(width: size, height: size);
+    }
+
+    debugPrint('$debugMessage Statik Günbi gösteriliyor.');
+    return _buildStaticMascot();
+  }
+
+  Widget _buildSilentFallbackMascot() {
+    if (!fallbackToStatic) {
+      return SizedBox(width: size, height: size);
+    }
+    return _buildStaticMascot();
+  }
+
+  String _fallbackDebugMessage(String message) {
+    if (!fallbackToStatic) {
+      return message;
+    }
+    return '$message Statik Günbi gösteriliyor.';
+  }
+
+  String? get _resolvedAnimationAsset {
+    final explicitAsset = animationAsset?.trim();
+    if (explicitAsset != null && explicitAsset.isNotEmpty) {
+      return explicitAsset;
+    }
+    return _assetForMood(mood, animationType);
+  }
+
+  String? _assetForMood(MascotMood mood, MascotAnimationType type) {
+    if (type == MascotAnimationType.none) {
+      return null;
+    }
+
+    final moodName = switch (mood) {
+      MascotMood.writing => 'writing',
+      MascotMood.celebration => 'celebration',
+      MascotMood.happy || MascotMood.excited || MascotMood.proud => 'happy',
+      MascotMood.calm || MascotMood.supportive || MascotMood.sleepy => 'idle',
+    };
+
+    return switch (type) {
+      MascotAnimationType.rive => 'assets/animations/rive/gunbi_$moodName.riv',
+      MascotAnimationType.lottie =>
+        'assets/animations/lottie/gunbi_$moodName.json',
+      MascotAnimationType.none => null,
+    };
   }
 
   double get _scale {
@@ -59,6 +185,37 @@ class MascotWidget extends StatelessWidget {
       MascotMood.excited || MascotMood.proud || MascotMood.celebration => true,
       _ => false,
     };
+  }
+}
+
+class _AnimationAssetGuard extends StatelessWidget {
+  const _AnimationAssetGuard({
+    required this.asset,
+    required this.builder,
+    required this.fallback,
+    required this.debugMessage,
+  });
+
+  final String asset;
+  final WidgetBuilder builder;
+  final Widget fallback;
+  final String debugMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<ByteData>(
+      future: rootBundle.load(asset),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return fallback;
+        }
+        if (snapshot.hasError || !snapshot.hasData) {
+          debugPrint(debugMessage);
+          return fallback;
+        }
+        return builder(context);
+      },
+    );
   }
 }
 
