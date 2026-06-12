@@ -9,6 +9,7 @@ import '../journal/mood_selection_page.dart';
 import '../parent/parent_page.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/rewards_page.dart';
+import '../settings/settings_page.dart';
 import '../streak/models/streak_stats.dart';
 import '../streak/services/streak_service.dart';
 import '../weekly_summary/weekly_summary_page.dart';
@@ -28,10 +29,14 @@ class _HomePageState extends State<HomePage> {
   final JournalRepository _repository = const JournalRepository();
   final StreakService _streakService = const StreakService();
   late Future<(JournalStats, StreakStats)> _dashboardFuture;
+  late String _childName;
+  late AgeGroup _ageGroup;
 
   @override
   void initState() {
     super.initState();
+    _childName = widget.childName;
+    _ageGroup = widget.ageGroup ?? AgeGroup.sixToEight;
     _dashboardFuture = _loadDashboardStats();
   }
 
@@ -58,8 +63,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final ageGroup = widget.ageGroup ?? AgeGroup.sixToEight;
-
     return Scaffold(
       appBar: AppBar(title: const Text('Eğlenceli Günlük')),
       body: SafeArea(
@@ -67,12 +70,12 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(24),
           children: [
             Text(
-              'Merhaba, ${widget.childName}!',
+              'Merhaba, $_childName!',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 6),
             Text(
-              '${ageGroup.label} yazı yolculuğu',
+              '${_ageGroup.label} yazı yolculuğu',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 18),
@@ -87,8 +90,8 @@ class _HomePageState extends State<HomePage> {
                   label: 'Bugün yaz',
                   onPressed: () => _openAndRefresh(
                     MoodSelectionPage(
-                      childName: widget.childName,
-                      ageGroup: ageGroup,
+                      childName: _childName,
+                      ageGroup: _ageGroup,
                     ),
                   ),
                 ),
@@ -112,8 +115,8 @@ class _HomePageState extends State<HomePage> {
                   label: 'Haftalık Özet',
                   onPressed: () => _openAndRefresh(
                     WeeklySummaryPage(
-                      childName: widget.childName,
-                      ageGroup: ageGroup,
+                      childName: _childName,
+                      ageGroup: _ageGroup,
                     ),
                   ),
                 ),
@@ -121,8 +124,13 @@ class _HomePageState extends State<HomePage> {
                   icon: Icons.family_restroom_rounded,
                   label: 'Ebeveyn Alanı',
                   onPressed: () => _openAndRefresh(
-                    ParentPage(childName: widget.childName, ageGroup: ageGroup),
+                    ParentPage(childName: _childName, ageGroup: _ageGroup),
                   ),
+                ),
+                _HomeAction(
+                  icon: Icons.settings_rounded,
+                  label: 'Ayarlar',
+                  onPressed: _openSettings,
                 ),
               ],
             ),
@@ -130,6 +138,29 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _openSettings() async {
+    final result = await Navigator.of(context).push<SettingsResult>(
+      MaterialPageRoute<SettingsResult>(
+        builder: (_) =>
+            SettingsPage(childName: _childName, ageGroup: _ageGroup),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (result != null) {
+      setState(() {
+        _childName = result.childName;
+        _ageGroup = result.ageGroup;
+        _dashboardFuture = _loadDashboardStats();
+      });
+    } else {
+      _refreshStats();
+    }
   }
 }
 

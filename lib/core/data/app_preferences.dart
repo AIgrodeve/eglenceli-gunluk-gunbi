@@ -37,4 +37,14 @@ class AppPreferences {
     await preferences.setString(_childAgeGroupKey, ageGroup.storageValue);
     await preferences.setBool(_onboardingCompletedKey, true);
   }
+
+  Future<void> updateChildName(String childName) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_childNameKey, childName.trim());
+  }
+
+  Future<void> updateChildAgeGroup(AgeGroup ageGroup) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_childAgeGroupKey, ageGroup.storageValue);
+  }
 }
