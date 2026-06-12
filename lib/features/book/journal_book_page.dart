@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
 
 import '../../core/data/app_preferences.dart';
 import '../../core/models/age_group.dart';
@@ -9,6 +10,7 @@ import '../journal/models/journal_entry.dart';
 import '../journal/mood_selection_page.dart';
 import '../rewards/models/journal_stats.dart';
 import '../streak/services/streak_service.dart';
+import 'services/journal_book_pdf_service.dart';
 
 class JournalBookPage extends StatefulWidget {
   const JournalBookPage({
@@ -27,6 +29,7 @@ class JournalBookPage extends StatefulWidget {
 class _JournalBookPageState extends State<JournalBookPage> {
   final AppPreferences _preferences = const AppPreferences();
   final JournalRepository _repository = const JournalRepository();
+  final JournalBookPdfService _pdfService = const JournalBookPdfService();
   final StreakService _streakService = const StreakService();
   late final TextEditingController _titleController;
   late Future<_BookPreviewData> _previewFuture;
@@ -77,14 +80,50 @@ class _JournalBookPageState extends State<JournalBookPage> {
     await _preferences.updateBookTitle(title);
   }
 
-  void _showPdfComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Günbi kitabı hazırlamak için biraz daha büyüyecek. PDF özelliği yakında!',
+  Future<void> _previewPdf(_BookPreviewData preview) async {
+    if (preview.entries.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('PDF için önce günlüğüne birkaç yazı ekleyelim.'),
         ),
-      ),
-    );
+      );
+      return;
+    }
+
+    final title = _titleController.text.trim().isEmpty
+        ? _defaultTitle
+        : _titleController.text.trim();
+    await _preferences.updateBookTitle(title);
+
+    try {
+      await Printing.layoutPdf(
+        name: _pdfService.safeFileName(childName: widget.childName),
+        onLayout: (_) => _pdfService.buildPdf(
+          bookTitle: title,
+          childName: widget.childName,
+          ageGroup: widget.ageGroup,
+          entries: preview.entries,
+          stats: preview.stats,
+          writtenDayCount: preview.writtenDayCount,
+          mostFrequentMood: preview.mostFrequentMood,
+          bestStreak: preview.bestStreak,
+          firstEntryDate: preview.firstEntryDate,
+          lastEntryDate: preview.lastEntryDate,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Günbi kitabı hazırlarken biraz zorlandı. Tekrar deneyelim.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -152,9 +191,9 @@ class _JournalBookPageState extends State<JournalBookPage> {
                 ],
                 const SizedBox(height: 8),
                 FilledButton.icon(
-                  onPressed: _showPdfComingSoon,
+                  onPressed: () => _previewPdf(preview),
                   icon: const Icon(Icons.picture_as_pdf_rounded),
-                  label: const Text('PDF oluşturma yakında'),
+                  label: const Text('PDF Önizle'),
                 ),
               ],
             );
