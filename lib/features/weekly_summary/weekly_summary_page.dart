@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
@@ -8,9 +9,10 @@ import 'models/weekly_summary.dart';
 import 'services/weekly_summary_service.dart';
 
 class WeeklySummaryPage extends StatelessWidget {
-  const WeeklySummaryPage({super.key, required this.childName});
+  const WeeklySummaryPage({super.key, required this.childName, this.ageGroup});
 
   final String childName;
+  final AgeGroup? ageGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,10 @@ class WeeklySummaryPage extends StatelessWidget {
 
             final summary = snapshot.data;
             if (summary == null || !summary.hasEntries) {
-              return _EmptyWeeklySummary(childName: childName);
+              return _EmptyWeeklySummary(
+                childName: childName,
+                ageGroup: ageGroup,
+              );
             }
 
             return _WeeklySummaryContent(summary: summary);
@@ -186,9 +191,10 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _EmptyWeeklySummary extends StatelessWidget {
-  const _EmptyWeeklySummary({required this.childName});
+  const _EmptyWeeklySummary({required this.childName, required this.ageGroup});
 
   final String childName;
+  final AgeGroup? ageGroup;
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +216,10 @@ class _EmptyWeeklySummary extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute<void>(
-                    builder: (_) => MoodSelectionPage(childName: childName),
+                    builder: (_) => MoodSelectionPage(
+                      childName: childName,
+                      ageGroup: ageGroup ?? AgeGroup.sixToEight,
+                    ),
                   ),
                 );
               },

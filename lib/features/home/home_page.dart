@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
@@ -11,9 +12,10 @@ import '../weekly_summary/weekly_summary_page.dart';
 import 'gunbi_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.childName});
+  const HomePage({super.key, required this.childName, this.ageGroup});
 
   final String childName;
+  final AgeGroup? ageGroup;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -49,6 +51,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final ageGroup = widget.ageGroup ?? AgeGroup.sixToEight;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Eğlenceli Günlük')),
       body: SafeArea(
@@ -59,6 +63,11 @@ class _HomePageState extends State<HomePage> {
               'Merhaba, ${widget.childName}!',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            const SizedBox(height: 6),
+            Text(
+              '${ageGroup.label} yazı yolculuğu',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const SizedBox(height: 18),
             _GunbiPromptCard(statsFuture: _statsFuture),
             const SizedBox(height: 24),
@@ -68,7 +77,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icons.edit_note_rounded,
                   label: 'Bugün yaz',
                   onPressed: () => _openAndRefresh(
-                    MoodSelectionPage(childName: widget.childName),
+                    MoodSelectionPage(
+                      childName: widget.childName,
+                      ageGroup: ageGroup,
+                    ),
                   ),
                 ),
                 _HomeAction(
@@ -90,7 +102,10 @@ class _HomePageState extends State<HomePage> {
                   icon: Icons.calendar_month_rounded,
                   label: 'Haftalık Özet',
                   onPressed: () => _openAndRefresh(
-                    WeeklySummaryPage(childName: widget.childName),
+                    WeeklySummaryPage(
+                      childName: widget.childName,
+                      ageGroup: ageGroup,
+                    ),
                   ),
                 ),
               ],

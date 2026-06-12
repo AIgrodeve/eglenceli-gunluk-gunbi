@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import 'journal_page.dart';
 import 'mood_options.dart';
 
 class MoodSelectionPage extends StatefulWidget {
-  const MoodSelectionPage({super.key, required this.childName});
+  const MoodSelectionPage({
+    super.key,
+    required this.childName,
+    required this.ageGroup,
+  });
 
   final String childName;
+  final AgeGroup ageGroup;
 
   @override
   State<MoodSelectionPage> createState() => _MoodSelectionPageState();
@@ -26,6 +32,7 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
       MaterialPageRoute<void>(
         builder: (_) => JournalPage(
           childName: widget.childName,
+          ageGroup: widget.ageGroup,
           moodLabel: mood.label,
           moodEmoji: mood.emoji,
         ),

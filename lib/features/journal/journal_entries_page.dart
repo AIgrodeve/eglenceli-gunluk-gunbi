@@ -127,6 +127,18 @@ class _JournalEntryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
+            if (entry.promptText != null &&
+                entry.promptText!.trim().isNotEmpty) ...[
+              Text(
+                'Konu: ${entry.promptText}',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
             Text(
               entry.text,
               maxLines: 2,

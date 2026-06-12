@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/data/app_preferences.dart';
+import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../home/home_page.dart';
@@ -19,6 +20,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   final AppPreferences _preferences = const AppPreferences();
 
   int _currentPage = 0;
+  AgeGroup? _selectedAgeGroup;
   MoodOption? _selectedMood;
   bool _isCompleting = false;
 
@@ -27,6 +29,9 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       return _nameController.text.trim().isNotEmpty;
     }
     if (_currentPage == 2) {
+      return _selectedAgeGroup != null;
+    }
+    if (_currentPage == 3) {
       return _selectedMood != null;
     }
     return !_isCompleting;
@@ -55,7 +60,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       );
     }
 
-    if (_currentPage == 3) {
+    if (_currentPage == 4) {
       await _completeOnboarding();
       return;
     }
@@ -67,17 +72,27 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   }
 
   Future<void> _completeOnboarding() async {
+    final ageGroup = _selectedAgeGroup;
+    if (ageGroup == null) {
+      return;
+    }
+
     setState(() => _isCompleting = true);
 
     final childName = _nameController.text.trim();
-    await _preferences.completeOnboarding(childName: childName);
+    await _preferences.completeOnboarding(
+      childName: childName,
+      ageGroup: ageGroup,
+    );
 
     if (!mounted) {
       return;
     }
 
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => HomePage(childName: childName)),
+      MaterialPageRoute<void>(
+        builder: (_) => HomePage(childName: childName, ageGroup: ageGroup),
+      ),
     );
   }
 
@@ -101,6 +116,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                     _NameStep(
                       controller: _nameController,
                       onChanged: (_) => setState(() {}),
+                    ),
+                    _AgeGroupStep(
+                      selectedAgeGroup: _selectedAgeGroup,
+                      onAgeGroupSelected: (ageGroup) {
+                        setState(() => _selectedAgeGroup = ageGroup);
+                      },
                     ),
                     _MoodStep(
                       selectedMood: _selectedMood,
@@ -131,7 +152,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     if (_currentPage == 0) {
       return 'Başlayalım!';
     }
-    if (_currentPage == 3) {
+    if (_currentPage == 4) {
       return 'Ana sayfaya geç';
     }
     return 'Devam';
@@ -168,6 +189,77 @@ class _NameStep extends StatelessWidget {
         onChanged: onChanged,
         textCapitalization: TextCapitalization.words,
         decoration: const InputDecoration(hintText: 'Adım...'),
+      ),
+    );
+  }
+}
+
+class _AgeGroupStep extends StatelessWidget {
+  const _AgeGroupStep({
+    required this.selectedAgeGroup,
+    required this.onAgeGroupSelected,
+  });
+
+  final AgeGroup? selectedAgeGroup;
+  final ValueChanged<AgeGroup> onAgeGroupSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return _OnboardingStep(
+      title: 'Kaç yaş grubundasın?',
+      message:
+          'Günbi sana daha güzel sorular sorabilmek için bunu bilmek istiyor.',
+      child: Column(
+        children: [
+          for (final ageGroup in AgeGroup.values) ...[
+            _AgeGroupCard(
+              ageGroup: ageGroup,
+              isSelected: selectedAgeGroup == ageGroup,
+              onTap: () => onAgeGroupSelected(ageGroup),
+            ),
+            const SizedBox(height: 12),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _AgeGroupCard extends StatelessWidget {
+  const _AgeGroupCard({
+    required this.ageGroup,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final AgeGroup ageGroup;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isSelected ? AppTheme.pastelYellow : Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: isSelected ? AppTheme.lightOrange : AppTheme.pastelYellow,
+              width: 2,
+            ),
+          ),
+          child: Text(
+            ageGroup.label,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+        ),
       ),
     );
   }
@@ -277,7 +369,7 @@ class _ProgressDots extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(4, (index) {
+      children: List.generate(5, (index) {
         final isActive = index == currentPage;
 
         return AnimatedContainer(
