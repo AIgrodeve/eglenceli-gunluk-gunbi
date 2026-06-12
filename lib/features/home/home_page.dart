@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
+import '../book/journal_book_page.dart';
 import '../journal/data/journal_repository.dart';
 import '../journal/journal_entries_page.dart';
 import '../journal/mood_selection_page.dart';
@@ -118,6 +119,13 @@ class _HomePageState extends State<HomePage> {
                       childName: _childName,
                       ageGroup: _ageGroup,
                     ),
+                  ),
+                ),
+                _HomeAction(
+                  icon: Icons.menu_book_rounded,
+                  label: 'Günlük Kitabım',
+                  onPressed: () => _openAndRefresh(
+                    JournalBookPage(childName: _childName, ageGroup: _ageGroup),
                   ),
                 ),
                 _HomeAction(

@@ -7,6 +7,7 @@ class AppPreferences {
 
   static const _childNameKey = 'child_name';
   static const _childAgeGroupKey = 'childAgeGroup';
+  static const _bookTitleKey = 'bookTitle';
   static const _onboardingCompletedKey = 'onboarding_completed';
 
   Future<String?> loadChildName() async {
@@ -46,5 +47,19 @@ class AppPreferences {
   Future<void> updateChildAgeGroup(AgeGroup ageGroup) async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_childAgeGroupKey, ageGroup.storageValue);
+  }
+
+  Future<String?> loadBookTitle() async {
+    final preferences = await SharedPreferences.getInstance();
+    final bookTitle = preferences.getString(_bookTitleKey)?.trim();
+    if (bookTitle == null || bookTitle.isEmpty) {
+      return null;
+    }
+    return bookTitle;
+  }
+
+  Future<void> updateBookTitle(String bookTitle) async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setString(_bookTitleKey, bookTitle.trim());
   }
 }
