@@ -4,6 +4,8 @@ import '../../core/theme/app_theme.dart';
 import 'data/journal_repository.dart';
 import 'journal_entries_page.dart';
 import 'models/journal_entry.dart';
+import '../rewards/models/journal_stats.dart';
+import '../rewards/services/badge_service.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({
@@ -24,6 +26,7 @@ class JournalPage extends StatefulWidget {
 class _JournalPageState extends State<JournalPage> {
   final TextEditingController _textController = TextEditingController();
   final JournalRepository _repository = const JournalRepository();
+  final BadgeService _badgeService = const BadgeService();
 
   bool _isSaving = false;
 
@@ -46,6 +49,8 @@ class _JournalPageState extends State<JournalPage> {
 
     setState(() => _isSaving = true);
 
+    final previousEntries = await _repository.loadEntries();
+    final previousStats = JournalStats.fromEntries(previousEntries);
     final entry = JournalEntry.create(
       childName: widget.childName,
       moodLabel: widget.moodLabel,
@@ -53,15 +58,24 @@ class _JournalPageState extends State<JournalPage> {
       text: text,
     );
     await _repository.addEntry(entry);
+    final newStats = JournalStats.fromEntries([entry, ...previousEntries]);
+    final newlyUnlockedBadges = _badgeService.newlyUnlocked(
+      before: previousStats,
+      after: newStats,
+    );
 
     if (!mounted) {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute<void>(
-        builder: (_) => const JournalEntriesPage(showSavedMessage: true),
+        builder: (_) => JournalEntriesPage(
+          showSavedMessage: true,
+          newlyUnlockedBadges: newlyUnlockedBadges,
+        ),
       ),
+      (route) => route.isFirst,
     );
   }
 

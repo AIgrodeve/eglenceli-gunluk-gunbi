@@ -22,7 +22,7 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => JournalPage(
           childName: widget.childName,

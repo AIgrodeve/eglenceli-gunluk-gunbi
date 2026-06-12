@@ -3,11 +3,17 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'data/journal_repository.dart';
 import 'models/journal_entry.dart';
+import '../rewards/models/badge.dart' as reward_badge;
 
 class JournalEntriesPage extends StatefulWidget {
-  const JournalEntriesPage({super.key, this.showSavedMessage = false});
+  const JournalEntriesPage({
+    super.key,
+    this.showSavedMessage = false,
+    this.newlyUnlockedBadges = const [],
+  });
 
   final bool showSavedMessage;
+  final List<reward_badge.Badge> newlyUnlockedBadges;
 
   @override
   State<JournalEntriesPage> createState() => _JournalEntriesPageState();
@@ -22,15 +28,34 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
 
     if (widget.showSavedMessage && !_didShowSavedMessage) {
       _didShowSavedMessage = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         if (!mounted) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
+        final messenger = ScaffoldMessenger.of(context);
+        messenger.showSnackBar(
           const SnackBar(
             content: Text('Harika! Günlüğüne yeni bir yazı ekledik.'),
           ),
         );
+
+        if (widget.newlyUnlockedBadges.isEmpty) {
+          return;
+        }
+
+        await Future<void>.delayed(const Duration(milliseconds: 1400));
+        if (!mounted) {
+          return;
+        }
+
+        final badgeText = widget.newlyUnlockedBadges
+            .map((badge) => '${badge.emoji} ${badge.title}')
+            .join(', ');
+        final message = widget.newlyUnlockedBadges.length == 1
+            ? 'Yeni bir rozet kazandın: $badgeText'
+            : 'Yeni rozetler kazandın: $badgeText';
+
+        messenger.showSnackBar(SnackBar(content: Text(message)));
       });
     }
 
