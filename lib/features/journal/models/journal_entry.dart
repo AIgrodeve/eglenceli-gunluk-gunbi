@@ -1,5 +1,6 @@
 class JournalEntry {
   const JournalEntry({
+    required this.id,
     required this.childName,
     required this.moodLabel,
     required this.moodEmoji,
@@ -9,6 +10,7 @@ class JournalEntry {
     this.promptText,
   });
 
+  final String id;
   final String childName;
   final String moodLabel;
   final String moodEmoji;
@@ -19,6 +21,7 @@ class JournalEntry {
 
   factory JournalEntry.fromJson(Map<String, dynamic> json) {
     return JournalEntry(
+      id: json['id'] as String? ?? '',
       childName: json['childName'] as String? ?? '',
       moodLabel: json['moodLabel'] as String? ?? '',
       moodEmoji: json['moodEmoji'] as String? ?? '',
@@ -33,6 +36,7 @@ class JournalEntry {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'childName': childName,
       'moodLabel': moodLabel,
       'moodEmoji': moodEmoji,
@@ -53,6 +57,7 @@ class JournalEntry {
     String? promptText,
   }) {
     return JournalEntry(
+      id: _createId(),
       childName: childName,
       moodLabel: moodLabel,
       moodEmoji: moodEmoji,
@@ -61,5 +66,32 @@ class JournalEntry {
       title: title,
       promptText: promptText,
     );
+  }
+
+  JournalEntry copyWith({
+    String? id,
+    String? childName,
+    String? moodLabel,
+    String? moodEmoji,
+    String? text,
+    DateTime? createdAt,
+    String? title,
+    String? promptText,
+  }) {
+    return JournalEntry(
+      id: id ?? this.id,
+      childName: childName ?? this.childName,
+      moodLabel: moodLabel ?? this.moodLabel,
+      moodEmoji: moodEmoji ?? this.moodEmoji,
+      text: text ?? this.text,
+      createdAt: createdAt ?? this.createdAt,
+      title: title ?? this.title,
+      promptText: promptText ?? this.promptText,
+    );
+  }
+
+  static String _createId() {
+    final now = DateTime.now().microsecondsSinceEpoch;
+    return 'entry_$now';
   }
 }

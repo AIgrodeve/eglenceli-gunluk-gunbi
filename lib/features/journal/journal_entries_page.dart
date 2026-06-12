@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import 'data/journal_repository.dart';
+import 'journal_detail_page.dart';
 import 'models/journal_entry.dart';
 import '../rewards/models/badge.dart' as reward_badge;
 
@@ -91,13 +92,36 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
               itemCount: entries.length,
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                return _JournalEntryCard(entry: entries[index]);
+                final entry = entries[index];
+                return _JournalEntryCard(
+                  entry: entry,
+                  onTap: () => _openDetail(entry),
+                );
               },
             );
           },
         ),
       ),
     );
+  }
+
+  Future<void> _openDetail(JournalEntry entry) async {
+    final result = await Navigator.of(context).push<String>(
+      MaterialPageRoute<String>(
+        builder: (_) => JournalDetailPage(entry: entry),
+      ),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {});
+    if (result == 'deleted') {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Yazı silindi.')));
+    }
   }
 }
 
@@ -106,9 +130,10 @@ String _badgeText(List<reward_badge.Badge> badges) {
 }
 
 class _JournalEntryCard extends StatelessWidget {
-  const _JournalEntryCard({required this.entry});
+  const _JournalEntryCard({required this.entry, required this.onTap});
 
   final JournalEntry entry;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -121,53 +146,57 @@ class _JournalEntryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         side: const BorderSide(color: AppTheme.pastelYellow, width: 1.5),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    _cardTitle(entry),
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w800,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(18),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _cardTitle(entry),
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '${entry.moodEmoji} ${entry.moodLabel}',
+                    style: textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+              if (entry.title != null && entry.title!.trim().isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(_formatDate(entry.createdAt), style: textTheme.bodySmall),
+              ],
+              const SizedBox(height: 12),
+              if (entry.promptText != null &&
+                  entry.promptText!.trim().isNotEmpty) ...[
+                Text(
+                  'Konu: ${entry.promptText}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                Text(
-                  '${entry.moodEmoji} ${entry.moodLabel}',
-                  style: textTheme.bodyLarge,
-                ),
+                const SizedBox(height: 8),
               ],
-            ),
-            if (entry.title != null && entry.title!.trim().isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(_formatDate(entry.createdAt), style: textTheme.bodySmall),
-            ],
-            const SizedBox(height: 12),
-            if (entry.promptText != null &&
-                entry.promptText!.trim().isNotEmpty) ...[
               Text(
-                'Konu: ${entry.promptText}',
-                maxLines: 1,
+                entry.text,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
+                style: textTheme.bodyLarge,
               ),
-              const SizedBox(height: 8),
             ],
-            Text(
-              entry.text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: textTheme.bodyLarge,
-            ),
-          ],
+          ),
         ),
       ),
     );
