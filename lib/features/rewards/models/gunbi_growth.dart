@@ -8,34 +8,31 @@ class GunbiGrowth {
     if (entryCount == 0) {
       return const GunbiGrowth(
         title: 'Günbi seni bekliyor',
-        description: 'İlk yazını yazınca Günbi de yolculuğa başlayacak.',
+        description: 'Günbi ilk yazını bekliyor.',
       );
     }
     if (entryCount < 10) {
-      return GunbiGrowth(
+      return const GunbiGrowth(
         title: 'Günbi uyandı',
-        description:
-            'Sen $entryCount yazı yazdın. Günbi seninle büyümeye başladı!',
+        description: 'Günbi seninle yazı yolculuğuna başladı.',
       );
     }
     if (entryCount < 25) {
-      return GunbiGrowth(
+      return const GunbiGrowth(
         title: 'Günbi parlıyor',
-        description:
-            'Sen $entryCount yazı yazdın. Günbi artık ışıl ışıl görünüyor!',
+        description: 'Günbi parlıyor! Yazıların çoğalıyor.',
       );
     }
     if (entryCount < 50) {
-      return GunbiGrowth(
+      return const GunbiGrowth(
         title: 'Günbi aksesuar kazandı',
-        description:
-            'Sen $entryCount yazı yazdın. Günbi yeni bir sürpriz kazandı!',
+        description: 'Günbi seninle gurur duyuyor.',
       );
     }
 
-    return GunbiGrowth(
+    return const GunbiGrowth(
       title: 'Günbi özel formda',
-      description: 'Sen $entryCount yazı yazdın. Günbi özel formuyla yanında!',
+      description: 'Günbi özel formunda! Harika bir yazı yolculuğu!',
     );
   }
 }

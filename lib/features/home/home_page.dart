@@ -188,7 +188,7 @@ class _GunbiPromptCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const MascotWidget(size: 78),
+          const MascotWidget(size: 78, mood: MascotMood.happy),
           const SizedBox(width: 16),
           Expanded(
             child: FutureBuilder<JournalStats>(

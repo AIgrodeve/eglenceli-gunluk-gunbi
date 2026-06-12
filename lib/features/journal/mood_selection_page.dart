@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/mascot_widget.dart';
 import 'journal_page.dart';
 import 'mood_options.dart';
 
@@ -50,6 +51,14 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              const Center(
+                child: MascotWidget(
+                  size: 88,
+                  mood: MascotMood.supportive,
+                  showShadow: false,
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 'Bugün nasıl hissediyorsun?',
                 textAlign: TextAlign.center,

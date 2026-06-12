@@ -31,7 +31,10 @@ class GunbiPage extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const MascotWidget(size: 170),
+                    MascotWidget(
+                      size: 170,
+                      mood: _moodForEntryCount(stats.totalEntries),
+                    ),
                     const SizedBox(height: 28),
                     Text(
                       growth.title,
@@ -52,5 +55,21 @@ class GunbiPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  MascotMood _moodForEntryCount(int entryCount) {
+    if (entryCount == 0) {
+      return MascotMood.sleepy;
+    }
+    if (entryCount < 10) {
+      return MascotMood.happy;
+    }
+    if (entryCount < 25) {
+      return MascotMood.excited;
+    }
+    if (entryCount < 50) {
+      return MascotMood.proud;
+    }
+    return MascotMood.celebration;
   }
 }

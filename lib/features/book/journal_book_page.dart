@@ -144,7 +144,9 @@ class _JournalBookPageState extends State<JournalBookPage> {
             return ListView(
               padding: const EdgeInsets.all(24),
               children: [
-                const Center(child: MascotWidget(size: 118)),
+                const Center(
+                  child: MascotWidget(size: 118, mood: MascotMood.excited),
+                ),
                 const SizedBox(height: 18),
                 Text(
                   'Yazıların bir gün güzel bir kitaba dönüşebilir!',

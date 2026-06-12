@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/mascot_widget.dart';
 import 'data/journal_repository.dart';
 import 'journal_entries_page.dart';
 import 'models/journal_entry.dart';
@@ -154,6 +155,8 @@ class _JournalPageState extends State<JournalPage> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 18),
+            const _WritingMascotCard(),
+            const SizedBox(height: 14),
             _WritingPromptCard(
               promptText: _promptText,
               onRefresh: () {
@@ -240,6 +243,40 @@ class _JournalPageState extends State<JournalPage> {
       return const ["👑 30 gün! Günbi'nin en yakın yazı arkadaşısın!"];
     }
     return const [];
+  }
+}
+
+class _WritingMascotCard extends StatelessWidget {
+  const _WritingMascotCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.softBlue.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.softBlue.withValues(alpha: 0.55)),
+      ),
+      child: Row(
+        children: [
+          const MascotWidget(
+            size: 66,
+            mood: MascotMood.writing,
+            showShadow: false,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Günbi yazmaya hazır. Küçük bir cümle bile güzel bir başlangıç.',
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

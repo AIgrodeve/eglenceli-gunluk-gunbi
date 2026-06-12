@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/data/app_preferences.dart';
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -116,6 +117,14 @@ class _SettingsPageState extends State<SettingsPage> {
           child: ListView(
             padding: const EdgeInsets.all(24),
             children: [
+              const Center(
+                child: MascotWidget(
+                  size: 96,
+                  mood: MascotMood.calm,
+                  showShadow: false,
+                ),
+              ),
+              const SizedBox(height: 16),
               _SectionCard(
                 title: 'Profil',
                 child: Column(

@@ -55,7 +55,7 @@ class _WeeklySummaryContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        const Center(child: MascotWidget(size: 118)),
+        const Center(child: MascotWidget(size: 118, mood: MascotMood.proud)),
         const SizedBox(height: 18),
         Text(
           _gunbiMessage(summary),

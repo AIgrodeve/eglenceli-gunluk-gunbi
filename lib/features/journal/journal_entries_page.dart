@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/mascot_widget.dart';
 import 'data/journal_repository.dart';
 import 'journal_detail_page.dart';
 import 'models/journal_entry.dart';
@@ -87,12 +88,21 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
               return const _EmptyEntries();
             }
 
+            final showCelebrationBanner =
+                widget.showSavedMessage ||
+                widget.newlyUnlockedBadges.isNotEmpty ||
+                widget.streakMessages.isNotEmpty;
+
             return ListView.separated(
               padding: const EdgeInsets.all(20),
-              itemCount: entries.length,
+              itemCount: entries.length + (showCelebrationBanner ? 1 : 0),
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final entry = entries[index];
+                if (showCelebrationBanner && index == 0) {
+                  return const _CelebrationBanner();
+                }
+
+                final entry = entries[index - (showCelebrationBanner ? 1 : 0)];
                 return _JournalEntryCard(
                   entry: entry,
                   onTap: () => _openDetail(entry),
@@ -122,6 +132,40 @@ class _JournalEntriesPageState extends State<JournalEntriesPage> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Yazı silindi.')));
     }
+  }
+}
+
+class _CelebrationBanner extends StatelessWidget {
+  const _CelebrationBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.pastelYellow.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.lightOrange, width: 1.5),
+      ),
+      child: Row(
+        children: [
+          const MascotWidget(
+            size: 72,
+            mood: MascotMood.celebration,
+            showShadow: false,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Günbi seninle kutluyor!',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -168,7 +168,7 @@ class _WelcomeStep extends StatelessWidget {
       title: 'Merhaba! Ben Günbi!',
       message:
           'Senin yazı arkadaşınım. Birlikte gününü anlatmanın eğlenceli yollarını bulacağız.',
-      child: MascotWidget(),
+      child: MascotWidget(mood: MascotMood.excited),
     );
   }
 }
@@ -184,11 +184,17 @@ class _NameStep extends StatelessWidget {
     return _OnboardingStep(
       title: 'Seni nasıl çağırayım?',
       message: 'Seni nasıl çağıracağımı bilmem için küçük bir isim yazalım mı?',
-      child: TextField(
-        controller: controller,
-        onChanged: onChanged,
-        textCapitalization: TextCapitalization.words,
-        decoration: const InputDecoration(hintText: 'Adım...'),
+      child: Column(
+        children: [
+          const MascotWidget(size: 96, mood: MascotMood.happy),
+          const SizedBox(height: 16),
+          TextField(
+            controller: controller,
+            onChanged: onChanged,
+            textCapitalization: TextCapitalization.words,
+            decoration: const InputDecoration(hintText: 'Adım...'),
+          ),
+        ],
       ),
     );
   }
@@ -276,26 +282,35 @@ class _MoodStep extends StatelessWidget {
     return _OnboardingStep(
       title: 'Bugün nasıl hissediyorsun?',
       message: 'Bir duygu seç. Doğru ya da yanlış cevap yok.',
-      child: Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        alignment: WrapAlignment.center,
+      child: Column(
         children: [
-          for (final mood in moodOptions)
-            ChoiceChip(
-              label: Text(mood.displayText),
-              selected: selectedMood == mood,
-              onSelected: (_) => onMoodSelected(mood),
-              selectedColor: AppTheme.softBlue,
-              backgroundColor: Colors.white,
-              labelStyle: Theme.of(context).textTheme.bodyLarge,
-              side: BorderSide(
-                color: selectedMood == mood
-                    ? AppTheme.softBlue
-                    : AppTheme.pastelYellow,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            ),
+          const MascotWidget(size: 96, mood: MascotMood.supportive),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: [
+              for (final mood in moodOptions)
+                ChoiceChip(
+                  label: Text(mood.displayText),
+                  selected: selectedMood == mood,
+                  onSelected: (_) => onMoodSelected(mood),
+                  selectedColor: AppTheme.softBlue,
+                  backgroundColor: Colors.white,
+                  labelStyle: Theme.of(context).textTheme.bodyLarge,
+                  side: BorderSide(
+                    color: selectedMood == mood
+                        ? AppTheme.softBlue
+                        : AppTheme.pastelYellow,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );
@@ -315,7 +330,7 @@ class _InviteStep extends StatelessWidget {
       title: '$greeting küçük bir sır vereyim...',
       message:
           'Yazmak bazen konuşmaktan daha kolay olur. Hazır olduğunda ana sayfanda buluşalım!',
-      child: const MascotWidget(size: 132),
+      child: const MascotWidget(size: 132, mood: MascotMood.happy),
     );
   }
 }
