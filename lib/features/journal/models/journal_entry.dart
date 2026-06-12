@@ -5,6 +5,7 @@ class JournalEntry {
     required this.moodEmoji,
     required this.text,
     required this.createdAt,
+    this.title,
     this.promptText,
   });
 
@@ -13,6 +14,7 @@ class JournalEntry {
   final String moodEmoji;
   final String text;
   final DateTime createdAt;
+  final String? title;
   final String? promptText;
 
   factory JournalEntry.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class JournalEntry {
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.now(),
+      title: json['title'] as String?,
       promptText: json['promptText'] as String?,
     );
   }
@@ -35,6 +38,7 @@ class JournalEntry {
       'moodEmoji': moodEmoji,
       'text': text,
       'createdAt': createdAt.toIso8601String(),
+      if (title != null && title!.trim().isNotEmpty) 'title': title,
       if (promptText != null && promptText!.trim().isNotEmpty)
         'promptText': promptText,
     };
@@ -45,6 +49,7 @@ class JournalEntry {
     required String moodLabel,
     required String moodEmoji,
     required String text,
+    String? title,
     String? promptText,
   }) {
     return JournalEntry(
@@ -53,6 +58,7 @@ class JournalEntry {
       moodEmoji: moodEmoji,
       text: text,
       createdAt: DateTime.now(),
+      title: title,
       promptText: promptText,
     );
   }

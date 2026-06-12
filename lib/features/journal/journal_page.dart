@@ -5,6 +5,7 @@ import '../../core/theme/app_theme.dart';
 import 'data/journal_repository.dart';
 import 'journal_entries_page.dart';
 import 'models/journal_entry.dart';
+import 'services/writing_coach_service.dart';
 import 'services/writing_prompt_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/services/badge_service.dart';
@@ -28,13 +29,16 @@ class JournalPage extends StatefulWidget {
 }
 
 class _JournalPageState extends State<JournalPage> {
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _textController = TextEditingController();
   final JournalRepository _repository = const JournalRepository();
   final BadgeService _badgeService = const BadgeService();
+  final WritingCoachService _coachService = const WritingCoachService();
   final WritingPromptService _promptService = WritingPromptService();
 
   bool _isSaving = false;
   late String _promptText;
+  List<String> _coachSuggestions = const [];
 
   @override
   void initState() {
@@ -44,8 +48,18 @@ class _JournalPageState extends State<JournalPage> {
 
   @override
   void dispose() {
+    _titleController.dispose();
     _textController.dispose();
     super.dispose();
+  }
+
+  void _showCoachSuggestions() {
+    setState(() {
+      _coachSuggestions = _coachService.suggestionsFor(
+        ageGroup: widget.ageGroup,
+        text: _textController.text,
+      );
+    });
   }
 
   Future<void> _saveEntry() async {
@@ -68,6 +82,7 @@ class _JournalPageState extends State<JournalPage> {
       moodLabel: widget.moodLabel,
       moodEmoji: widget.moodEmoji,
       text: text,
+      title: _titleController.text.trim(),
       promptText: _promptText,
     );
     await _repository.addEntry(entry);
@@ -114,61 +129,75 @@ class _JournalPageState extends State<JournalPage> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Hoş geldin, $displayName!',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Bugün "${widget.moodEmoji} ${widget.moodLabel}" seçtin. İstersen gününü buraya anlat.',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 18),
-              _WritingPromptCard(
-                promptText: _promptText,
-                onRefresh: () {
-                  setState(() {
-                    _promptText = _promptService.randomPromptFor(
-                      widget.ageGroup,
-                      except: _promptText,
-                    );
-                  });
-                },
-              ),
-              const SizedBox(height: 18),
-              Expanded(
-                child: TextField(
-                  controller: _textController,
-                  expands: true,
-                  maxLines: null,
-                  minLines: null,
-                  textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
-                    hintText: _hintText,
-                    fillColor: Colors.white,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(22),
-                      borderSide: const BorderSide(
-                        color: AppTheme.pastelYellow,
-                        width: 2,
-                      ),
+          children: [
+            Text(
+              'Hoş geldin, $displayName!',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Bugün "${widget.moodEmoji} ${widget.moodLabel}" seçtin. İstersen gününü buraya anlat.',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 18),
+            _WritingPromptCard(
+              promptText: _promptText,
+              onRefresh: () {
+                setState(() {
+                  _promptText = _promptService.randomPromptFor(
+                    widget.ageGroup,
+                    except: _promptText,
+                  );
+                });
+              },
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _titleController,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: InputDecoration(hintText: _titleHintText),
+            ),
+            const SizedBox(height: 14),
+            SizedBox(
+              height: 260,
+              child: TextField(
+                controller: _textController,
+                expands: true,
+                maxLines: null,
+                minLines: null,
+                textAlignVertical: TextAlignVertical.top,
+                decoration: InputDecoration(
+                  hintText: _hintText,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(22),
+                    borderSide: const BorderSide(
+                      color: AppTheme.pastelYellow,
+                      width: 2,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: _isSaving ? null : _saveEntry,
-                icon: const Icon(Icons.favorite_rounded),
-                label: Text(_isSaving ? 'Kaydediliyor...' : 'Günlüğüme ekle'),
-              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _showCoachSuggestions,
+              icon: const Icon(Icons.lightbulb_rounded),
+              label: const Text("Günbi'den yardım al"),
+            ),
+            if (_coachSuggestions.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              _CoachSuggestionsPanel(suggestions: _coachSuggestions),
             ],
-          ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: _isSaving ? null : _saveEntry,
+              icon: const Icon(Icons.favorite_rounded),
+              label: Text(_isSaving ? 'Kaydediliyor...' : 'Günlüğüme ekle'),
+            ),
+          ],
         ),
       ),
     );
@@ -178,6 +207,13 @@ class _JournalPageState extends State<JournalPage> {
     return switch (widget.ageGroup) {
       AgeGroup.sixToEight => 'Birkaç cümle yazabilirsin...',
       AgeGroup.nineToEleven => 'Düşüncelerini burada anlatabilirsin...',
+    };
+  }
+
+  String get _titleHintText {
+    return switch (widget.ageGroup) {
+      AgeGroup.sixToEight => 'Yazına küçük bir başlık...',
+      AgeGroup.nineToEleven => 'Yazına bir başlık verebilirsin...',
     };
   }
 }
@@ -222,6 +258,51 @@ class _WritingPromptCard extends StatelessWidget {
               label: const Text('Başka öneri'),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CoachSuggestionsPanel extends StatelessWidget {
+  const _CoachSuggestionsPanel({required this.suggestions});
+
+  final List<String> suggestions;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.pastelYellow.withValues(alpha: 0.45),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.lightOrange, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Günbi diyor ki:',
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 10),
+          for (final suggestion in suggestions) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('• '),
+                Expanded(
+                  child: Text(
+                    suggestion,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
         ],
       ),
     );

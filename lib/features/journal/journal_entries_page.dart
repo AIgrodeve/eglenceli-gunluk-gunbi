@@ -114,10 +114,12 @@ class _JournalEntryCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    _formatDate(entry.createdAt),
+                    _cardTitle(entry),
                     style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 Text(
@@ -126,6 +128,10 @@ class _JournalEntryCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (entry.title != null && entry.title!.trim().isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(_formatDate(entry.createdAt), style: textTheme.bodySmall),
+            ],
             const SizedBox(height: 12),
             if (entry.promptText != null &&
                 entry.promptText!.trim().isNotEmpty) ...[
@@ -149,6 +155,14 @@ class _JournalEntryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _cardTitle(JournalEntry entry) {
+    final title = entry.title?.trim();
+    if (title != null && title.isNotEmpty) {
+      return title;
+    }
+    return _formatDate(entry.createdAt);
   }
 
   String _formatDate(DateTime dateTime) {
