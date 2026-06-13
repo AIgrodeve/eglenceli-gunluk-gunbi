@@ -44,7 +44,7 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Bugün yaz')),
+      appBar: AppBar(title: const Text('Bugünü yaz')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),

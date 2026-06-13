@@ -231,7 +231,7 @@ class _EmptyWeeklySummary extends StatelessWidget {
                 );
               },
               icon: const Icon(Icons.edit_note_rounded),
-              label: const Text('Bugün yaz'),
+              label: const Text('Bugünü yaz'),
             ),
           ],
         ),

@@ -173,7 +173,17 @@ class _JournalPageState extends State<JournalPage> {
             TextField(
               controller: _titleController,
               textCapitalization: TextCapitalization.sentences,
-              decoration: InputDecoration(hintText: _titleHintText),
+              decoration: InputDecoration(
+                hintText: _titleHintText,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(22),
+                  borderSide: const BorderSide(
+                    color: AppTheme.pastelYellow,
+                    width: 2,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             SizedBox(
@@ -184,6 +194,7 @@ class _JournalPageState extends State<JournalPage> {
                 maxLines: null,
                 minLines: null,
                 textAlignVertical: TextAlignVertical.top,
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   hintText: _hintText,
                   fillColor: Colors.white,

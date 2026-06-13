@@ -7,6 +7,7 @@ class AppPreferences {
 
   static const _childNameKey = 'child_name';
   static const _childAgeGroupKey = 'childAgeGroup';
+  static const _childGenderKey = 'childGender';
   static const _bookTitleKey = 'bookTitle';
   static const _onboardingCompletedKey = 'onboarding_completed';
 
@@ -31,10 +32,12 @@ class AppPreferences {
 
   Future<void> completeOnboarding({
     required String childName,
+    required String childGender,
     required AgeGroup ageGroup,
   }) async {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_childNameKey, childName.trim());
+    await preferences.setString(_childGenderKey, childGender.trim());
     await preferences.setString(_childAgeGroupKey, ageGroup.storageValue);
     await preferences.setBool(_onboardingCompletedKey, true);
   }
@@ -67,6 +70,7 @@ class AppPreferences {
     final preferences = await SharedPreferences.getInstance();
     await preferences.remove(_childNameKey);
     await preferences.remove(_childAgeGroupKey);
+    await preferences.remove(_childGenderKey);
     await preferences.remove(_bookTitleKey);
     await preferences.remove(_onboardingCompletedKey);
   }

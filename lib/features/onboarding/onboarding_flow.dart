@@ -8,7 +8,9 @@ import '../home/home_page.dart';
 import '../journal/mood_options.dart';
 
 class OnboardingFlow extends StatefulWidget {
-  const OnboardingFlow({super.key});
+  const OnboardingFlow({super.key, this.initialMessage});
+
+  final String? initialMessage;
 
   @override
   State<OnboardingFlow> createState() => _OnboardingFlowState();
@@ -20,6 +22,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
   final AppPreferences _preferences = const AppPreferences();
 
   int _currentPage = 0;
+  String? _selectedGender;
   AgeGroup? _selectedAgeGroup;
   MoodOption? _selectedMood;
   bool _isCompleting = false;
@@ -29,9 +32,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       return _nameController.text.trim().isNotEmpty;
     }
     if (_currentPage == 2) {
-      return _selectedAgeGroup != null;
+      return _selectedGender != null;
     }
     if (_currentPage == 3) {
+      return _selectedAgeGroup != null;
+    }
+    if (_currentPage == 4) {
       return _selectedMood != null;
     }
     return !_isCompleting;
@@ -42,6 +48,22 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     _pageController.dispose();
     _nameController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final initialMessage = widget.initialMessage;
+    if (initialMessage != null && initialMessage.trim().isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) {
+          return;
+        }
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(initialMessage)));
+      });
+    }
   }
 
   Future<void> _goNext() async {
@@ -60,7 +82,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
       );
     }
 
-    if (_currentPage == 4) {
+    if (_currentPage == 5) {
       await _completeOnboarding();
       return;
     }
@@ -82,6 +104,7 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     final childName = _nameController.text.trim();
     await _preferences.completeOnboarding(
       childName: childName,
+      childGender: _selectedGender ?? '',
       ageGroup: ageGroup,
     );
 
@@ -116,6 +139,12 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
                     _NameStep(
                       controller: _nameController,
                       onChanged: (_) => setState(() {}),
+                    ),
+                    _GenderStep(
+                      selectedGender: _selectedGender,
+                      onGenderSelected: (gender) {
+                        setState(() => _selectedGender = gender);
+                      },
                     ),
                     _AgeGroupStep(
                       selectedAgeGroup: _selectedAgeGroup,
@@ -152,8 +181,8 @@ class _OnboardingFlowState extends State<OnboardingFlow> {
     if (_currentPage == 0) {
       return 'Başlayalım!';
     }
-    if (_currentPage == 4) {
-      return 'Ana sayfaya geç';
+    if (_currentPage == 5) {
+      return 'İlk sayfaya geç';
     }
     return 'Devam';
   }
@@ -187,7 +216,7 @@ class _NameStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return _OnboardingStep(
       title: 'Seni nasıl çağırayım?',
-      message: 'Seni nasıl çağıracağımı bilmem için küçük bir isim yazalım mı?',
+      message: 'Seni nasıl çağıracağımı bilmem için ismini yazar mısın?',
       child: Column(
         children: [
           const MascotWidget(size: 88, mood: MascotMood.happy),
@@ -198,6 +227,38 @@ class _NameStep extends StatelessWidget {
             textCapitalization: TextCapitalization.words,
             decoration: const InputDecoration(hintText: 'Adım...'),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GenderStep extends StatelessWidget {
+  const _GenderStep({
+    required this.selectedGender,
+    required this.onGenderSelected,
+  });
+
+  final String? selectedGender;
+  final ValueChanged<String> onGenderSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    const options = ['Kız', 'Erkek', 'Söylemek istemiyorum'];
+
+    return _OnboardingStep(
+      title: 'Seni biraz daha tanıyalım mı?',
+      message: 'İstersen cinsiyetini seçebilirsin.',
+      child: Column(
+        children: [
+          for (final option in options) ...[
+            _SelectionCard(
+              label: option,
+              isSelected: selectedGender == option,
+              onTap: () => onGenderSelected(option),
+            ),
+            const SizedBox(height: 12),
+          ],
         ],
       ),
     );
@@ -222,8 +283,8 @@ class _AgeGroupStep extends StatelessWidget {
       child: Column(
         children: [
           for (final ageGroup in AgeGroup.values) ...[
-            _AgeGroupCard(
-              ageGroup: ageGroup,
+            _SelectionCard(
+              label: ageGroup.label,
               isSelected: selectedAgeGroup == ageGroup,
               onTap: () => onAgeGroupSelected(ageGroup),
             ),
@@ -235,14 +296,14 @@ class _AgeGroupStep extends StatelessWidget {
   }
 }
 
-class _AgeGroupCard extends StatelessWidget {
-  const _AgeGroupCard({
-    required this.ageGroup,
+class _SelectionCard extends StatelessWidget {
+  const _SelectionCard({
+    required this.label,
     required this.isSelected,
     required this.onTap,
   });
 
-  final AgeGroup ageGroup;
+  final String label;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -265,7 +326,7 @@ class _AgeGroupCard extends StatelessWidget {
             ),
           ),
           child: Text(
-            ageGroup.label,
+            label,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleLarge,
           ),
@@ -335,7 +396,7 @@ class _InviteStep extends StatelessWidget {
     return _OnboardingStep(
       title: '$greeting küçük bir sır vereyim...',
       message:
-          'Yazmak bazen konuşmaktan daha kolay olur. Hazır olduğunda ana sayfanda buluşalım!',
+          'Yazmak bazen konuşmaktan daha kolay olur. Hazır olduğunda ilk sayfanda buluşalım!',
       child: const MascotWidget(size: 132, mood: MascotMood.happy),
     );
   }
@@ -390,7 +451,7 @@ class _ProgressDots extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
+      children: List.generate(6, (index) {
         final isActive = index == currentPage;
 
         return AnimatedContainer(

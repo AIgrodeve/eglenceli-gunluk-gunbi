@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
@@ -32,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   late Future<(JournalStats, StreakStats)> _dashboardFuture;
   late String _childName;
   late AgeGroup _ageGroup;
+  DateTime? _lastBackPressedAt;
 
   @override
   void initState() {
@@ -64,87 +66,111 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Eğlenceli Günlük')),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            Text(
-              'Merhaba, $_childName!',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              '${_ageGroup.label} yazı yolculuğu',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 18),
-            _GunbiPromptCard(dashboardFuture: _dashboardFuture),
-            const SizedBox(height: 12),
-            _StreakCard(dashboardFuture: _dashboardFuture),
-            const SizedBox(height: 24),
-            _HomeActionGrid(
-              actions: [
-                _HomeAction(
-                  icon: Icons.edit_note_rounded,
-                  label: 'Bugün yaz',
-                  onPressed: () => _openAndRefresh(
-                    MoodSelectionPage(
-                      childName: _childName,
-                      ageGroup: _ageGroup,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) {
+          return;
+        }
+        final now = DateTime.now();
+        final shouldExit =
+            _lastBackPressedAt != null &&
+            now.difference(_lastBackPressedAt!) < const Duration(seconds: 2);
+        if (shouldExit) {
+          SystemNavigator.pop();
+          return;
+        }
+        _lastBackPressedAt = now;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Çıkmak için geri tuşuna tekrar bas.')),
+        );
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Eğlenceli Günlük')),
+        body: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              Text(
+                'Merhaba, $_childName!',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 6),
+              Text(
+                '${_ageGroup.label} yazı yolculuğu',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 18),
+              _GunbiPromptCard(dashboardFuture: _dashboardFuture),
+              const SizedBox(height: 12),
+              _StreakCard(dashboardFuture: _dashboardFuture),
+              const SizedBox(height: 24),
+              _HomeActionGrid(
+                actions: [
+                  _HomeAction(
+                    icon: Icons.edit_note_rounded,
+                    label: 'Bugünü yaz',
+                    onPressed: () => _openAndRefresh(
+                      MoodSelectionPage(
+                        childName: _childName,
+                        ageGroup: _ageGroup,
+                      ),
                     ),
                   ),
-                ),
-                _HomeAction(
-                  icon: Icons.article_rounded,
-                  label: 'Yazılarım',
-                  onPressed: () => _openAndRefresh(const JournalEntriesPage()),
-                ),
-                _HomeAction(
-                  icon: Icons.workspace_premium_rounded,
-                  label: 'Rozetlerim',
-                  onPressed: () => _openAndRefresh(const RewardsPage()),
-                ),
-                _HomeAction(
-                  icon: Icons.wb_sunny_rounded,
-                  label: 'Günbi',
-                  onPressed: () => _openAndRefresh(const GunbiPage()),
-                ),
-                _HomeAction(
-                  icon: Icons.calendar_month_rounded,
-                  label: 'Haftalık Özet',
-                  onPressed: () => _openAndRefresh(
-                    WeeklySummaryPage(
-                      childName: _childName,
-                      ageGroup: _ageGroup,
+                  _HomeAction(
+                    icon: Icons.article_rounded,
+                    label: 'Yazılarım',
+                    onPressed: () =>
+                        _openAndRefresh(const JournalEntriesPage()),
+                  ),
+                  _HomeAction(
+                    icon: Icons.workspace_premium_rounded,
+                    label: 'Rozetlerim',
+                    onPressed: () => _openAndRefresh(const RewardsPage()),
+                  ),
+                  _HomeAction(
+                    icon: Icons.wb_sunny_rounded,
+                    label: 'Günbi',
+                    onPressed: () => _openAndRefresh(const GunbiPage()),
+                  ),
+                  _HomeAction(
+                    icon: Icons.calendar_month_rounded,
+                    label: 'Haftalık Özet',
+                    onPressed: () => _openAndRefresh(
+                      WeeklySummaryPage(
+                        childName: _childName,
+                        ageGroup: _ageGroup,
+                      ),
                     ),
                   ),
-                ),
-                _HomeAction(
-                  icon: Icons.menu_book_rounded,
-                  label: 'Günlük Kitabım',
-                  onPressed: () => _openAndRefresh(
-                    JournalBookPage(childName: _childName, ageGroup: _ageGroup),
+                  _HomeAction(
+                    icon: Icons.menu_book_rounded,
+                    label: 'Günlük Kitabım',
+                    onPressed: () => _openAndRefresh(
+                      JournalBookPage(
+                        childName: _childName,
+                        ageGroup: _ageGroup,
+                      ),
+                    ),
                   ),
-                ),
-                _HomeAction(
-                  icon: Icons.family_restroom_rounded,
-                  label: 'Ebeveyn Alanı',
-                  isQuiet: true,
-                  onPressed: () => _openAndRefresh(
-                    ParentPage(childName: _childName, ageGroup: _ageGroup),
+                  _HomeAction(
+                    icon: Icons.family_restroom_rounded,
+                    label: 'Ebeveyn Alanı',
+                    isQuiet: true,
+                    onPressed: () => _openAndRefresh(
+                      ParentPage(childName: _childName, ageGroup: _ageGroup),
+                    ),
                   ),
-                ),
-                _HomeAction(
-                  icon: Icons.settings_rounded,
-                  label: 'Ayarlar',
-                  isQuiet: true,
-                  onPressed: _openSettings,
-                ),
-              ],
-            ),
-          ],
+                  _HomeAction(
+                    icon: Icons.settings_rounded,
+                    label: 'Ayarlar',
+                    isQuiet: true,
+                    onPressed: _openSettings,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

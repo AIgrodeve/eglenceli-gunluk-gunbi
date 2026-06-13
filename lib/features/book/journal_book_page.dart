@@ -434,7 +434,7 @@ class _EmptyBookState extends StatelessWidget {
           FilledButton.icon(
             onPressed: onWriteToday,
             icon: const Icon(Icons.edit_note_rounded),
-            label: const Text('Bugün yaz'),
+            label: const Text('Bugünü yaz'),
           ),
         ],
       ),

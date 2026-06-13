@@ -106,15 +106,25 @@ class MascotWidget extends StatelessWidget {
       builder: (_) => SizedBox(
         width: size,
         height: size,
-        child: Lottie.asset(
-          asset,
-          fit: BoxFit.contain,
-          repeat: true,
-          animate: true,
-          errorBuilder: (_, error, stackTrace) {
-            debugPrint('Günbi Lottie animasyonu açılamadı: $error');
-            return _buildFallbackMascot('Lottie animasyonu açılamadı: $asset');
-          },
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Lottie.asset(
+              asset,
+              fit: BoxFit.contain,
+              repeat: true,
+              animate: true,
+              errorBuilder: (_, error, stackTrace) {
+                debugPrint('Günbi Lottie animasyonu açılamadı: $error');
+                return _buildFallbackMascot(
+                  'Lottie animasyonu açılamadı: $asset',
+                );
+              },
+            ),
+            IgnorePointer(
+              child: _MascotFaceOverlay(size: size, mood: mood),
+            ),
+          ],
         ),
       ),
     );
@@ -215,6 +225,54 @@ class _AnimationAssetGuard extends StatelessWidget {
         }
         return builder(context);
       },
+    );
+  }
+}
+
+class _MascotFaceOverlay extends StatelessWidget {
+  const _MascotFaceOverlay({required this.size, required this.mood});
+
+  final double size;
+  final MascotMood mood;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = _MascotColors.forMood(mood);
+
+    return SizedBox(
+      width: size,
+      height: size,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+            top: size * 0.33,
+            left: size * 0.36,
+            child: _Eye(size: size * 0.74, mood: mood),
+          ),
+          Positioned(
+            top: size * 0.33,
+            right: size * 0.36,
+            child: _Eye(size: size * 0.74, mood: mood),
+          ),
+          if (mood != MascotMood.sleepy)
+            Positioned(
+              top: size * 0.47,
+              left: size * 0.28,
+              child: _Cheek(size: size * 0.8, color: colors.cheek),
+            ),
+          if (mood != MascotMood.sleepy)
+            Positioned(
+              top: size * 0.47,
+              right: size * 0.28,
+              child: _Cheek(size: size * 0.8, color: colors.cheek),
+            ),
+          Positioned(
+            bottom: size * 0.32,
+            child: _Mouth(size: size * 0.78, mood: mood, color: colors.accent),
+          ),
+        ],
+      ),
     );
   }
 }

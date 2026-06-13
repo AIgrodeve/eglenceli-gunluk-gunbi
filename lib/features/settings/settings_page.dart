@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/data/app_preferences.dart';
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../onboarding/onboarding_flow.dart';
@@ -83,7 +84,13 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _startDeleteAllDataFlow() async {
-    final verified = await _showAdultVerificationDialog();
+    final verified = await showAdultVerificationDialog(
+      context: context,
+      title: 'Ebeveyn doğrulaması',
+      question: 'Devam etmek için işlemi cevaplayın: 7 + 5 = ?',
+      expectedAnswer: '12',
+      wrongAnswerMessage: 'Bu işlem ebeveynler içindir.',
+    );
     if (!verified || !mounted) {
       return;
     }
@@ -100,68 +107,14 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Veriler bu cihazdan silindi.')),
-    );
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute<void>(builder: (_) => const OnboardingFlow()),
+      MaterialPageRoute<void>(
+        builder: (_) => const OnboardingFlow(
+          initialMessage: 'Veriler bu cihazdan silindi.',
+        ),
+      ),
       (_) => false,
     );
-  }
-
-  Future<bool> _showAdultVerificationDialog() async {
-    final controller = TextEditingController();
-    try {
-      final result = await showDialog<bool>(
-        context: context,
-        builder: (dialogContext) {
-          return AlertDialog(
-            title: const Text('Ebeveyn doğrulaması'),
-            content: TextField(
-              controller: controller,
-              keyboardType: TextInputType.number,
-              textInputAction: TextInputAction.done,
-              autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Devam etmek için işlemi cevaplayın: 7 + 5 = ?',
-              ),
-              onSubmitted: (_) {
-                Navigator.of(dialogContext).pop(controller.text.trim() == '12');
-              },
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(false),
-                child: const Text('Vazgeç'),
-              ),
-              FilledButton(
-                onPressed: () {
-                  // Bu geçici kontrol gerçek PIN veya güçlü ebeveyn
-                  // doğrulamasının yerine geçmez.
-                  Navigator.of(
-                    dialogContext,
-                  ).pop(controller.text.trim() == '12');
-                },
-                child: const Text('Devam et'),
-              ),
-            ],
-          );
-        },
-      );
-
-      if (result ?? false) {
-        return true;
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Bu işlem ebeveynler içindir.')),
-        );
-      }
-      return false;
-    } finally {
-      controller.dispose();
-    }
   }
 
   Future<bool> _showDeleteConfirmationDialog() async {
@@ -170,8 +123,10 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Tüm veriler silinsin mi?'),
-          content: const Text(
-            'Bu işlem günlük yazılarını, rozet ilerlemesini, seri bilgilerini, kitap başlığını ve profil bilgilerini bu cihazdan siler. Bu işlem geri alınamaz.',
+          content: const SingleChildScrollView(
+            child: Text(
+              'Bu işlem günlük yazılarını, rozet ilerlemesini, seri bilgilerini, kitap başlığını ve profil bilgilerini bu cihazdan siler. Bu işlem geri alınamaz.',
+            ),
           ),
           actions: [
             TextButton(
@@ -374,12 +329,18 @@ class _SettingsPageState extends State<SettingsPage> {
                       'Günlük yazıların ve uygulama bilgilerin bu cihazda saklanır.',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
+                    const SizedBox(height: 18),
+                    const Divider(height: 1),
                     const SizedBox(height: 14),
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFFB94A3D),
                         side: const BorderSide(color: Color(0xFFE9A49A)),
                         backgroundColor: const Color(0xFFFFF1EF),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                       ),
                       onPressed: _startDeleteAllDataFlow,
                       icon: const Icon(Icons.delete_outline_rounded),
@@ -481,21 +442,33 @@ class _InfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final valueStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
           ),
           const SizedBox(width: 12),
           Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.right,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Text(
+                  value,
+                  maxLines: 1,
+                  softWrap: false,
+                  textAlign: TextAlign.right,
+                  style: valueStyle,
+                ),
+              ),
             ),
           ),
         ],

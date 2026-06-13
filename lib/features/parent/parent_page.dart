@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../journal/models/journal_entry.dart';
@@ -24,7 +25,6 @@ class ParentPage extends StatefulWidget {
 }
 
 class _ParentPageState extends State<ParentPage> {
-  final TextEditingController _answerController = TextEditingController();
   final JournalRepository _repository = const JournalRepository();
   final StreakService _streakService = const StreakService();
   final WeeklySummaryService _weeklySummaryService =
@@ -32,32 +32,26 @@ class _ParentPageState extends State<ParentPage> {
 
   bool _isVerified = false;
 
-  @override
-  void dispose() {
-    _answerController.dispose();
-    super.dispose();
-  }
-
-  void _verifyAnswer() {
-    // Bu sadece geçici ve basit bir yetişkin kontrolüdür; gerçek PIN ya da
-    // güçlü ebeveyn doğrulaması yerine geçmez.
-    if (_answerController.text.trim() == '8') {
-      setState(() => _isVerified = true);
+  Future<void> _verifyAnswer() async {
+    final verified = await showAdultVerificationDialog(
+      context: context,
+      title: 'Ebeveyn doğrulaması',
+      question: 'Ebeveyn alanına geçmek için işlemi cevaplayın: 5 + 3 = ?',
+      expectedAnswer: '8',
+      wrongAnswerMessage: 'Bu alan ebeveynler içindir.',
+    );
+    if (!context.mounted) {
       return;
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bu alan ebeveynler içindir.')),
-    );
+    if (verified) {
+      setState(() => _isVerified = true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     if (!_isVerified) {
-      return _ParentGate(
-        controller: _answerController,
-        onVerify: _verifyAnswer,
-      );
+      return _ParentGate(onVerify: _verifyAnswer);
     }
 
     return Scaffold(
@@ -161,9 +155,8 @@ class _ParentPageState extends State<ParentPage> {
 }
 
 class _ParentGate extends StatelessWidget {
-  const _ParentGate({required this.controller, required this.onVerify});
+  const _ParentGate({required this.onVerify});
 
-  final TextEditingController controller;
   final VoidCallback onVerify;
 
   @override
@@ -180,17 +173,15 @@ class _ParentGate extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Ebeveyn alanına geçmek için işlemi cevaplayın: 5 + 3 = ?',
+                    'Ebeveyn alanına geçmek için kısa bir yetişkin doğrulaması yapalım.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  const SizedBox(height: 18),
-                  TextField(
-                    controller: controller,
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => onVerify(),
-                    decoration: const InputDecoration(hintText: 'Cevap'),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Günlük içerikleri çocuğa özeldir; burada sadece gelişim özeti gösterilir.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
                   FilledButton(
