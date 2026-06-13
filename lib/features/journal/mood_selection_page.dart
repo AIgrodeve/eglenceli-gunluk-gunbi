@@ -70,7 +70,7 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
               Expanded(
                 child: SingleChildScrollView(
                   child: Wrap(
@@ -85,13 +85,17 @@ class _MoodSelectionPageState extends State<MoodSelectionPage> {
                           onSelected: (_) {
                             setState(() => _selectedMood = mood);
                           },
-                          selectedColor: AppTheme.softBlue,
+                          selectedColor: AppTheme.softBlue.withValues(
+                            alpha: 0.72,
+                          ),
                           backgroundColor: Colors.white,
+                          checkmarkColor: AppTheme.cocoa,
                           labelStyle: Theme.of(context).textTheme.bodyLarge,
                           side: BorderSide(
                             color: _selectedMood == mood
-                                ? AppTheme.softBlue
+                                ? AppTheme.lightOrange
                                 : AppTheme.pastelYellow,
+                            width: _selectedMood == mood ? 2.2 : 1.4,
                           ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12,

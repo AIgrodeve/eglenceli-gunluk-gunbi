@@ -32,7 +32,7 @@ class GunbiPage extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MascotWidget(
-                      size: 170,
+                      size: 190,
                       mood: _moodForEntryCount(stats.totalEntries),
                       animationType: MascotAnimationType.lottie,
                     ),

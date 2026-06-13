@@ -131,6 +131,7 @@ class _HomePageState extends State<HomePage> {
                 _HomeAction(
                   icon: Icons.family_restroom_rounded,
                   label: 'Ebeveyn Alanı',
+                  isQuiet: true,
                   onPressed: () => _openAndRefresh(
                     ParentPage(childName: _childName, ageGroup: _ageGroup),
                   ),
@@ -138,6 +139,7 @@ class _HomePageState extends State<HomePage> {
                 _HomeAction(
                   icon: Icons.settings_rounded,
                   label: 'Ayarlar',
+                  isQuiet: true,
                   onPressed: _openSettings,
                 ),
               ],
@@ -180,7 +182,7 @@ class _GunbiPromptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -189,7 +191,7 @@ class _GunbiPromptCard extends StatelessWidget {
       child: Row(
         children: [
           const MascotWidget(
-            size: 78,
+            size: 92,
             mood: MascotMood.happy,
             animationType: MascotAnimationType.lottie,
             animationAsset: 'assets/animations/lottie/gunbi_idle.json',
@@ -316,16 +318,18 @@ class _HomeActionGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final itemWidth = (constraints.maxWidth - 12) / 2;
+        final spacing = constraints.maxWidth < 360 ? 10.0 : 12.0;
+        final itemWidth = (constraints.maxWidth - spacing) / 2;
+        final itemHeight = constraints.maxWidth < 360 ? 104.0 : 112.0;
 
         return Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: spacing,
+          runSpacing: spacing,
           children: [
             for (final action in actions)
               SizedBox(
                 width: itemWidth,
-                height: 112,
+                height: itemHeight,
                 child: _HomeActionCard(action: action),
               ),
           ],
@@ -340,11 +344,13 @@ class _HomeAction {
     required this.icon,
     required this.label,
     required this.onPressed,
+    this.isQuiet = false,
   });
 
   final IconData icon;
   final String label;
   final VoidCallback onPressed;
+  final bool isQuiet;
 }
 
 class _HomeActionCard extends StatelessWidget {
@@ -355,22 +361,27 @@ class _HomeActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Colors.white,
+      color: action.isQuiet
+          ? AppTheme.softBlue.withValues(alpha: 0.16)
+          : Colors.white,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: action.onPressed,
         borderRadius: BorderRadius.circular(18),
         child: Container(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: AppTheme.pastelYellow, width: 1.5),
+            border: Border.all(
+              color: action.isQuiet ? AppTheme.softBlue : AppTheme.pastelYellow,
+              width: 1.5,
+            ),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(action.icon, color: AppTheme.cocoa, size: 30),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 action.label,
                 textAlign: TextAlign.center,

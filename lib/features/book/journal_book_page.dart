@@ -96,6 +96,12 @@ class _JournalBookPageState extends State<JournalBookPage> {
     await _preferences.updateBookTitle(title);
 
     try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Günbi kitabını hazırlıyor...')),
+        );
+      }
+
       await Printing.layoutPdf(
         name: _pdfService.safeFileName(childName: widget.childName),
         onLayout: (_) => _pdfService.buildPdf(

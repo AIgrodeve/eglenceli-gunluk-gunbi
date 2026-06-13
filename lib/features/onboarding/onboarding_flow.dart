@@ -169,6 +169,7 @@ class _WelcomeStep extends StatelessWidget {
       message:
           'Senin yazı arkadaşınım. Birlikte gününü anlatmanın eğlenceli yollarını bulacağız.',
       child: MascotWidget(
+        size: 168,
         mood: MascotMood.excited,
         animationType: MascotAnimationType.lottie,
       ),
@@ -189,8 +190,8 @@ class _NameStep extends StatelessWidget {
       message: 'Seni nasıl çağıracağımı bilmem için küçük bir isim yazalım mı?',
       child: Column(
         children: [
-          const MascotWidget(size: 96, mood: MascotMood.happy),
-          const SizedBox(height: 16),
+          const MascotWidget(size: 88, mood: MascotMood.happy),
+          const SizedBox(height: 14),
           TextField(
             controller: controller,
             onChanged: onChanged,
@@ -260,7 +261,7 @@ class _AgeGroupCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: isSelected ? AppTheme.lightOrange : AppTheme.pastelYellow,
-              width: 2,
+              width: isSelected ? 2.6 : 1.6,
             ),
           ),
           child: Text(
@@ -299,13 +300,15 @@ class _MoodStep extends StatelessWidget {
                   label: Text(mood.displayText),
                   selected: selectedMood == mood,
                   onSelected: (_) => onMoodSelected(mood),
-                  selectedColor: AppTheme.softBlue,
+                  selectedColor: AppTheme.softBlue.withValues(alpha: 0.72),
                   backgroundColor: Colors.white,
+                  checkmarkColor: AppTheme.cocoa,
                   labelStyle: Theme.of(context).textTheme.bodyLarge,
                   side: BorderSide(
                     color: selectedMood == mood
-                        ? AppTheme.softBlue
+                        ? AppTheme.lightOrange
                         : AppTheme.pastelYellow,
+                    width: selectedMood == mood ? 2.2 : 1.4,
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,

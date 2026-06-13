@@ -5,6 +5,7 @@ import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
+import '../privacy/privacy_policy_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
@@ -201,6 +202,34 @@ class _SettingsPageState extends State<SettingsPage> {
                     _PrivacyBullet('Herkese açık paylaşım yoktur.'),
                     _PrivacyBullet('Çocuklar arası mesajlaşma yoktur.'),
                     _PrivacyBullet('Konum izni kullanılmaz.'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              _SectionCard(
+                title: 'Gizlilik ve Güvenlik',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const _PrivacyBullet(
+                      'Günlük yazıları bu cihazda saklanır.',
+                    ),
+                    const _PrivacyBullet('Herkese açık paylaşım yoktur.'),
+                    const _PrivacyBullet('Çocuklar arası mesajlaşma yoktur.'),
+                    const _PrivacyBullet('Konum izni kullanılmaz.'),
+                    const _PrivacyBullet('Reklam gösterilmez.'),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const PrivacyPolicyPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.privacy_tip_rounded),
+                      label: const Text('Gizlilik Politikası'),
+                    ),
                   ],
                 ),
               ),

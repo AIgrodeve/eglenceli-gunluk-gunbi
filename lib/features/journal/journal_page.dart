@@ -143,7 +143,8 @@ class _JournalPageState extends State<JournalPage> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.fromLTRB(24, 22, 24, 28),
           children: [
             Text(
               'Hoş geldin, $displayName!',
@@ -168,15 +169,15 @@ class _JournalPageState extends State<JournalPage> {
                 });
               },
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             TextField(
               controller: _titleController,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(hintText: _titleHintText),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             SizedBox(
-              height: 260,
+              height: 240,
               child: TextField(
                 controller: _textController,
                 expands: true,
@@ -196,7 +197,7 @@ class _JournalPageState extends State<JournalPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             OutlinedButton.icon(
               onPressed: _showCoachSuggestions,
               icon: const Icon(Icons.lightbulb_rounded),
@@ -206,7 +207,7 @@ class _JournalPageState extends State<JournalPage> {
               const SizedBox(height: 12),
               _CoachSuggestionsPanel(suggestions: _coachSuggestions),
             ],
-            const SizedBox(height: 16),
+            const SizedBox(height: 18),
             FilledButton.icon(
               onPressed: _isSaving ? null : _saveEntry,
               icon: const Icon(Icons.favorite_rounded),
@@ -261,7 +262,7 @@ class _WritingMascotCard extends StatelessWidget {
       child: Row(
         children: [
           const MascotWidget(
-            size: 66,
+            size: 72,
             mood: MascotMood.writing,
             showShadow: false,
             animationType: MascotAnimationType.lottie,
@@ -290,7 +291,7 @@ class _WritingPromptCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
@@ -337,25 +338,60 @@ class _CoachSuggestionsPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.pastelYellow.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(18),
+        color: AppTheme.pastelYellow.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppTheme.lightOrange, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.lightOrange.withValues(alpha: 0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Günbi diyor ki:',
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: AppTheme.lightOrange,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.chat_bubble_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Günbi diyor ki:',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           for (final suggestion in suggestions) ...[
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('• '),
+                const Padding(
+                  padding: EdgeInsets.only(top: 2),
+                  child: Icon(
+                    Icons.auto_awesome_rounded,
+                    size: 16,
+                    color: AppTheme.lightOrange,
+                  ),
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     suggestion,
