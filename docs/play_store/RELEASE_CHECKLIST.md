@@ -51,6 +51,8 @@
 - [ ] Küçük ekran overflow testi
 - [ ] İnternetsiz kullanım testi
 - [ ] Geri tuşu çift basışla çıkış testi
+- [ ] Demo veri release sürümde otomatik oluşmuyor.
+- [ ] Ekran görüntüleri alındıktan sonra gerçek release build temiz veriyle test edildi.
 
 ## Geliştirme Doğrulaması
 
