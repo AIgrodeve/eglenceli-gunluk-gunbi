@@ -4,6 +4,10 @@
 
 Eğlenceli Günlük
 
+## Android applicationId
+
+com.aigrodeve.eglenceligunluk
+
 ## Geliştirici
 
 AIgrodeve

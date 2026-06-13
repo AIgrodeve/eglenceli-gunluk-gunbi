@@ -4,7 +4,7 @@
 
 - [x] pubspec.yaml version alanı kontrol edildi: `1.0.0+1`
 - [x] Android uygulama adı kontrol edildi: `Eğlenceli Günlük`
-- [ ] Android applicationId yayın öncesi netleştirilecek.
+- [x] Yayın applicationId: `com.aigrodeve.eglenceligunluk`
 - [x] Gereksiz izin kontrolü yapıldı. Release/main AndroidManifest içinde konum, kamera, mikrofon, rehber veya depolama izni yok.
 - [x] Cinsiyet bilgisi yalnızca cihazda lokal profil bilgisi olarak saklanır.
 - [x] Tüm verileri sil akışı cinsiyet bilgisini de temizler.

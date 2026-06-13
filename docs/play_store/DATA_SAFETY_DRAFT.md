@@ -4,6 +4,7 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 
 ## Mevcut sürüm için varsayımlar
 
+- Android applicationId: com.aigrodeve.eglenceligunluk
 - Kullanıcıdan çevrim içi hesap alınmaz.
 - Veri sunucuya gönderilmez.
 - Günlük yazıları cihazda lokal saklanır.

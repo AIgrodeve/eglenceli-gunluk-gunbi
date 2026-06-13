@@ -1,4 +1,4 @@
-package com.example.eglenceli_gunluk_gunbi
+package com.aigrodeve.eglenceligunluk
 
 import io.flutter.embedding.android.FlutterActivity
 
