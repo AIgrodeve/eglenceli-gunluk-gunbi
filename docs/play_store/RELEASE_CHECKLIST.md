@@ -22,6 +22,12 @@
 
 - [ ] `build/app/outputs/bundle/release/app-release.aab`
 
+## Teknik Uyarılar
+
+- [ ] `rive_common` Kotlin Gradle Plugin uyarısı mevcut build'i engellemedi.
+- [ ] Java source/target 8 Gradle uyarısı mevcut build'i engellemedi.
+- [ ] Bu uyarılar sonraki bakımda takip edilecek.
+
 ## Manuel Test Listesi
 
 - [ ] Temiz kurulum onboarding testi

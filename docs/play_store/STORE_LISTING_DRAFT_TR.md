@@ -8,6 +8,10 @@ Eğlenceli Günlük
 
 Günbi ile çocuklar için eğlenceli, güvenli ve alışkanlık kazandıran günlük yazma deneyimi.
 
+## Kısa açıklama önerisi
+
+Günbi ile çocuklar için güvenli ve eğlenceli günlük yazma deneyimi.
+
 ## Uzun açıklama
 
 ### Eğlenceli Günlük nedir?
@@ -55,6 +59,16 @@ Ebeveyn alanı günlük yazı içeriklerini göstermez; sadece gelişim özeti s
 - Çocuklar arası mesajlaşma yok
 - Konum izni yok
 - Günlükler cihazda saklanır
+
+## Play Store ekran görüntüsü başlıkları
+
+- Günbi ile tanış
+- Bugünü yaz
+- Yazarken Günbi'den yardım al
+- Yazdıkça rozet kazan
+- Haftalık gelişimini gör
+- Günlük kitabını hazırla
+- Güvenli ve reklamsız alan
 
 ## Not
 
