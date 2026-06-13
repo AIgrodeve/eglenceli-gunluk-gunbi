@@ -12,6 +12,7 @@ Uygulama mevcut sürümde aşağıdaki bilgileri cihaz içinde lokal olarak sakl
 
 - Çocuk adı
 - Yaş grubu
+- Cinsiyet bilgisi
 - Seçilen duygu bilgileri
 - Günlük yazıları
 - Günlük başlıkları
@@ -34,6 +35,8 @@ Mevcut sürümde aşağıdaki bilgiler toplanmaz:
 ## İnternet ve sunucu kullanımı
 
 Mevcut sürümde günlük yazıları bir sunucuya gönderilmez. Uygulama günlük kayıtlarını cihazda saklar. PDF Günlük Kitabı oluşturma işlemi cihaz üzerinde yapılır.
+
+Çocuk adı, yaş grubu ve cinsiyet bilgisi uygulama deneyimini kişiselleştirmek için cihazda lokal olarak kullanılır; bu bilgiler bir sunucuya gönderilmez.
 
 ## Çocukların gizliliği
 

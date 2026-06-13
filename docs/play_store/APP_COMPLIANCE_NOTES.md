@@ -32,6 +32,7 @@ aigrodeve@gmail.com
 - Mikrofon erişimi yok.
 - Hesap oluşturma yok.
 - Bulut yedekleme yok.
+- Çocuk cinsiyet bilgisi yalnızca cihazda lokal profil bilgisi olarak saklanır.
 - Günlük yazıları cihaz içinde saklanır.
 - AI/API/Firebase yok.
 - Reklam yok.

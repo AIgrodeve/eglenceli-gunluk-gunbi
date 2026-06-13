@@ -9,6 +9,7 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 - Günlük yazıları cihazda lokal saklanır.
 - Çocuk adı cihazda lokal saklanır.
 - Yaş grubu cihazda lokal saklanır.
+- Cinsiyet bilgisi cihazda lokal saklanır.
 - Duygu seçimleri cihazda lokal saklanır.
 - PDF oluşturma cihazda yapılır.
 - Reklam SDK yok.
