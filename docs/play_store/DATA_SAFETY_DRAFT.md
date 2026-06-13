@@ -15,6 +15,7 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 - Analitik SDK yok.
 - Crash reporting SDK yok.
 - Üçüncü taraf veri paylaşımı yok.
+- Uygulama içindeki Ayarlar bölümünden yerel veriler silinebilir.
 
 ## Kontrol notu
 

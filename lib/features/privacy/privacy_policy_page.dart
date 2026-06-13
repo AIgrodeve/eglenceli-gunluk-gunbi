@@ -54,7 +54,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _InfoCard(
               title: 'Verilerin silinmesi',
               message:
-                  'Uygulama içinden tüm verileri silme özelliği yakında eklenecektir. Şimdilik cihaz ayarları üzerinden uygulama verileri silinebilir.',
+                  'Ayarlar bölümünden cihazda saklanan uygulama verileri silinebilir.',
             ),
           ],
         ),

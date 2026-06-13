@@ -56,6 +56,11 @@ class JournalRepository {
     await _saveEntries(preferences, updatedEntries);
   }
 
+  Future<void> clearAllEntries() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(_entriesKey);
+  }
+
   Future<void> _saveEntries(
     SharedPreferences preferences,
     List<JournalEntry> entries,

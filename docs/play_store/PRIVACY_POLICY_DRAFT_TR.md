@@ -53,7 +53,7 @@ Mevcut sürümde reklam gösterilmez. Reklam SDK, analitik SDK veya crash report
 
 ## Verilerin silinmesi
 
-Mevcut sürümde uygulama içinden tüm verileri silme özelliği henüz eklenmemiştir. Bu özellik ileride ayrıca eklenebilir. Kullanıcılar cihaz ayarları üzerinden uygulama verilerini silebilir.
+Kullanıcı/ebeveyn, uygulama içindeki Ayarlar bölümünden cihazda saklanan günlük yazılarını ve uygulama verilerini silebilir. Bu işlem cihazdaki yerel verileri temizler ve geri alınamaz.
 
 ## İletişim
 

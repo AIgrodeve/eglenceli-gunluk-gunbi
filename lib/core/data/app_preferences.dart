@@ -62,4 +62,12 @@ class AppPreferences {
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(_bookTitleKey, bookTitle.trim());
   }
+
+  Future<void> clearLocalPreferences() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.remove(_childNameKey);
+    await preferences.remove(_childAgeGroupKey);
+    await preferences.remove(_bookTitleKey);
+    await preferences.remove(_onboardingCompletedKey);
+  }
 }

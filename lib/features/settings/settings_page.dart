@@ -5,6 +5,7 @@ import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
+import '../onboarding/onboarding_flow.dart';
 import '../privacy/privacy_policy_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -78,6 +79,118 @@ class _SettingsPageState extends State<SettingsPage> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(const SnackBar(content: Text('Yaş grubu güncellendi.')));
+  }
+
+  Future<void> _startDeleteAllDataFlow() async {
+    final verified = await _showAdultVerificationDialog();
+    if (!verified || !mounted) {
+      return;
+    }
+
+    final confirmed = await _showDeleteConfirmationDialog();
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    await _repository.clearAllEntries();
+    await _preferences.clearLocalPreferences();
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Veriler bu cihazdan silindi.')),
+    );
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute<void>(builder: (_) => const OnboardingFlow()),
+      (_) => false,
+    );
+  }
+
+  Future<bool> _showAdultVerificationDialog() async {
+    final controller = TextEditingController();
+    try {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            title: const Text('Ebeveyn doğrulaması'),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Devam etmek için işlemi cevaplayın: 7 + 5 = ?',
+              ),
+              onSubmitted: (_) {
+                Navigator.of(dialogContext).pop(controller.text.trim() == '12');
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(false),
+                child: const Text('Vazgeç'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  // Bu geçici kontrol gerçek PIN veya güçlü ebeveyn
+                  // doğrulamasının yerine geçmez.
+                  Navigator.of(
+                    dialogContext,
+                  ).pop(controller.text.trim() == '12');
+                },
+                child: const Text('Devam et'),
+              ),
+            ],
+          );
+        },
+      );
+
+      if (result ?? false) {
+        return true;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Bu işlem ebeveynler içindir.')),
+        );
+      }
+      return false;
+    } finally {
+      controller.dispose();
+    }
+  }
+
+  Future<bool> _showDeleteConfirmationDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Tüm veriler silinsin mi?'),
+          content: const Text(
+            'Bu işlem günlük yazılarını, rozet ilerlemesini, seri bilgilerini, kitap başlığını ve profil bilgilerini bu cihazdan siler. Bu işlem geri alınamaz.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: const Text('Vazgeç'),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFFE78A7A),
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Evet, sil'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result ?? false;
   }
 
   @override
@@ -229,6 +342,30 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       icon: const Icon(Icons.privacy_tip_rounded),
                       label: const Text('Gizlilik Politikası'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              _SectionCard(
+                title: 'Verilerim',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Günlük yazıların ve uygulama bilgilerin bu cihazda saklanır.',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 14),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFFB94A3D),
+                        side: const BorderSide(color: Color(0xFFE9A49A)),
+                        backgroundColor: const Color(0xFFFFF1EF),
+                      ),
+                      onPressed: _startDeleteAllDataFlow,
+                      icon: const Icon(Icons.delete_outline_rounded),
+                      label: const Text('Tüm verileri sil'),
                     ),
                   ],
                 ),
