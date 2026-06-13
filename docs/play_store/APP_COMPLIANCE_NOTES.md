@@ -4,6 +4,14 @@
 
 Eğlenceli Günlük
 
+## Geliştirici
+
+AIgrodeve
+
+## İletişim
+
+aigrodeve@gmail.com
+
 ## Hedef yaş grupları
 
 - 6-8

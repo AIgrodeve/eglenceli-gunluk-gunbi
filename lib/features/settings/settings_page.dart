@@ -7,6 +7,7 @@ import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../onboarding/onboarding_flow.dart';
 import '../privacy/privacy_policy_page.dart';
+import 'about_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
@@ -299,10 +300,27 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
               ),
               const SizedBox(height: 14),
-              const _SectionCard(
+              _SectionCard(
                 title: 'Uygulama Bilgisi',
-                child: Text(
-                  'Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına yardımcı olmak için tasarlanmıştır.',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const Text(
+                      'Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına yardımcı olmak için tasarlanmıştır.',
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const AboutPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.info_outline_rounded),
+                      label: const Text('Hakkında'),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 14),

@@ -57,9 +57,10 @@ Kullanıcı/ebeveyn, uygulama içindeki Ayarlar bölümünden cihazda saklanan g
 
 ## İletişim
 
-Gizlilik politikası hakkında sorular için iletişim e-postası:
+Gizlilik politikası hakkında sorular için:
 
-aigrodeve@gmail.com
+- Geliştirici: AIgrodeve
+- E-posta: aigrodeve@gmail.com
 
 ## Değişiklikler
 
