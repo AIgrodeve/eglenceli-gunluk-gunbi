@@ -1,10 +1,53 @@
 # Release Checklist
 
-## Geliştirme
+## Sürüm ve Android Kontrolleri
 
-- [ ] flutter analyze
-- [ ] flutter test
-- [ ] flutter build appbundle
+- [x] pubspec.yaml version alanı kontrol edildi: `1.0.0+1`
+- [x] Android uygulama adı kontrol edildi: `Eğlenceli Günlük`
+- [ ] Android applicationId yayın öncesi netleştirilecek.
+- [x] Gereksiz izin kontrolü yapıldı. Release/main AndroidManifest içinde konum, kamera, mikrofon, rehber veya depolama izni yok.
+- [x] Cinsiyet bilgisi yalnızca cihazda lokal profil bilgisi olarak saklanır.
+- [x] Tüm verileri sil akışı cinsiyet bilgisini de temizler.
+
+## Release Build Komutları
+
+- [ ] `flutter clean`
+- [ ] `flutter pub get`
+- [ ] `dart format lib test`
+- [ ] `flutter analyze`
+- [ ] `flutter test`
+- [ ] `flutter build appbundle`
+
+## AAB Çıktısı
+
+- [ ] `build/app/outputs/bundle/release/app-release.aab`
+
+## Manuel Test Listesi
+
+- [ ] Temiz kurulum onboarding testi
+- [ ] Çocuk adı, cinsiyet ve yaş grubu seçimi
+- [ ] Duygu seçimi
+- [ ] Günlük yazma ve kaydetme
+- [ ] Yazılarım listeleme
+- [ ] Yazı detay, düzenleme, silme
+- [ ] Rozetlerim
+- [ ] Seri sistemi
+- [ ] Haftalık Özet
+- [ ] Günlük Kitabım PDF testi
+- [ ] Türkçe karakter PDF testi
+- [ ] Ebeveyn Alanı yetişkin doğrulama testi
+- [ ] Ayarlar profil düzenleme
+- [ ] Gizlilik Politikası
+- [ ] Hakkında
+- [ ] Tüm verileri sil
+- [ ] Veri silme sonrası onboarding'e dönüş
+- [ ] Cinsiyet bilgisinin veri silme sonrası temizlenmesi
+- [ ] Küçük ekran overflow testi
+- [ ] İnternetsiz kullanım testi
+- [ ] Geri tuşu çift basışla çıkış testi
+
+## Geliştirme Doğrulaması
+
 - [ ] Gerçek cihaz testi
 - [ ] Veri silme testi
 - [ ] PDF Türkçe karakter testi

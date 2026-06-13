@@ -37,3 +37,14 @@ aigrodeve@gmail.com
 - AI/API/Firebase yok.
 - Reklam yok.
 - Uygulama içi satın alma şu an yok.
+
+## İlk yayın stratejisi
+
+- Reklam yok.
+- Hesap sistemi yok.
+- Bulut yedekleme yok.
+- Gerçek AI/API yok.
+- Uygulama çevrimdışı kullanılabilir.
+- Günlük yazıları cihazda saklanır.
+- Çocuk adı, yaş grubu ve cinsiyet bilgisi yalnızca cihazda kişiselleştirme için saklanır.
+- Kapalı testte çocuk güvenliği ve veri silme akışı ayrıca test edilecek.

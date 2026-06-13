@@ -55,3 +55,10 @@ Ebeveyn alanı günlük yazı içeriklerini göstermez; sadece gelişim özeti s
 - Çocuklar arası mesajlaşma yok
 - Konum izni yok
 - Günlükler cihazda saklanır
+
+## Not
+
+- Uygulama çocukların yazma alışkanlığını desteklemek için tasarlanmıştır.
+- Ebeveyn gözetimi önerilir.
+- Uygulamada herkese açık paylaşım, çocuklar arası mesajlaşma ve reklam yoktur.
+- Kişiselleştirme bilgileri cihazda saklanır.

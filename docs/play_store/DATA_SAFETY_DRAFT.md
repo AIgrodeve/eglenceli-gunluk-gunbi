@@ -18,6 +18,18 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 - Üçüncü taraf veri paylaşımı yok.
 - Uygulama içindeki Ayarlar bölümünden yerel veriler silinebilir.
 
+## Kullanılan paketler kontrol edilmeli
+
+Mevcut bilinen paketler:
+
+- shared_preferences
+- pdf
+- printing
+- rive
+- lottie
+
+Play Console Veri Güvenliği formu doldurulmadan önce pubspec.yaml ve AndroidManifest izinleri tekrar kontrol edilmelidir.
+
 ## Kontrol notu
 
 Bu dosya Play Console formu doldurulmadan önce gerçek kod ve kullanılan paketlerle tekrar kontrol edilmelidir.
