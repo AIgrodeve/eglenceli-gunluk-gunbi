@@ -48,18 +48,25 @@ aigrodeve@gmail.com
 - Hesap sistemi yok.
 - Bulut yedekleme yok.
 - Gerçek AI/API yok.
-- Uygulama çevrimdışı kullanılabilir.
+- Uygulamanın temel günlük deneyimi çevrimdışı kullanılabilir; Premium satın alma ve geri yükleme için Google Play bağlantısı gerekebilir.
 - Günlük yazıları cihazda saklanır.
 - Çocuk adı, yaş grubu ve cinsiyet bilgisi yalnızca cihazda kişiselleştirme için saklanır.
 - Kapalı testte çocuk güvenliği ve veri silme akışı ayrıca test edilecek.
 
 ## Premium plan notları
 
-- Premium özellikler planlanmaktadır.
-- Gerçek satın alma eklenirse Google Play Billing kullanılacaktır.
+- Uygulama içi satın alma vardır.
+- Satın alma tipi: tek seferlik Premium kilidi.
+- Ürün ID: `premium_lifetime`
+- Google Play Billing kullanılacaktır.
+- Google Play Billing için `com.android.vending.BILLING`, `INTERNET` ve `ACCESS_NETWORK_STATE` izinleri kullanılabilir.
 - Ödeme bilgileri uygulama tarafından saklanmayacaktır.
 - Satın alma işlemleri Google Play tarafından yönetilecektir.
 - Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir.
 - Reklam kullanılmayacaktır.
+- Abonelik kullanılmayacaktır.
 - Reklamsızlaştırma gelir modeli kullanılmayacaktır; uygulama zaten reklamsız kalacaktır.
+- Premium durumu cihazda lokal olarak tutulabilir.
+- Tüm verileri sil lokal premium bilgisini temizler; satın alma Google Play üzerinden geri yüklenebilir.
 - Gelişmiş rozetler, gelişmiş haftalık özet, daha fazla Günbi yazı önerisi ve özel Günbi temaları ileride Premium kapsamında değerlendirilebilir.
+- İlk sürümde satın alma durumu Google Play Billing istemci akışıyla yönetilir. Daha yüksek güvenlik gereksinimlerinde sunucu tarafı doğrulama ayrıca değerlendirilebilir.

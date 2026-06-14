@@ -56,9 +56,11 @@ Mevcut sürümde reklam gösterilmez. Reklam SDK, analitik SDK veya crash report
 
 ## Premium özellikler ve ödeme
 
-Premium özellikler planlanmaktadır. Gerçek satın alma eklenirse Google Play Billing kullanılacaktır. Ödeme bilgileri uygulama tarafından saklanmayacaktır. Satın alma işlemleri Google Play tarafından yönetilecektir. Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir. Reklam kullanılmayacaktır.
+Uygulama içi satın alma vardır. Satın alma tipi tek seferlik Premium kilididir. Ürün ID: `premium_lifetime`. Satın alma işlemleri Google Play üzerinden yönetilir. Google Play Billing satın alma ve geri yükleme işlemleri için internet/Play Store bağlantısı kullanılabilir. Uygulama ödeme kartı veya ödeme bilgisi saklamaz. Premium durumu cihazda lokal olarak tutulabilir. Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir. Reklam ve abonelik kullanılmayacaktır.
 
-Mevcut aşamada gerçek ödeme, Google Play Billing, abonelik veya reklam SDK'sı eklenmemiştir. Lokal premium durumu yalnızca geliştirme/test amaçlıdır.
+Tüm verileri sil işlemi lokal premium bilgisini temizler; satın alma Google Play üzerinden geri yüklenebilir.
+
+İlk sürümde satın alma durumu Google Play Billing istemci akışıyla yönetilir. Daha yüksek güvenlik gereksinimlerinde sunucu tarafı doğrulama ayrıca değerlendirilebilir.
 
 ## Verilerin silinmesi
 

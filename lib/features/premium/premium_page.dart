@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import 'services/premium_service.dart';
 
@@ -14,38 +17,142 @@ class PremiumPage extends StatefulWidget {
 
 class _PremiumPageState extends State<PremiumPage> {
   final PremiumService _premiumService = const PremiumService();
-  late Future<bool> _premiumFuture;
+  late Future<PremiumStoreState> _storeFuture;
+  StreamSubscription? _purchaseSubscription;
+  bool _isPurchaseInProgress = false;
+  bool _isRestoring = false;
 
   @override
   void initState() {
     super.initState();
-    _premiumFuture = _premiumService.isPremiumUnlocked();
+    _storeFuture = _premiumService.loadStoreState();
+    _purchaseSubscription = _premiumService.purchaseUpdates.listen(
+      _handlePurchaseUpdates,
+      onError: (_) {
+        if (!mounted) {
+          return;
+        }
+        _showMessage(
+          'Satın alma sırasında bir sorun oluştu. Lütfen tekrar deneyin.',
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _purchaseSubscription?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _handlePurchaseUpdates(List<dynamic> purchases) async {
+    final results = await _premiumService.handlePurchaseUpdates(
+      purchases.cast(),
+    );
+    if (!mounted || results.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _isPurchaseInProgress = false;
+      _isRestoring = false;
+      _storeFuture = _premiumService.loadStoreState();
+    });
+
+    _showMessage(results.last.message);
+  }
+
+  Future<void> _startPurchase(PremiumStoreState storeState) async {
+    final productDetails = storeState.productDetails;
+    if (productDetails == null) {
+      _showMessage(
+        'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+      );
+      return;
+    }
+
+    final verified = await showAdultVerificationDialog(
+      context: context,
+      title: 'Ebeveyn doğrulaması',
+      question: 'Devam etmek için işlemi cevaplayın: 9 + 4 = ?',
+      expectedAnswer: '13',
+      wrongAnswerMessage: 'Bu işlem ebeveynler içindir.',
+    );
+    if (!verified || !mounted) {
+      return;
+    }
+
+    setState(() => _isPurchaseInProgress = true);
+    try {
+      final didStart = await _premiumService.buyPremium(productDetails);
+      if (!mounted) {
+        return;
+      }
+      if (!didStart) {
+        setState(() => _isPurchaseInProgress = false);
+        _showMessage('Satın alma tamamlanmadı.');
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isPurchaseInProgress = false);
+      _showMessage(
+        'Satın alma sırasında bir sorun oluştu. Lütfen tekrar deneyin.',
+      );
+    }
+  }
+
+  Future<void> _restorePurchase() async {
+    setState(() => _isRestoring = true);
+    final wasUnlocked = await _premiumService.isPremiumUnlocked();
+    try {
+      await _premiumService.restorePurchases();
+      await Future<void>.delayed(const Duration(milliseconds: 1800));
+      final isUnlocked = await _premiumService.isPremiumUnlocked();
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _isRestoring = false;
+        _storeFuture = _premiumService.loadStoreState();
+      });
+
+      if (!wasUnlocked && !isUnlocked) {
+        _showMessage('Aktif Premium satın alma bulunamadı.');
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isRestoring = false);
+      _showMessage(
+        'Satın alma bilgisi kontrol edilirken bir sorun oluştu. Lütfen tekrar deneyin.',
+      );
+    }
   }
 
   Future<void> _toggleDebugPremium(bool currentValue) async {
-    // Bu buton sadece debug testleri içindir; gerçek yayın öncesi
-    // Google Play Billing entegrasyonu ile değiştirilmelidir.
+    // Bu buton sadece debug testleri içindir; release build'de görünmez.
+    // Gerçek premium kaynağı Google Play Billing satın alma durumudur.
     await _premiumService.setPremiumUnlocked(!currentValue);
     if (!mounted) {
       return;
     }
 
-    setState(() => _premiumFuture = _premiumService.isPremiumUnlocked());
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          !currentValue
-              ? 'Debug: Premium kilidi açıldı.'
-              : 'Debug: Premium kilidi kapatıldı.',
-        ),
-      ),
+    setState(() => _storeFuture = _premiumService.loadStoreState());
+    _showMessage(
+      !currentValue
+          ? 'Debug: Premium kilidi açıldı.'
+          : 'Debug: Premium kilidi kapatıldı.',
     );
   }
 
-  void _showComingSoonMessage() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Premium satın alma yakında eklenecek.')),
-    );
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -53,10 +160,19 @@ class _PremiumPageState extends State<PremiumPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Premium')),
       body: SafeArea(
-        child: FutureBuilder<bool>(
-          future: _premiumFuture,
+        child: FutureBuilder<PremiumStoreState>(
+          future: _storeFuture,
           builder: (context, snapshot) {
-            final isPremiumUnlocked = snapshot.data ?? false;
+            final storeState =
+                snapshot.data ??
+                const PremiumStoreState(
+                  isPremiumUnlocked: false,
+                  isBillingAvailable: false,
+                );
+            final product = storeState.productDetails;
+            final isPremiumUnlocked = storeState.isPremiumUnlocked;
+            final isLoading =
+                snapshot.connectionState == ConnectionState.waiting;
 
             return ListView(
               padding: const EdgeInsets.all(24),
@@ -77,7 +193,12 @@ class _PremiumPageState extends State<PremiumPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: 22),
-                _PremiumStatusCard(isPremiumUnlocked: isPremiumUnlocked),
+                _PremiumStatusCard(
+                  isPremiumUnlocked: isPremiumUnlocked,
+                  productTitle: product?.title,
+                  productPrice: product?.price,
+                  message: storeState.message,
+                ),
                 const SizedBox(height: 14),
                 const _FeatureCard(
                   title: 'Ücretsiz',
@@ -102,9 +223,52 @@ class _PremiumPageState extends State<PremiumPage> {
                 ),
                 const SizedBox(height: 18),
                 FilledButton.icon(
-                  onPressed: _showComingSoonMessage,
-                  icon: const Icon(Icons.lock_clock_rounded),
-                  label: const Text('Yakında ebeveyn onayıyla açılacak'),
+                  onPressed:
+                      isLoading ||
+                          isPremiumUnlocked ||
+                          product == null ||
+                          _isPurchaseInProgress
+                      ? null
+                      : () => _startPurchase(storeState),
+                  icon: Icon(
+                    isPremiumUnlocked
+                        ? Icons.check_circle_rounded
+                        : Icons.workspace_premium_rounded,
+                  ),
+                  label: Text(
+                    isPremiumUnlocked
+                        ? 'Premium açık'
+                        : _isPurchaseInProgress
+                        ? 'Satın alma başlatılıyor...'
+                        : "Premium'u aç",
+                  ),
+                ),
+                if (product != null && !isPremiumUnlocked) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tek seferlik satın alma: ${product.price}',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+                if (product == null && !isLoading) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    storeState.message ??
+                        'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: _isRestoring ? null : _restorePurchase,
+                  icon: const Icon(Icons.restore_rounded),
+                  label: Text(
+                    _isRestoring
+                        ? 'Satın alma kontrol ediliyor...'
+                        : 'Satın almayı geri yükle',
+                  ),
                 ),
                 if (kDebugMode) ...[
                   const SizedBox(height: 12),
@@ -132,12 +296,24 @@ class _PremiumPageState extends State<PremiumPage> {
 }
 
 class _PremiumStatusCard extends StatelessWidget {
-  const _PremiumStatusCard({required this.isPremiumUnlocked});
+  const _PremiumStatusCard({
+    required this.isPremiumUnlocked,
+    this.productTitle,
+    this.productPrice,
+    this.message,
+  });
 
   final bool isPremiumUnlocked;
+  final String? productTitle;
+  final String? productPrice;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
+    final title = productTitle?.trim().isNotEmpty == true
+        ? productTitle!.trim()
+        : 'Eğlenceli Günlük Premium';
+
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -148,6 +324,7 @@ class _PremiumStatusCard extends StatelessWidget {
         border: Border.all(color: AppTheme.pastelYellow, width: 1.5),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(
             isPremiumUnlocked
@@ -157,11 +334,20 @@ class _PremiumStatusCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              isPremiumUnlocked
-                  ? 'Premium test kilidi açık.'
-                  : 'Premium özellikler henüz kilitli.',
-              style: Theme.of(context).textTheme.titleMedium,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  isPremiumUnlocked
+                      ? 'Premium açık.'
+                      : productPrice == null
+                      ? (message ?? 'Premium bilgisi bekleniyor.')
+                      : 'Tek seferlik satın alma: $productPrice',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
           ),
         ],

@@ -18,12 +18,19 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 - Crash reporting SDK yok.
 - Üçüncü taraf veri paylaşımı yok.
 - Uygulama içindeki Ayarlar bölümünden yerel veriler silinebilir.
-- Premium özellikler planlanmaktadır.
-- Gerçek satın alma eklenirse Google Play Billing kullanılacaktır.
+- Uygulama içi satın alma vardır.
+- Satın alma tipi: tek seferlik Premium kilidi.
+- Ürün ID: premium_lifetime
+- Google Play Billing kullanılacaktır.
+- Google Play Billing satın alma ve geri yükleme işlemleri için internet/Play Store bağlantısı kullanılabilir.
 - Ödeme bilgileri uygulama tarafından saklanmayacaktır.
 - Satın alma işlemleri Google Play tarafından yönetilecektir.
+- Premium durumu cihazda lokal olarak tutulabilir.
+- Tüm verileri sil lokal premium bilgisini temizler; satın alma Google Play üzerinden geri yüklenebilir.
 - Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir.
 - Reklam kullanılmayacaktır.
+- Abonelik yoktur.
+- İlk sürümde satın alma durumu Google Play Billing istemci akışıyla yönetilir. Daha yüksek güvenlik gereksinimlerinde sunucu tarafı doğrulama ayrıca değerlendirilebilir.
 
 ## Kullanılan paketler kontrol edilmeli
 
@@ -34,6 +41,7 @@ Mevcut bilinen paketler:
 - printing
 - rive
 - lottie
+- in_app_purchase
 
 Play Console Veri Güvenliği formu doldurulmadan önce pubspec.yaml ve AndroidManifest izinleri tekrar kontrol edilmelidir.
 

@@ -54,7 +54,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _InfoCard(
               title: 'Premium planı',
               message:
-                  'Premium özellikler planlanmaktadır. Gerçek satın alma eklenirse işlemler Google Play tarafından yönetilecek, ödeme bilgileri uygulama tarafından saklanmayacaktır.',
+                  'Premium tek seferlik uygulama içi satın alma olarak sunulur. Satın alma işlemleri Google Play tarafından yönetilir; ödeme bilgileri uygulama tarafından saklanmaz.',
             ),
             const SizedBox(height: 14),
             const _InfoCard(
