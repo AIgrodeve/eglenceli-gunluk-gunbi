@@ -38,6 +38,10 @@ Eğlenceli Günlük çocukların mahremiyetini önemser. Günlük yazıları cih
 
 Ebeveyn alanı günlük yazı içeriklerini göstermez; sadece gelişim özeti sunar. Ayarlar bölümünden cihazda saklanan yerel veriler silinebilir.
 
+### Premium planı
+
+Premium özellikler ileride ebeveyn onayıyla açılacak şekilde planlanmaktadır. Gerçek satın alma eklenirse işlemler Google Play tarafından yönetilecek, ödeme bilgileri uygulama tarafından saklanmayacaktır. Uygulama reklamsız kalacaktır.
+
 ## Özellikler
 
 - Günlük yazma
@@ -51,6 +55,7 @@ Ebeveyn alanı günlük yazı içeriklerini göstermez; sadece gelişim özeti s
 - Ebeveyn alanı
 - Yerel veri saklama
 - Verileri cihazdan silme
+- Planlanan Premium özellikler
 
 ## Güvenlik vurguları
 

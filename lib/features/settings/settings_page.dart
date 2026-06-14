@@ -7,6 +7,8 @@ import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../onboarding/onboarding_flow.dart';
+import '../premium/premium_page.dart';
+import '../premium/services/premium_service.dart';
 import '../privacy/privacy_policy_page.dart';
 import 'about_page.dart';
 
@@ -27,6 +29,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final AppPreferences _preferences = const AppPreferences();
   final JournalRepository _repository = const JournalRepository();
+  final PremiumService _premiumService = const PremiumService();
   late final TextEditingController _nameController;
   late AgeGroup _selectedAgeGroup;
   late Future<int> _entryCountFuture;
@@ -102,6 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     await _repository.clearAllEntries();
     await _preferences.clearLocalPreferences();
+    await _premiumService.clearPremiumStatus();
 
     if (!mounted) {
       return;
@@ -315,6 +319,31 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                       icon: const Icon(Icons.privacy_tip_rounded),
                       label: const Text('Gizlilik Politikası'),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 14),
+              _SectionCard(
+                title: 'Premium',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Premium özellikler ileride ebeveyn onayıyla açılacak.',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => const PremiumPage(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.workspace_premium_rounded),
+                      label: const Text('Premium bilgisi'),
                     ),
                   ],
                 ),

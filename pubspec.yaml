@@ -68,6 +68,7 @@ flutter:
     - assets/animations/
     - assets/animations/rive/
     - assets/animations/lottie/
+    - assets/mascot/
     - assets/fonts/Roboto-Regular.ttf
     - assets/fonts/Roboto-Bold.ttf
     - assets/fonts/Roboto-Italic.ttf

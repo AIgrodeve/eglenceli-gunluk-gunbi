@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' hide Image;
 
 import '../theme/app_theme.dart';
 
@@ -56,7 +56,7 @@ class MascotWidget extends StatelessWidget {
     final asset = _resolvedAnimationAsset;
 
     return switch (animationType) {
-      MascotAnimationType.none => _buildStaticMascot(),
+      MascotAnimationType.none => _buildPngMascotOrStatic(),
       MascotAnimationType.rive =>
         asset == null
             ? _buildFallbackMascot('Rive animasyon dosyası seçilmedi.')
@@ -80,7 +80,7 @@ class MascotWidget extends StatelessWidget {
   Widget _buildRiveMascot(String asset) {
     return _AnimationAssetGuard(
       asset: asset,
-      fallback: _buildSilentFallbackMascot(),
+      fallback: _buildPngMascotOrStatic(),
       debugMessage: _fallbackDebugMessage(
         'Rive animasyonu yüklenemedi: $asset',
       ),
@@ -99,7 +99,7 @@ class MascotWidget extends StatelessWidget {
   Widget _buildLottieMascot(String asset) {
     return _AnimationAssetGuard(
       asset: asset,
-      fallback: _buildSilentFallbackMascot(),
+      fallback: _buildPngMascotOrStatic(),
       debugMessage: _fallbackDebugMessage(
         'Lottie animasyonu yüklenemedi: $asset',
       ),
@@ -130,6 +130,20 @@ class MascotWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildPngMascotOrStatic() {
+    if (!fallbackToStatic) {
+      return SizedBox(width: size, height: size);
+    }
+
+    return _PngMascotAsset(
+      size: size,
+      mood: mood,
+      showShadow: showShadow,
+      fallback: _buildStaticMascot(),
+      assetCandidates: _pngAssetsForMood(mood),
+    );
+  }
+
   Widget _buildFallbackMascot(String debugMessage) {
     if (!fallbackToStatic) {
       debugPrint(debugMessage);
@@ -137,14 +151,7 @@ class MascotWidget extends StatelessWidget {
     }
 
     debugPrint('$debugMessage Statik Günbi gösteriliyor.');
-    return _buildStaticMascot();
-  }
-
-  Widget _buildSilentFallbackMascot() {
-    if (!fallbackToStatic) {
-      return SizedBox(width: size, height: size);
-    }
-    return _buildStaticMascot();
+    return _buildPngMascotOrStatic();
   }
 
   String _fallbackDebugMessage(String message) {
@@ -182,6 +189,38 @@ class MascotWidget extends StatelessWidget {
     };
   }
 
+  List<String> _pngAssetsForMood(MascotMood mood) {
+    final primaryAsset = switch (mood) {
+      MascotMood.calm => 'assets/mascot/gunbi_idle.png',
+      MascotMood.happy => 'assets/mascot/gunbi_happy.png',
+      MascotMood.excited => 'assets/mascot/gunbi_happy.png',
+      MascotMood.writing => 'assets/mascot/gunbi_writing.png',
+      MascotMood.celebration => 'assets/mascot/gunbi_celebration.png',
+      MascotMood.supportive => 'assets/mascot/gunbi_supportive.png',
+      MascotMood.proud => 'assets/mascot/gunbi_proud.png',
+      MascotMood.sleepy => 'assets/mascot/gunbi_sleepy.png',
+    };
+
+    final fallbackAssets = switch (mood) {
+      MascotMood.supportive => [
+        'assets/mascot/gunbi_happy.png',
+        'assets/mascot/gunbi_idle.png',
+      ],
+      MascotMood.proud => [
+        'assets/mascot/gunbi_celebration.png',
+        'assets/mascot/gunbi_happy.png',
+      ],
+      MascotMood.sleepy => ['assets/mascot/gunbi_idle.png'],
+      MascotMood.excited => ['assets/mascot/gunbi_idle.png'],
+      MascotMood.celebration => ['assets/mascot/gunbi_happy.png'],
+      MascotMood.writing => ['assets/mascot/gunbi_happy.png'],
+      MascotMood.happy => ['assets/mascot/gunbi_idle.png'],
+      MascotMood.calm => ['assets/mascot/gunbi_happy.png'],
+    };
+
+    return <String>{primaryAsset, ...fallbackAssets}.toList();
+  }
+
   double get _scale {
     return switch (mood) {
       MascotMood.excited || MascotMood.celebration => 1.03,
@@ -195,6 +234,79 @@ class MascotWidget extends StatelessWidget {
       MascotMood.excited || MascotMood.proud || MascotMood.celebration => true,
       _ => false,
     };
+  }
+}
+
+class _PngMascotAsset extends StatelessWidget {
+  const _PngMascotAsset({
+    required this.size,
+    required this.mood,
+    required this.showShadow,
+    required this.assetCandidates,
+    required this.fallback,
+  });
+
+  final double size;
+  final MascotMood mood;
+  final bool showShadow;
+  final List<String> assetCandidates;
+  final Widget fallback;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String?>(
+      future: _firstAvailableAsset(assetCandidates),
+      builder: (context, snapshot) {
+        final asset = snapshot.data;
+        if (snapshot.connectionState == ConnectionState.waiting ||
+            asset == null) {
+          return fallback;
+        }
+
+        return Container(
+          width: size,
+          height: size,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(size * 0.34),
+            boxShadow: showShadow
+                ? [
+                    BoxShadow(
+                      color: AppTheme.lightOrange.withValues(alpha: 0.2),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Image.asset(
+            asset,
+            width: size,
+            height: size,
+            fit: BoxFit.contain,
+            errorBuilder: (_, error, stackTrace) {
+              debugPrint('Günbi PNG görseli açılamadı: $asset - $error');
+              return fallback;
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Future<String?> _firstAvailableAsset(List<String> assets) async {
+    for (final asset in assets) {
+      try {
+        await rootBundle.load(asset);
+        return asset;
+      } catch (_) {
+        continue;
+      }
+    }
+
+    debugPrint(
+      'Günbi PNG görseli bulunamadı (${mood.name}). Statik Günbi gösteriliyor.',
+    );
+    return null;
   }
 }
 

@@ -11,6 +11,8 @@ import 'services/writing_prompt_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/services/badge_service.dart';
 import '../streak/services/streak_service.dart';
+import '../premium/premium_page.dart';
+import '../premium/services/premium_service.dart';
 
 class JournalPage extends StatefulWidget {
   const JournalPage({
@@ -36,6 +38,7 @@ class _JournalPageState extends State<JournalPage> {
   final JournalRepository _repository = const JournalRepository();
   final BadgeService _badgeService = const BadgeService();
   final StreakService _streakService = const StreakService();
+  final PremiumService _premiumService = const PremiumService();
   final WritingCoachService _coachService = const WritingCoachService();
   final WritingPromptService _promptService = WritingPromptService();
 
@@ -76,9 +79,34 @@ class _JournalPageState extends State<JournalPage> {
       return;
     }
 
+    final previousEntries = await _repository.loadEntries();
+    final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
+    if (!mounted) {
+      return;
+    }
+
+    if (!isPremiumUnlocked &&
+        previousEntries.length >= PremiumService.freeEntryLimit) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Harika bir yazı alışkanlığı oluşturdun! Daha fazla yazı eklemek için bir ebeveynden yardım isteyebilirsin.',
+          ),
+          action: SnackBarAction(
+            label: 'Ebeveyne göster',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PremiumPage()),
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSaving = true);
 
-    final previousEntries = await _repository.loadEntries();
     final previousStats = JournalStats.fromEntries(previousEntries);
     final previousStreak = _streakService.calculate(previousEntries);
     final entry = JournalEntry.create(
@@ -276,7 +304,6 @@ class _WritingMascotCard extends StatelessWidget {
             size: 72,
             mood: MascotMood.writing,
             showShadow: false,
-            animationType: MascotAnimationType.lottie,
           ),
           const SizedBox(width: 12),
           Expanded(

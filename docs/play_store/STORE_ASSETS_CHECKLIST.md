@@ -9,6 +9,11 @@
 - [ ] Gizlilik politikası bağlantısı
 - [ ] Uygulama tanıtım metinleri
 
+## Seçilen görsel kararları
+
+- Uygulama ikonu: yazısız Günbi + açık günlük + kalem
+- Özellik grafiği: "Günbi ile yazmak artık oyun gibi" mesajlı 1024 x 500 görsel
+
 ## Önerilen telefon ekran görüntüleri
 
 1. Günbi karşılama ekranı

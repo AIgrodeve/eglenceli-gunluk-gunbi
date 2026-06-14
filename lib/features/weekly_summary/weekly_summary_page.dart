@@ -55,7 +55,9 @@ class _WeeklySummaryContent extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        const Center(child: MascotWidget(size: 118, mood: MascotMood.proud)),
+        const Center(
+          child: MascotWidget(size: 118, mood: MascotMood.supportive),
+        ),
         const SizedBox(height: 18),
         Text(
           _gunbiMessage(summary),
@@ -211,7 +213,7 @@ class _EmptyWeeklySummary extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const MascotWidget(size: 128, mood: MascotMood.calm),
+            const MascotWidget(size: 128, mood: MascotMood.supportive),
             const SizedBox(height: 22),
             Text(
               'Bu hafta henüz yazı eklemedin. Günbi ilk yazını bekliyor!',

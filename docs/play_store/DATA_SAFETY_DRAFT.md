@@ -18,6 +18,12 @@ Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırl
 - Crash reporting SDK yok.
 - Üçüncü taraf veri paylaşımı yok.
 - Uygulama içindeki Ayarlar bölümünden yerel veriler silinebilir.
+- Premium özellikler planlanmaktadır.
+- Gerçek satın alma eklenirse Google Play Billing kullanılacaktır.
+- Ödeme bilgileri uygulama tarafından saklanmayacaktır.
+- Satın alma işlemleri Google Play tarafından yönetilecektir.
+- Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir.
+- Reklam kullanılmayacaktır.
 
 ## Kullanılan paketler kontrol edilmeli
 

@@ -8,6 +8,7 @@ import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../journal/models/journal_entry.dart';
 import '../journal/mood_selection_page.dart';
+import '../premium/services/premium_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../streak/services/streak_service.dart';
 import 'services/journal_book_pdf_service.dart';
@@ -31,6 +32,7 @@ class _JournalBookPageState extends State<JournalBookPage> {
   final JournalRepository _repository = const JournalRepository();
   final JournalBookPdfService _pdfService = const JournalBookPdfService();
   final StreakService _streakService = const StreakService();
+  final PremiumService _premiumService = const PremiumService();
   late final TextEditingController _titleController;
   late Future<_BookPreviewData> _previewFuture;
 
@@ -50,6 +52,7 @@ class _JournalBookPageState extends State<JournalBookPage> {
   Future<_BookPreviewData> _loadPreview() async {
     final savedTitle = await _preferences.loadBookTitle();
     final entries = await _repository.loadEntries();
+    final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
     final sortedEntries = [...entries]
       ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
     final stats = JournalStats.fromEntries(entries);
@@ -71,6 +74,7 @@ class _JournalBookPageState extends State<JournalBookPage> {
           ? null
           : sortedEntries.last.createdAt,
       writtenDayCount: streakStats.totalWrittenDays,
+      isPremiumUnlocked: isPremiumUnlocked,
     );
   }
 
@@ -81,6 +85,17 @@ class _JournalBookPageState extends State<JournalBookPage> {
   }
 
   Future<void> _previewPdf(_BookPreviewData preview) async {
+    if (!preview.isPremiumUnlocked) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'PDF Günlük Kitabı Premium ile açılır. Bir ebeveynden yardım isteyebilirsin.',
+          ),
+        ),
+      );
+      return;
+    }
+
     if (preview.entries.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -200,8 +215,16 @@ class _JournalBookPageState extends State<JournalBookPage> {
                 const SizedBox(height: 8),
                 FilledButton.icon(
                   onPressed: () => _previewPdf(preview),
-                  icon: const Icon(Icons.picture_as_pdf_rounded),
-                  label: const Text('PDF Önizle'),
+                  icon: Icon(
+                    preview.isPremiumUnlocked
+                        ? Icons.picture_as_pdf_rounded
+                        : Icons.lock_rounded,
+                  ),
+                  label: Text(
+                    preview.isPremiumUnlocked
+                        ? 'PDF Önizle'
+                        : 'PDF Premium ile açılır',
+                  ),
                 ),
               ],
             );
@@ -471,6 +494,7 @@ class _BookPreviewData {
     required this.firstEntryDate,
     required this.lastEntryDate,
     required this.writtenDayCount,
+    required this.isPremiumUnlocked,
   });
 
   factory _BookPreviewData.empty(String title) {
@@ -483,6 +507,7 @@ class _BookPreviewData {
       firstEntryDate: null,
       lastEntryDate: null,
       writtenDayCount: 0,
+      isPremiumUnlocked: false,
     );
   }
 
@@ -494,6 +519,7 @@ class _BookPreviewData {
   final DateTime? firstEntryDate;
   final DateTime? lastEntryDate;
   final int writtenDayCount;
+  final bool isPremiumUnlocked;
 }
 
 class _StatItem {

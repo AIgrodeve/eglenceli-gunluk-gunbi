@@ -14,13 +14,7 @@ class AboutPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            const Center(
-              child: MascotWidget(
-                size: 116,
-                mood: MascotMood.happy,
-                animationType: MascotAnimationType.lottie,
-              ),
-            ),
+            const Center(child: MascotWidget(size: 116, mood: MascotMood.calm)),
             const SizedBox(height: 18),
             Text(
               'Eğlenceli Günlük',

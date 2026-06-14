@@ -52,3 +52,14 @@ aigrodeve@gmail.com
 - Günlük yazıları cihazda saklanır.
 - Çocuk adı, yaş grubu ve cinsiyet bilgisi yalnızca cihazda kişiselleştirme için saklanır.
 - Kapalı testte çocuk güvenliği ve veri silme akışı ayrıca test edilecek.
+
+## Premium plan notları
+
+- Premium özellikler planlanmaktadır.
+- Gerçek satın alma eklenirse Google Play Billing kullanılacaktır.
+- Ödeme bilgileri uygulama tarafından saklanmayacaktır.
+- Satın alma işlemleri Google Play tarafından yönetilecektir.
+- Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir.
+- Reklam kullanılmayacaktır.
+- Reklamsızlaştırma gelir modeli kullanılmayacaktır; uygulama zaten reklamsız kalacaktır.
+- Gelişmiş rozetler, gelişmiş haftalık özet, daha fazla Günbi yazı önerisi ve özel Günbi temaları ileride Premium kapsamında değerlendirilebilir.

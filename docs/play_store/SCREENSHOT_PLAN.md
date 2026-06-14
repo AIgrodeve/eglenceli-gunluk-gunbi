@@ -67,3 +67,25 @@ Bu çağrı uygulama koduna kalıcı olarak eklenmemelidir. Ekran görüntüleri
 4. Demo yazıları farklı duygu seçimleriyle ekle.
 5. Ana sayfa, yazı ekranı, yazı koçu, Yazılarım, Rozetlerim, Haftalık Özet ve Günlük Kitabım ekranlarını sırayla yakala.
 6. Gizlilik ve güvenlik vurgusu için Ebeveyn Alanı veya Ayarlar içindeki ilgili ekranı ayrıca yakala.
+
+## Ekran görüntüsü alma sırası
+
+1. Günbi karşılama
+2. Ana sayfa
+3. Bugünü yaz
+4. Günbi'den yardım al
+5. Yazılarım
+6. Rozetlerim
+7. Haftalık Özet
+8. Günlük Kitabım
+9. Gizlilik ve Güvenlik / Ebeveyn Alanı
+
+## Ekran görüntüsü kısa başlıkları
+
+- Günbi ile tanış
+- Bugünü yaz
+- Yazarken destek al
+- Yazdıkça rozet kazan
+- Haftalık gelişimini gör
+- Yazıların kitaba dönüşsün
+- Güvenli ve reklamsız alan

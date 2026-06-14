@@ -54,6 +54,12 @@ PDF Günlük Kitabı özelliği, çocuğun cihazda kayıtlı yazılarından bir 
 
 Mevcut sürümde reklam gösterilmez. Reklam SDK, analitik SDK veya crash reporting SDK kullanılmaz. Üçüncü taraf veri paylaşımı yapılmaz.
 
+## Premium özellikler ve ödeme
+
+Premium özellikler planlanmaktadır. Gerçek satın alma eklenirse Google Play Billing kullanılacaktır. Ödeme bilgileri uygulama tarafından saklanmayacaktır. Satın alma işlemleri Google Play tarafından yönetilecektir. Premium teklifleri ebeveyn alanı/ayarlar üzerinden gösterilecektir. Reklam kullanılmayacaktır.
+
+Mevcut aşamada gerçek ödeme, Google Play Billing, abonelik veya reklam SDK'sı eklenmemiştir. Lokal premium durumu yalnızca geliştirme/test amaçlıdır.
+
 ## Verilerin silinmesi
 
 Kullanıcı/ebeveyn, uygulama içindeki Ayarlar bölümünden cihazda saklanan günlük yazılarını ve uygulama verilerini silebilir. Bu işlem cihazdaki yerel verileri temizler ve geri alınamaz.

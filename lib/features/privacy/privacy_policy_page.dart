@@ -52,6 +52,12 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             const _InfoCard(
+              title: 'Premium planı',
+              message:
+                  'Premium özellikler planlanmaktadır. Gerçek satın alma eklenirse işlemler Google Play tarafından yönetilecek, ödeme bilgileri uygulama tarafından saklanmayacaktır.',
+            ),
+            const SizedBox(height: 14),
+            const _InfoCard(
               title: 'Verilerin silinmesi',
               message:
                   'Ayarlar bölümünden cihazda saklanan uygulama verileri silinebilir.',

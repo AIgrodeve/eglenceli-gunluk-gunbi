@@ -53,6 +53,10 @@
 - [ ] Geri tuşu çift basışla çıkış testi
 - [ ] Demo veri release sürümde otomatik oluşmuyor.
 - [ ] Ekran görüntüleri alındıktan sonra gerçek release build temiz veriyle test edildi.
+- [ ] Premium debug toggle release build'de görünmüyor.
+- [ ] Ücretsiz yazı limiti 15 yazıda yeni kayıt eklemeyi durduruyor.
+- [ ] PDF Günlük Kitabı Premium kilidi doğru çalışıyor.
+- [ ] Tüm verileri sil akışı lokal premium durumunu da temizliyor.
 
 ## Geliştirme Doğrulaması
 
@@ -85,3 +89,4 @@
 - [ ] Konum izni yok
 - [ ] Gereksiz izin yok
 - [ ] Veriler cihazdan silinebiliyor
+- [ ] Premium teklifleri çocuk ekranlarında agresif şekilde gösterilmiyor
