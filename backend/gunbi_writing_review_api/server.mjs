@@ -17,7 +17,7 @@ const schema = {
     },
     suggestions: {
       type: "array",
-      maxItems: 5,
+      maxItems: 8,
       items: {
         type: "object",
         additionalProperties: false,
@@ -110,8 +110,12 @@ async function reviewWithOpenAI({ title, text, ageGroup, moodLabel }) {
             "Sadece Türkçe yazım, Türkçe karakter, noktalama, boşluk ve cümle düzeni önerileri ver.",
             "Çocuğun yerine yazı yazma, metni baştan sona yeniden yazma.",
             "Sert, suçlayıcı veya utandırıcı dil kullanma.",
-            "En fazla 5 kısa öneri üret.",
+            "En fazla 8 kısa öneri üret.",
+            "Başlıkta hata bulsan bile günlük yazısı metnini de mutlaka kontrol et.",
+            "Hem başlıkta hem metinde hata varsa önerileri dengeli dağıt; sadece başlık önerileriyle yetinme.",
+            "Metinde açık yazım veya noktalama hatası varsa en az bir metin önerisi ekle.",
             "Öneri başlıktaysa mesajda 'Başlıkta' ifadesini kullan.",
+            "Öneri günlük yazısı metnindeyse mesajda 'Yazıda' ifadesini kullan.",
             "Soru cümlelerinde nokta yerine soru işareti gerekiyorsa bunu fark et.",
             "Örnek: 'Günluk uygulamasi yazım denetimi nasıl çalışıyor.' cümlesinde 'Günlük', 'uygulaması' ve '?' önerilebilir.",
           ].join(" "),

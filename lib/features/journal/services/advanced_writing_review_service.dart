@@ -125,7 +125,7 @@ class AdvancedWritingReviewService {
           .whereType<Map<String, dynamic>>()
           .map(_suggestionFromJson)
           .whereType<WritingReviewSuggestion>()
-          .take(6)
+          .take(8)
           .toList(growable: false);
       final message = decoded['summary'] as String?;
 

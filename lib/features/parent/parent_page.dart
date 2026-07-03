@@ -67,7 +67,7 @@ class _ParentPageState extends State<ParentPage> {
       return;
     }
 
-    setState(() => _pinErrorText = 'Åifre hatalÄ±. LÃ¼tfen tekrar deneyin.');
+    setState(() => _pinErrorText = 'Şifre hatalı. Lütfen tekrar deneyin.');
   }
 
   Future<void> _startForgotPinResetFlow() async {
@@ -84,9 +84,9 @@ class _ParentPageState extends State<ParentPage> {
     setState(() => _isResetting = true);
 
     try {
-      // Bu ÅŸifre sÄ±fÄ±rlama akÄ±ÅŸÄ± gÃ¼Ã§lÃ¼ kimlik doÄŸrulama yerine geÃ§mez.
-      // Uygulamada hesap/sunucu olmadÄ±ÄŸÄ± iÃ§in ÅŸifre unutma durumunda yerel
-      // veriler silinerek ebeveyn ÅŸifresi varsayÄ±lan deÄŸere dÃ¶ndÃ¼rÃ¼lÃ¼r.
+      // Bu şifre sıfırlama akışı güçlü kimlik doğrulama yerine geçmez.
+      // Uygulamada hesap/sunucu olmadığı için şifre unutma durumunda yerel
+      // veriler silinerek ebeveyn şifresi varsayılan değere döndürülür.
       await _resetService.clearAllLocalData();
       if (!mounted) {
         return;
@@ -110,7 +110,7 @@ class _ParentPageState extends State<ParentPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Veriler silinirken bir sorun oluÅŸtu. LÃ¼tfen tekrar deneyin.',
+            'Veriler silinirken bir sorun oluştu. Lütfen tekrar deneyin.',
           ),
         ),
       );
@@ -121,16 +121,16 @@ class _ParentPageState extends State<ParentPage> {
     return showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Ebeveyn ÅŸifresini sÄ±fÄ±rla'),
+        title: const Text('Ebeveyn şifresini sıfırla'),
         content: const SingleChildScrollView(
           child: Text(
-            'Ebeveyn ÅŸifresini sÄ±fÄ±rlamak iÃ§in uygulamadaki tÃ¼m yerel verilerin silinmesi gerekir. Bu iÅŸlem gÃ¼nlÃ¼k yazÄ±larÄ±nÄ±, profil bilgilerini, rozet ilerlemesini, kitap baÅŸlÄ±ÄŸÄ±nÄ± ve yerel ayarlarÄ± siler. Premium satÄ±n alma varsa Google Play Ã¼zerinden tekrar geri yÃ¼klenebilir.',
+            'Ebeveyn şifresini sıfırlamak için uygulamadaki tüm yerel verilerin silinmesi gerekir. Bu işlem günlük yazılarını, profil bilgilerini, rozet ilerlemesini, kitap başlığını ve yerel ayarları siler. Premium satın alma varsa Google Play üzerinden tekrar geri yüklenebilir.',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('VazgeÃ§'),
+            child: const Text('Vazgeç'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -148,17 +148,17 @@ class _ParentPageState extends State<ParentPage> {
         title: const Text('Tüm veriler silinsin mi?'),
         content: const SingleChildScrollView(
           child: Text(
-            'Bu iÅŸlem geri alÄ±namaz. Devam edersen ebeveyn ÅŸifresi 1234 olarak sÄ±fÄ±rlanÄ±r ve uygulama ilk kurulum ekranÄ±na dÃ¶ner.',
+            'Bu işlem geri alınamaz. Devam edersen ebeveyn şifresi 1234 olarak sıfırlanır ve uygulama ilk kurulum ekranına döner.',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text('VazgeÃ§'),
+            child: const Text('Vazgeç'),
           ),
           FilledButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text('TÃ¼m verileri sil ve sÄ±fÄ±rla'),
+            child: const Text('Tüm verileri sil ve sıfırla'),
           ),
         ],
       ),
@@ -178,7 +178,7 @@ class _ParentPageState extends State<ParentPage> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Ebeveyn AlanÄ±')),
+      appBar: AppBar(title: const Text('Ebeveyn Alanı')),
       body: SafeArea(
         child: FutureBuilder<_ParentSummaryData>(
           future: _loadSummary(),
@@ -206,15 +206,15 @@ class _ParentPageState extends State<ParentPage> {
                 ),
                 const SizedBox(height: 16),
                 const _InfoPanel(
-                  title: 'GÃ¼venli geliÅŸim Ã¶zeti',
+                  title: 'Güvenli gelişim özeti',
                   message:
-                      'Bu alan, Ã§ocuÄŸun yazma alÄ±ÅŸkanlÄ±ÄŸÄ±nÄ± gÃ¼venli ÅŸekilde takip etmek iÃ§in hazÄ±rlanmÄ±ÅŸtÄ±r.',
+                      'Bu alan, çocuğun yazma alışkanlığını güvenli şekilde takip etmek için hazırlanmıştır.',
                 ),
                 const SizedBox(height: 12),
                 const _InfoPanel(
                   title: 'Mahremiyet',
                   message:
-                      'GÃ¼nlÃ¼k yazÄ±lar Ã§ocuÄŸa Ã¶zeldir. Burada sadece geliÅŸim Ã¶zeti gÃ¶sterilir.',
+                      'Günlük yazılar çocuğa özeldir. Burada sadece gelişim özeti gösterilir.',
                   isSoftBlue: true,
                 ),
                 const SizedBox(height: 18),
@@ -262,7 +262,7 @@ class _ParentPageState extends State<ParentPage> {
 
   String _mostFrequentMood(List<JournalEntry> entries) {
     if (entries.isEmpty) {
-      return 'HenÃ¼z yok';
+      return 'Henüz yok';
     }
 
     final counts = <String, int>{};
@@ -303,7 +303,7 @@ class _ParentGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ebeveyn AlanÄ±')),
+      appBar: AppBar(title: const Text('Ebeveyn Alanı')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -314,13 +314,13 @@ class _ParentGate extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Bu alan ebeveynler iÃ§indir. Devam etmek iÃ§in ebeveyn ÅŸifresini girin.',
+                    'Bu alan ebeveynler içindir. Devam etmek için ebeveyn şifresini girin.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'GÃ¼nlÃ¼k iÃ§erikleri Ã§ocuÄŸa Ã¶zeldir; burada sadece geliÅŸim Ã¶zeti gÃ¶sterilir.',
+                    'Günlük içerikleri çocuğa özeldir; burada sadece gelişim özeti gösterilir.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
@@ -332,7 +332,7 @@ class _ParentGate extends StatelessWidget {
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
-                      labelText: 'Åifre',
+                      labelText: 'Şifre',
                       errorText: errorText,
                     ),
                     onSubmitted: (_) => onVerify(),
@@ -345,7 +345,7 @@ class _ParentGate extends StatelessWidget {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: isBusy ? null : onForgotPin,
-                    child: const Text('Åifremi unuttum'),
+                    child: const Text('Şifremi unuttum'),
                   ),
                 ],
               ),
@@ -375,7 +375,7 @@ class _PremiumManagementPanel extends StatelessWidget {
           Text('Premium', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
-            'Premium satÄ±n alma ve geri yÃ¼kleme iÅŸlemleri yalnÄ±zca Ebeveyn AlanÄ± Ã¼zerinden yÃ¶netilir.',
+            'Premium satın alma ve geri yükleme işlemleri yalnızca Ebeveyn Alanı üzerinden yönetilir.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 12),
@@ -386,7 +386,7 @@ class _PremiumManagementPanel extends StatelessWidget {
               );
             },
             icon: const Icon(Icons.workspace_premium_rounded),
-            label: const Text('Premium yÃ¶netimi'),
+            label: const Text('Premium yönetimi'),
           ),
         ],
       ),
@@ -441,7 +441,7 @@ class _AdvancedWritingReviewPanelState
         content: Text(
           value
               ? 'Gelişmiş Günbi Yazı Kontrolü açıldı.'
-              : 'GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼ kapatÄ±ldÄ±.',
+              : 'Gelişmiş Günbi Yazı Kontrolü kapatıldı.',
         ),
       ),
     );
@@ -476,12 +476,12 @@ class _AdvancedWritingReviewPanelState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼',
+                          'Gelişmiş Günbi Yazı Kontrolü',
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'Premium kapsamÄ±ndaki bu Ã¶zellik ebeveyn onayÄ±yla aÃ§Ä±lÄ±r. GÃ¼nbi Ã§ocuÄŸun yerine yazmaz; sadece yazÄ±m ve noktalama Ã¶nerileri sunar.',
+                          'Premium kapsamındaki bu özellik ebeveyn onayıyla açılır. Günbi çocuğun yerine yazmaz; sadece yazım ve noktalama önerileri sunar.',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                       ],
@@ -493,7 +493,7 @@ class _AdvancedWritingReviewPanelState
               Text(
                 state.isApiConfigured
                     ? 'API bağlantısı yapılandırılmış. Bu ayar açılırsa yazı, yalnızca yazım ve noktalama önerileri için güvenli backend üzerinden kontrol edilir.'
-                    : 'API baÄŸlantÄ±sÄ± henÃ¼z yapÄ±landÄ±rÄ±lmadÄ±. Bu yÃ¼zden yazÄ±lar dÄ±ÅŸ servise gÃ¶nderilmez ve geliÅŸmiÅŸ kontrol aÃ§Ä±lmaz.',
+                    : 'API bağlantısı henüz yapılandırılmadı. Bu yüzden yazılar dış servise gönderilmez ve gelişmiş kontrol açılmaz.',
                 style: Theme.of(context).textTheme.bodySmall,
               ),
               const SizedBox(height: 12),
@@ -506,13 +506,13 @@ class _AdvancedWritingReviewPanelState
                         !state.isApiConfigured
                     ? null
                     : _setEnabled,
-                title: const Text('Ebeveyn onayÄ±'),
+                title: const Text('Ebeveyn onayı'),
                 subtitle: Text(
                   !state.isPremiumUnlocked
                       ? 'Bu ayar Premium açılınca kullanılabilir.'
                       : !state.isApiConfigured
                       ? 'Backend URL tanımlanınca kullanılabilir.'
-                      : 'Premium aÃ§Ä±k. GeliÅŸmiÅŸ kontrolÃ¼ aÃ§Ä±p kapatabilirsin.',
+                      : 'Premium açık. Gelişmiş kontrolü açıp kapatabilirsin.',
                 ),
               ),
             ],
@@ -564,9 +564,9 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
   }
 
   Future<void> _updatePin() async {
-    // Bu basit ebeveyn kontrolÃ¼, gÃ¼Ã§lÃ¼ gÃ¼venlik veya kullanÄ±cÄ± hesabÄ± yerine
-    // geÃ§mez. Ã‡ocuklarÄ±n yanlÄ±ÅŸlÄ±kla ebeveyn alanÄ±na girmesini azaltmak iÃ§in
-    // kullanÄ±lÄ±r.
+    // Bu basit ebeveyn kontrolü, güçlü güvenlik veya kullanıcı hesabı yerine
+    // geçmez. Çocukların yanlışlıkla ebeveyn alanına girmesini azaltmak için
+    // kullanılır.
     final result = await _parentPinService.updatePin(
       currentPin: _currentPinController.text,
       newPin: _newPinController.text,
@@ -582,17 +582,17 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
       _repeatPinController.clear();
       setState(() => _errorText = null);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ebeveyn ÅŸifresi gÃ¼ncellendi.')),
+        const SnackBar(content: Text('Ebeveyn şifresi güncellendi.')),
       );
       return;
     }
 
     setState(() {
       _errorText = switch (result) {
-        ParentPinUpdateResult.empty => 'Åifre boÅŸ olamaz.',
-        ParentPinUpdateResult.tooShort => 'Åifre en az 4 karakter olmalÄ±.',
-        ParentPinUpdateResult.mismatch => 'Yeni ÅŸifreler aynÄ± olmalÄ±.',
-        ParentPinUpdateResult.wrongCurrentPin => 'Mevcut ÅŸifre doÄŸru deÄŸil.',
+        ParentPinUpdateResult.empty => 'Şifre boş olamaz.',
+        ParentPinUpdateResult.tooShort => 'Şifre en az 4 karakter olmalı.',
+        ParentPinUpdateResult.mismatch => 'Yeni şifreler aynı olmalı.',
+        ParentPinUpdateResult.wrongCurrentPin => 'Mevcut şifre doğru değil.',
         ParentPinUpdateResult.success => null,
       };
     });
@@ -611,12 +611,12 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            'Ebeveyn Åifresi',
+            'Ebeveyn Şifresi',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
           Text(
-            'VarsayÄ±lan ÅŸifre 1234â€™tÃ¼r. Ä°stersen buradan deÄŸiÅŸtirebilirsin.',
+            'Varsayılan şifre 1234’tür. İstersen buradan değiştirebilirsin.',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 12),
@@ -624,14 +624,14 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
             controller: _currentPinController,
             obscureText: true,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Mevcut ÅŸifre'),
+            decoration: const InputDecoration(labelText: 'Mevcut şifre'),
           ),
           const SizedBox(height: 10),
           TextField(
             controller: _newPinController,
             obscureText: true,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(labelText: 'Yeni ÅŸifre'),
+            decoration: const InputDecoration(labelText: 'Yeni şifre'),
           ),
           const SizedBox(height: 10),
           TextField(
@@ -639,7 +639,7 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
             obscureText: true,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              labelText: 'Yeni ÅŸifre tekrar',
+              labelText: 'Yeni şifre tekrar',
               errorText: _errorText,
             ),
           ),
@@ -647,7 +647,7 @@ class _ParentPinSectionState extends State<_ParentPinSection> {
           FilledButton.icon(
             onPressed: _updatePin,
             icon: const Icon(Icons.lock_reset_rounded),
-            label: const Text('Åifreyi gÃ¼ncelle'),
+            label: const Text('Şifreyi güncelle'),
           ),
         ],
       ),
@@ -700,27 +700,26 @@ class _TrustOverviewPanel extends StatelessWidget {
     const items = [
       _TrustItem(
         icon: Icons.lock_rounded,
-        title: 'Ebeveyn ÅŸifresi',
+        title: 'Ebeveyn şifresi',
         message:
-            'Bu alan ÅŸifreyle aÃ§Ä±lÄ±r. VarsayÄ±lan ÅŸifre 1234 olarak baÅŸlar ve deÄŸiÅŸtirilebilir.',
+            'Bu alan şifreyle açılır. Varsayılan şifre 1234 olarak başlar ve değiştirilebilir.',
       ),
       _TrustItem(
         icon: Icons.child_care_rounded,
-        title: 'Ã‡ocuÄŸun mahremiyeti',
-        message:
-            'Ebeveyn Ã¶zetinde gÃ¼nlÃ¼k yazÄ±larÄ±nÄ±n tam metni gÃ¶sterilmez.',
+        title: 'Çocuğun mahremiyeti',
+        message: 'Ebeveyn özetinde günlük yazılarının tam metni gösterilmez.',
       ),
       _TrustItem(
         icon: Icons.cloud_off_rounded,
         title: 'Cihazda saklama',
         message:
-            'GÃ¼nlÃ¼kler, profil bilgileri ve yerel ayarlar bu cihazda tutulur.',
+            'Günlükler, profil bilgileri ve yerel ayarlar bu cihazda tutulur.',
       ),
       _TrustItem(
         icon: Icons.delete_outline_rounded,
-        title: 'Veri kontrolÃ¼',
+        title: 'Veri kontrolü',
         message:
-            'Ayarlar bÃ¶lÃ¼mÃ¼nden ebeveyn ÅŸifresiyle tÃ¼m yerel veriler silinebilir.',
+            'Ayarlar bölümünden ebeveyn şifresiyle tüm yerel veriler silinebilir.',
       ),
     ];
 
@@ -734,7 +733,7 @@ class _TrustOverviewPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('GÃ¼ven Ã–zeti', style: Theme.of(context).textTheme.titleLarge),
+          Text('Güven Özeti', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 12),
           for (final item in items) ...[
             Row(
@@ -794,7 +793,7 @@ class _EmptyParentSummary extends StatelessWidget {
         border: Border.all(color: AppTheme.pastelYellow, width: 1.5),
       ),
       child: Text(
-        'HenÃ¼z yazÄ± eklenmemiÅŸ. Ä°lk yazÄ±dan sonra geliÅŸim Ã¶zeti burada gÃ¶rÃ¼necek.',
+        'Henüz yazı eklenmemiş. İlk yazıdan sonra gelişim özeti burada görünecek.',
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodyLarge,
       ),
@@ -810,16 +809,16 @@ class _SummaryGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cards = [
-      _SummaryItem('Ã‡ocuk adÄ±', summary.childName),
-      _SummaryItem('YaÅŸ grubu', summary.ageGroup.label),
-      _SummaryItem('Toplam yazÄ±', '${summary.totalEntries}'),
+      _SummaryItem('Çocuk adı', summary.childName),
+      _SummaryItem('Yaş grubu', summary.ageGroup.label),
+      _SummaryItem('Toplam yazı', '${summary.totalEntries}'),
       _SummaryItem('Toplam kelime', '${summary.totalWords}'),
-      _SummaryItem('YazÄ±lan gÃ¼n', '${summary.totalWrittenDays}'),
-      _SummaryItem('Mevcut seri', '${summary.currentStreak} gÃ¼n'),
-      _SummaryItem('En iyi seri', '${summary.bestStreak} gÃ¼n'),
-      _SummaryItem('Bu hafta yazÄ±', '${summary.weeklyEntryCount}'),
-      _SummaryItem('Bu hafta gÃ¼n', '${summary.weeklyWrittenDayCount}'),
-      _SummaryItem('En sÄ±k duygu', summary.mostFrequentMood),
+      _SummaryItem('Yazılan gün', '${summary.totalWrittenDays}'),
+      _SummaryItem('Mevcut seri', '${summary.currentStreak} gün'),
+      _SummaryItem('En iyi seri', '${summary.bestStreak} gün'),
+      _SummaryItem('Bu hafta yazı', '${summary.weeklyEntryCount}'),
+      _SummaryItem('Bu hafta gün', '${summary.weeklyWrittenDayCount}'),
+      _SummaryItem('En sık duygu', summary.mostFrequentMood),
     ];
 
     return LayoutBuilder(
@@ -885,9 +884,9 @@ class _SafetyPrinciples extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const items = [
-      'Herkese aÃ§Ä±k paylaÅŸÄ±m yok.',
-      'Ã‡ocuklar arasÄ± mesajlaÅŸma yok.',
-      'Konum izni kullanÄ±lmaz.',
+      'Herkese açık paylaşım yok.',
+      'Çocuklar arası mesajlaşma yok.',
+      'Konum izni kullanılmaz.',
       'Günlük kayıtları cihazda saklanır; gelişmiş yazı kontrolü açılırsa başlık ve yazı yalnızca öneri üretmek için güvenli API servisine gönderilebilir.',
     ];
 
@@ -902,7 +901,7 @@ class _SafetyPrinciples extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'GÃ¼venlik Ä°lkeleri',
+            'Güvenlik İlkeleri',
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 12),
@@ -910,7 +909,7 @@ class _SafetyPrinciples extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('â€¢ '),
+                const Text('• '),
                 Expanded(
                   child: Text(
                     item,
@@ -955,7 +954,7 @@ class _ParentSummaryData {
       bestStreak: 0,
       weeklyEntryCount: 0,
       weeklyWrittenDayCount: 0,
-      mostFrequentMood: 'HenÃ¼z yok',
+      mostFrequentMood: 'Henüz yok',
     );
   }
 

@@ -55,6 +55,8 @@ class _JournalPageState extends State<JournalPage> {
   bool _isSaving = false;
   bool _isReviewingWriting = false;
   bool _hasReviewedWriting = false;
+  String? _lastReviewedTitle;
+  String? _lastReviewedText;
   AdvancedWritingReviewStatus? _advancedReviewStatus;
   String? _writingReviewMessage;
   late String _promptText;
@@ -90,6 +92,8 @@ class _JournalPageState extends State<JournalPage> {
 
   Future<void> _reviewWriting() async {
     setState(() => _isReviewingWriting = true);
+    final reviewedTitle = _titleController.text.trim();
+    final reviewedText = _textController.text.trim();
 
     final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
     final isAdvancedReviewEnabled = await _advancedReviewSettingsService
@@ -122,7 +126,61 @@ class _JournalPageState extends State<JournalPage> {
       _advancedReviewStatus = advancedResult.status;
       _writingReviewMessage = advancedResult.message;
       _reviewSuggestions = advancedResult.suggestions;
+      if (advancedResult.isSuccessful) {
+        _lastReviewedTitle = reviewedTitle;
+        _lastReviewedText = reviewedText;
+      }
     });
+  }
+
+  bool get _isCurrentWritingReviewed {
+    return _hasReviewedWriting &&
+        _advancedReviewStatus == AdvancedWritingReviewStatus.success &&
+        _lastReviewedTitle == _titleController.text.trim() &&
+        _lastReviewedText == _textController.text.trim();
+  }
+
+  Future<bool> _shouldSaveWithoutFreshReview() async {
+    final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
+    final isAdvancedReviewEnabled = await _advancedReviewSettingsService
+        .isEnabled();
+    if (!isPremiumUnlocked ||
+        !isAdvancedReviewEnabled ||
+        !_advancedReviewService.isConfigured ||
+        _isCurrentWritingReviewed) {
+      return true;
+    }
+
+    if (!mounted) {
+      return false;
+    }
+
+    final shouldReview = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Günbi tekrar baksın mı?'),
+        content: const Text(
+          'Başlıkta veya yazında son kontrolden sonra değişiklik olmuş olabilir. Günbi kaydetmeden önce bir kez daha kontrol etsin mi?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Yine de ekle'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Önce kontrol et'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldReview == true) {
+      await _reviewWriting();
+      return false;
+    }
+
+    return shouldReview == false;
   }
 
   Future<void> _saveEntry() async {
@@ -133,6 +191,11 @@ class _JournalPageState extends State<JournalPage> {
           content: Text('Bir kelime bile olur. Önce küçük bir şey yazalım mı?'),
         ),
       );
+      return;
+    }
+
+    final canSaveNow = await _shouldSaveWithoutFreshReview();
+    if (!canSaveNow) {
       return;
     }
 
