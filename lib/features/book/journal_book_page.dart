@@ -10,6 +10,7 @@ import '../journal/models/journal_entry.dart';
 import '../journal/mood_selection_page.dart';
 import '../premium/services/premium_service.dart';
 import '../rewards/models/journal_stats.dart';
+import '../rewards/services/reward_activity_service.dart';
 import '../streak/services/streak_service.dart';
 import 'services/journal_book_pdf_service.dart';
 
@@ -33,6 +34,8 @@ class _JournalBookPageState extends State<JournalBookPage> {
   final JournalBookPdfService _pdfService = const JournalBookPdfService();
   final StreakService _streakService = const StreakService();
   final PremiumService _premiumService = const PremiumService();
+  final RewardActivityService _rewardActivityService =
+      const RewardActivityService();
   late final TextEditingController _titleController;
   late Future<_BookPreviewData> _previewFuture;
 
@@ -40,6 +43,7 @@ class _JournalBookPageState extends State<JournalBookPage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: _defaultTitle);
+    _rewardActivityService.markBookOpened();
     _previewFuture = _loadPreview();
   }
 
@@ -117,7 +121,7 @@ class _JournalBookPageState extends State<JournalBookPage> {
         );
       }
 
-      await Printing.layoutPdf(
+      final didOpenPreview = await Printing.layoutPdf(
         name: _pdfService.safeFileName(childName: widget.childName),
         onLayout: (_) => _pdfService.buildPdf(
           bookTitle: title,
@@ -132,6 +136,9 @@ class _JournalBookPageState extends State<JournalBookPage> {
           lastEntryDate: preview.lastEntryDate,
         ),
       );
+      if (didOpenPreview) {
+        await _rewardActivityService.markPdfPreviewed();
+      }
     } catch (_) {
       if (!mounted) {
         return;

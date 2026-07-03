@@ -1,12 +1,23 @@
 # Child Safety Notes
 
 - Uygulama çocukların yazma alışkanlığını destekler.
+- Hedef yaş grupları 6-8 ve 9-12 olarak sınırlandırılmıştır.
 - Çocuklar arası iletişim yoktur.
 - Herkese açık profil yoktur.
 - Herkese açık içerik paylaşımı yoktur.
 - Yabancılarla etkileşim yoktur.
 - Konum bilgisi alınmaz.
 - Reklam gösterilmez.
-- Ebeveyn alanı günlük içeriklerini değil, sadece gelişim özetini gösterir.
+- Ebeveyn alanı şifreyle korunur ve günlük içeriklerini değil, sadece gelişim özetini gösterir.
+- Varsayılan ebeveyn şifresi 1234'tür, cihazda lokal saklanır ve değiştirilebilir.
+- Tüm verileri sil akışı ebeveyn şifresiyle korunur.
+- Tüm yerel veriler silinince ebeveyn şifresi de sıfırlanır.
+- Ebeveyn şifresi unutulursa hesap/sunucu olmadığı için yerel veriler silinerek varsayılan 1234 değerine dönülebilir.
+- Premium satın alma yalnızca Ebeveyn Alanı üzerinden yönetilir.
+- Çocuk ekranlarında agresif satın alma çağrısı yoktur.
+- Premium satın alma varsa Google Play üzerinden geri yüklenebilir.
 - Yazı koçu çocuğun yerine yazmaz, sadece yönlendirir.
+- Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı özellik olarak hazırlanmıştır.
+- Backend bağlantısı yapılandırılıp ebeveyn onayı açılırsa yazı, yalnızca yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir.
+- Backend bağlantısı yapılandırılmamışsa gelişmiş kontrol çalışmaz ve yazılar dış servise gönderilmez.
 - Gelecekte AI eklenirse çocuk güvenliği, ebeveyn bilgilendirmesi ve veri aktarımı ayrıca değerlendirilecektir.

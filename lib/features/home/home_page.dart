@@ -224,8 +224,8 @@ class _GunbiPromptCard extends StatelessWidget {
               builder: (context, snapshot) {
                 final totalEntries = snapshot.data?.totalEntries ?? 0;
                 final message = totalEntries == 0
-                    ? 'Günbi ilk yazını bekliyor.'
-                    : 'Bugüne kadar $totalEntries yazı yazdın.';
+                    ? 'Günbi ilk yazını bekliyor. Bugün küçük bir başlangıç yapabilirsin.'
+                    : 'Bugüne kadar $totalEntries yazı yazdın. Günbi her yeni sayfada yanında.';
 
                 return Text(
                   message,

@@ -6,12 +6,16 @@ import '../../core/widgets/mascot_widget.dart';
 import 'data/journal_repository.dart';
 import 'journal_entries_page.dart';
 import 'models/journal_entry.dart';
+import 'models/writing_review_suggestion.dart';
+import 'services/advanced_writing_review_service.dart';
+import 'services/advanced_writing_review_settings_service.dart';
 import 'services/writing_coach_service.dart';
 import 'services/writing_prompt_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../rewards/services/badge_service.dart';
+import '../rewards/services/reward_activity_service.dart';
 import '../streak/services/streak_service.dart';
-import '../premium/premium_page.dart';
+import '../parent/parent_page.dart';
 import '../premium/services/premium_service.dart';
 
 class JournalPage extends StatefulWidget {
@@ -39,17 +43,31 @@ class _JournalPageState extends State<JournalPage> {
   final BadgeService _badgeService = const BadgeService();
   final StreakService _streakService = const StreakService();
   final PremiumService _premiumService = const PremiumService();
+  final RewardActivityService _rewardActivityService =
+      const RewardActivityService();
   final WritingCoachService _coachService = const WritingCoachService();
+  final AdvancedWritingReviewService _advancedReviewService =
+      const AdvancedWritingReviewService();
+  final AdvancedWritingReviewSettingsService _advancedReviewSettingsService =
+      const AdvancedWritingReviewSettingsService();
   final WritingPromptService _promptService = WritingPromptService();
 
   bool _isSaving = false;
+  bool _isReviewingWriting = false;
+  bool _hasReviewedWriting = false;
+  AdvancedWritingReviewStatus? _advancedReviewStatus;
+  String? _writingReviewMessage;
   late String _promptText;
   List<String> _coachSuggestions = const [];
+  List<WritingReviewSuggestion> _reviewSuggestions = const [];
 
   @override
   void initState() {
     super.initState();
-    _promptText = _promptService.randomPromptFor(widget.ageGroup);
+    _promptText = _promptService.randomPromptFor(
+      widget.ageGroup,
+      moodLabel: widget.moodLabel,
+    );
   }
 
   @override
@@ -59,12 +77,50 @@ class _JournalPageState extends State<JournalPage> {
     super.dispose();
   }
 
-  void _showCoachSuggestions() {
+  Future<void> _showCoachSuggestions() async {
     setState(() {
       _coachSuggestions = _coachService.suggestionsFor(
         ageGroup: widget.ageGroup,
         text: _textController.text,
+        moodLabel: widget.moodLabel,
       );
+    });
+    await _rewardActivityService.incrementCoachHelpCount();
+  }
+
+  Future<void> _reviewWriting() async {
+    setState(() => _isReviewingWriting = true);
+
+    final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
+    final isAdvancedReviewEnabled = await _advancedReviewSettingsService
+        .isEnabled();
+
+    final AdvancedWritingReviewResult advancedResult;
+    if (!isPremiumUnlocked || !isAdvancedReviewEnabled) {
+      advancedResult = const AdvancedWritingReviewResult(
+        status: AdvancedWritingReviewStatus.notConfigured,
+        suggestions: [],
+        message:
+            'Gelişmiş Günbi Yazı Kontrolü için ebeveyn alanında Premium ve ebeveyn onayı gerekir.',
+      );
+    } else {
+      advancedResult = await _advancedReviewService.review(
+        text: _textController.text,
+        ageGroup: widget.ageGroup,
+        moodLabel: widget.moodLabel,
+      );
+    }
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() {
+      _isReviewingWriting = false;
+      _hasReviewedWriting = true;
+      _advancedReviewStatus = advancedResult.status;
+      _writingReviewMessage = advancedResult.message;
+      _reviewSuggestions = advancedResult.suggestions;
     });
   }
 
@@ -90,13 +146,18 @@ class _JournalPageState extends State<JournalPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: const Text(
-            'Harika bir yazı alışkanlığı oluşturdun! Daha fazla yazı eklemek için bir ebeveynden yardım isteyebilirsin.',
+            'Daha fazla yazı eklemek için bir ebeveynden yardım isteyebilirsin.',
           ),
           action: SnackBarAction(
             label: 'Ebeveyne göster',
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const PremiumPage()),
+                MaterialPageRoute<void>(
+                  builder: (_) => ParentPage(
+                    childName: widget.childName,
+                    ageGroup: widget.ageGroup,
+                  ),
+                ),
               );
             },
           ),
@@ -109,6 +170,7 @@ class _JournalPageState extends State<JournalPage> {
 
     final previousStats = JournalStats.fromEntries(previousEntries);
     final previousStreak = _streakService.calculate(previousEntries);
+    final activityStats = await _rewardActivityService.loadStats();
     final entry = JournalEntry.create(
       childName: widget.childName,
       moodLabel: widget.moodLabel,
@@ -126,6 +188,8 @@ class _JournalPageState extends State<JournalPage> {
       after: newStats,
       beforeStreak: previousStreak,
       afterStreak: newStreak,
+      activityStats: activityStats,
+      isPremiumUnlocked: isPremiumUnlocked,
     );
     final streakMessages = _newStreakMessages(
       previousStreak.currentStreak,
@@ -184,7 +248,7 @@ class _JournalPageState extends State<JournalPage> {
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 18),
-            const _WritingMascotCard(),
+            _WritingMascotCard(moodLabel: widget.moodLabel),
             const SizedBox(height: 14),
             _WritingPromptCard(
               promptText: _promptText,
@@ -192,6 +256,7 @@ class _JournalPageState extends State<JournalPage> {
                 setState(() {
                   _promptText = _promptService.randomPromptFor(
                     widget.ageGroup,
+                    moodLabel: widget.moodLabel,
                     except: _promptText,
                   );
                 });
@@ -246,6 +311,24 @@ class _JournalPageState extends State<JournalPage> {
               const SizedBox(height: 12),
               _CoachSuggestionsPanel(suggestions: _coachSuggestions),
             ],
+            const SizedBox(height: 10),
+            OutlinedButton.icon(
+              onPressed: _isReviewingWriting ? null : _reviewWriting,
+              icon: const Icon(Icons.fact_check_rounded),
+              label: Text(
+                _isReviewingWriting
+                    ? 'Günbi kontrol ediyor...'
+                    : 'Günbi yazımı kontrol etsin',
+              ),
+            ),
+            if (_hasReviewedWriting) ...[
+              const SizedBox(height: 12),
+              _WritingReviewPanel(
+                suggestions: _reviewSuggestions,
+                status: _advancedReviewStatus,
+                message: _writingReviewMessage,
+              ),
+            ],
             const SizedBox(height: 18),
             FilledButton.icon(
               onPressed: _isSaving ? null : _saveEntry,
@@ -261,14 +344,14 @@ class _JournalPageState extends State<JournalPage> {
   String get _hintText {
     return switch (widget.ageGroup) {
       AgeGroup.sixToEight => 'Birkaç cümle yazabilirsin...',
-      AgeGroup.nineToEleven => 'Düşüncelerini burada anlatabilirsin...',
+      AgeGroup.nineToTwelve => 'Düşüncelerini burada anlatabilirsin...',
     };
   }
 
   String get _titleHintText {
     return switch (widget.ageGroup) {
       AgeGroup.sixToEight => 'Yazına küçük bir başlık...',
-      AgeGroup.nineToEleven => 'Yazına bir başlık verebilirsin...',
+      AgeGroup.nineToTwelve => 'Yazına bir başlık verebilirsin...',
     };
   }
 
@@ -287,7 +370,9 @@ class _JournalPageState extends State<JournalPage> {
 }
 
 class _WritingMascotCard extends StatelessWidget {
-  const _WritingMascotCard();
+  const _WritingMascotCard({required this.moodLabel});
+
+  final String moodLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +393,7 @@ class _WritingMascotCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              'Günbi yazmaya hazır. Küçük bir cümle bile güzel bir başlangıç.',
+              _message,
               style: Theme.of(
                 context,
               ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
@@ -317,6 +402,24 @@ class _WritingMascotCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String get _message {
+    return switch (moodLabel.toLowerCase().trim()) {
+      'mutlu' =>
+        'Günbi bu mutlu anı duymaya hazır. Küçük bir ayrıntı bile yeter.',
+      'hüzünlü' =>
+        'Günbi yanında. İstersen bugün içinden geçenleri yavaşça yazabilirsin.',
+      'heyecanlı' =>
+        'Günbi heyecanını merak ediyor. Nerede başladığını anlatarak başlayabilirsin.',
+      'sakin' =>
+        'Günbi sakin anını dinlemeye hazır. Bugünün huzurlu tarafını yazabilirsin.',
+      'karışık' =>
+        'Günbi seni anlıyor. Karışık hislerden birini seçip oradan başlayabilirsin.',
+      'enerjik' =>
+        'Günbi enerjini merak ediyor. Bugünün en hareketli anını yazabilirsin.',
+      _ => 'Günbi yazmaya hazır. Küçük bir cümle bile güzel bir başlangıç.',
+    };
   }
 }
 
@@ -376,8 +479,13 @@ class _CoachSuggestionsPanel extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.pastelYellow.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(20),
+        color: AppTheme.pastelYellow.withValues(alpha: 0.42),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+          bottomLeft: Radius.circular(6),
+          bottomRight: Radius.circular(24),
+        ),
         border: Border.all(color: AppTheme.lightOrange, width: 1.5),
         boxShadow: [
           BoxShadow(
@@ -443,5 +551,158 @@ class _CoachSuggestionsPanel extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+class _WritingReviewPanel extends StatelessWidget {
+  const _WritingReviewPanel({
+    required this.suggestions,
+    required this.status,
+    required this.message,
+  });
+
+  final List<WritingReviewSuggestion> suggestions;
+  final AdvancedWritingReviewStatus? status;
+  final String? message;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasSuggestions = suggestions.isNotEmpty;
+    final isSuccessful = status == AdvancedWritingReviewStatus.success;
+    final title = hasSuggestions
+        ? 'Günbi gelişmiş öneriler buldu'
+        : isSuccessful
+        ? 'Günbi gelişmiş kontrolle baktı'
+        : 'Günbi kontrolü bekliyor';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: hasSuggestions
+            ? Colors.white
+            : AppTheme.softBlue.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: hasSuggestions ? AppTheme.pastelYellow : AppTheme.softBlue,
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: hasSuggestions
+                      ? AppTheme.pastelYellow
+                      : AppTheme.softBlue,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  hasSuggestions
+                      ? Icons.edit_note_rounded
+                      : Icons.check_rounded,
+                  color: AppTheme.cocoa,
+                  size: 19,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (!hasSuggestions) ...[
+            const SizedBox(height: 8),
+            Text(
+              message ??
+                  (isSuccessful
+                      ? 'Yazın güzel görünüyor.'
+                      : 'Gelişmiş kontrol şu anda kullanılamıyor.'),
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ] else ...[
+            const SizedBox(height: 12),
+            Text(
+              message ?? 'Günbi gelişmiş kontrolle baktı. Bunlar sadece öneri.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 10),
+            for (final suggestion in suggestions) ...[
+              _WritingReviewSuggestionTile(suggestion: suggestion),
+              const SizedBox(height: 8),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _WritingReviewSuggestionTile extends StatelessWidget {
+  const _WritingReviewSuggestionTile({required this.suggestion});
+
+  final WritingReviewSuggestion suggestion;
+
+  @override
+  Widget build(BuildContext context) {
+    final correctionText =
+        suggestion.original != null && suggestion.suggestion != null
+        ? '${suggestion.original} → ${suggestion.suggestion}'
+        : null;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppTheme.pastelYellow.withValues(alpha: 0.26),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(_iconForType(suggestion.type), size: 20, color: AppTheme.cocoa),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (correctionText != null) ...[
+                  Text(
+                    correctionText,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                ],
+                Text(
+                  suggestion.message,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _iconForType(WritingReviewType type) {
+    return switch (type) {
+      WritingReviewType.spelling => Icons.spellcheck_rounded,
+      WritingReviewType.punctuation => Icons.more_horiz_rounded,
+      WritingReviewType.capitalization => Icons.text_fields_rounded,
+      WritingReviewType.spacing => Icons.space_bar_rounded,
+      WritingReviewType.repeatedWord => Icons.repeat_rounded,
+      WritingReviewType.longSentence => Icons.short_text_rounded,
+    };
   }
 }

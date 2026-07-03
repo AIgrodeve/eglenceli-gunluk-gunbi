@@ -2,7 +2,7 @@
 
 ## Sürüm ve Android Kontrolleri
 
-- [x] pubspec.yaml version alanı kontrol edildi: `1.0.0+1`
+- [x] pubspec.yaml version alanı kontrol edildi: `1.0.0+5`
 - [x] Android uygulama adı kontrol edildi: `Eğlenceli Günlük`
 - [x] Yayın applicationId: `com.aigrodeve.eglenceligunluk`
 - [x] Release imzalama debug keystore yerine upload keystore ile yapılandırıldı.
@@ -13,6 +13,11 @@
 - [x] Google Play Billing için `BILLING`, `INTERNET` ve `ACCESS_NETWORK_STATE` izinleri beklenir.
 - [x] Cinsiyet bilgisi yalnızca cihazda lokal profil bilgisi olarak saklanır.
 - [x] Tüm verileri sil akışı cinsiyet bilgisini de temizler.
+- [x] Hedef yaş grupları uygulama içinde `6-8` ve `9-12` olarak sınırlandı.
+- [x] Google Sites gizlilik politikası URL’si uygulama içine eklendi: `https://sites.google.com/view/eglenceli-gunluk`
+- [x] Premium sadece Ebeveyn Alanı içinden yönetiliyor.
+- [x] Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı ayar olarak hazırlandı.
+- [x] Backend URL verilmezse gelişmiş yazı kontrolü pasif kalıyor ve yazılar dış servise gönderilmiyor.
 
 ## Release Build Komutları
 
@@ -37,6 +42,7 @@
 
 - [ ] Temiz kurulum onboarding testi
 - [ ] Çocuk adı, cinsiyet ve yaş grubu seçimi
+- [ ] Yaş grubu seçenekleri yalnızca 6-8 ve 9-12 görünüyor.
 - [ ] Duygu seçimi
 - [ ] Günlük yazma ve kaydetme
 - [ ] Yazılarım listeleme
@@ -46,7 +52,7 @@
 - [ ] Haftalık Özet
 - [ ] Günlük Kitabım PDF testi
 - [ ] Türkçe karakter PDF testi
-- [ ] Ebeveyn Alanı yetişkin doğrulama testi
+- [ ] Ebeveyn Alanı şifre girişi testi
 - [ ] Ayarlar profil düzenleme
 - [ ] Gizlilik Politikası
 - [ ] Hakkında
@@ -59,6 +65,13 @@
 - [ ] Demo veri release sürümde otomatik oluşmuyor.
 - [ ] Ekran görüntüleri alındıktan sonra gerçek release build temiz veriyle test edildi.
 - [ ] Premium debug toggle release build'de görünmüyor.
+- [ ] Premium satın alma yalnızca Ebeveyn Alanı üzerinden açılıyor.
+- [ ] Ebeveyn şifresi varsayılan `1234` ile çalışıyor.
+- [ ] Ebeveyn şifresi değiştirildi ve tekrar giriş test edildi.
+- [ ] Tüm verileri sil akışı yeni şifreyle test edildi.
+- [ ] Ebeveyn şifresi unutulursa uygulama içinden tüm yerel veriler silinerek şifre varsayılan `1234` değerine sıfırlanabiliyor.
+- [ ] Şifre unutma/veri silerek sıfırlama davranışı belgelendi.
+- [ ] Şifre sıfırlama sonrası Premium satın alma varsa Google Play üzerinden geri yüklenebiliyor.
 - [ ] Ücretsiz yazı limiti 15 yazıda yeni kayıt eklemeyi durduruyor.
 - [ ] PDF Günlük Kitabı Premium kilidi doğru çalışıyor.
 - [ ] Tüm verileri sil akışı lokal premium durumunu da temizliyor.
@@ -76,6 +89,8 @@
 - [ ] Premium kullanıcıda sınırsız yazı çalışıyor.
 - [ ] Premium olmayan kullanıcıda PDF kilitli.
 - [ ] Premium kullanıcıda PDF oluşturma çalışıyor.
+- [ ] Tüm verileri sil sonrası parentPin varsayılan `1234` kabul ediliyor.
+- [ ] Şifremi unuttum akışı iki aşamalı onayla çalışıyor ve onboarding başlangıcına dönüyor.
 
 ## Geliştirme Doğrulaması
 
@@ -93,12 +108,21 @@
 - [ ] Özellik grafiği
 - [ ] Ekran görüntüleri
 - [ ] Gizlilik politikası bağlantısı
+- [ ] Play Console gizlilik politikası URL’si `https://sites.google.com/view/eglenceli-gunluk` adresiyle güncellendi.
 - [ ] Veri Güvenliği formu
+- [ ] Data Safety formu bu bilgilerle tekrar kontrol edildi.
 - [ ] Hedef kitle ve içerik formu
 - [ ] Reklam beyanı
 - [ ] Uygulama erişimi beyanı
 - [ ] İçerik derecelendirme
 - [ ] Kapalı test hazırlığı
+- [ ] Play Console hedef yaş grupları yalnızca 6-8 ve 9-12 seçildi.
+- [ ] Hedef yaş grupları 6-8 ve 9-12 olarak düzeltildi.
+- [ ] 13-15, 16-17 ve 18+ seçilmedi.
+- [ ] 5 yaş ve altı seçilmedi.
+- [ ] Mağaza girişi çocuk hedefiyle tutarlı.
+- [ ] Families Policy beyanları kontrol edildi.
+- [ ] Premium satın alma Ebeveyn Alanı üzerinden test edildi.
 
 ## Çocuk güvenliği
 
@@ -109,3 +133,7 @@
 - [ ] Gereksiz izin yok
 - [ ] Veriler cihazdan silinebiliyor
 - [ ] Premium teklifleri çocuk ekranlarında agresif şekilde gösterilmiyor
+- [ ] Gelişmiş Günbi Yazı Kontrolü ayarı Premium yokken pasif görünüyor.
+- [ ] Premium açıkken Ebeveyn Alanı içinden gelişmiş yazı kontrolü ayarı açılıp kapatılabiliyor.
+- [ ] Backend URL yokken gelişmiş kontrol ayarı pasif kalıyor.
+- [ ] Backend URL ile alınan build'de ebeveyn onayı açıldığında gelişmiş kontrol API endpoint'ine istek gönderiyor.

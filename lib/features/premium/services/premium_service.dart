@@ -6,6 +6,10 @@ class PremiumService {
 
   static const freeEntryLimit = 15;
   static const premiumProductId = 'premium_lifetime';
+  static const unavailableMessage =
+      'Premium bilgisi şu anda alınamadı. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.';
+  static const activationDelayMessage =
+      'Ürün yeni etkinleştirildiyse veya Play Store bilgileri henüz güncellenmediyse birkaç dakika sonra tekrar deneyebilirsiniz.';
   static const _isPremiumUnlockedKey = 'isPremiumUnlocked';
 
   InAppPurchase get _inAppPurchase => InAppPurchase.instance;
@@ -27,8 +31,7 @@ class PremiumService {
       return PremiumStoreState(
         isPremiumUnlocked: isUnlocked,
         isBillingAvailable: false,
-        message:
-            'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+        message: unavailableMessage,
       );
     }
 
@@ -40,8 +43,7 @@ class PremiumService {
       return PremiumStoreState(
         isPremiumUnlocked: isUnlocked,
         isBillingAvailable: true,
-        message:
-            'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+        message: unavailableMessage,
       );
     }
 
@@ -50,8 +52,7 @@ class PremiumService {
       return PremiumStoreState(
         isPremiumUnlocked: isUnlocked,
         isBillingAvailable: true,
-        message:
-            'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+        message: unavailableMessage,
       );
     }
 

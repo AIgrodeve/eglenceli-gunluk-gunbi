@@ -10,6 +10,10 @@ class JournalStats {
     required this.hasNightEntry,
     required this.hasLongEntry,
     required this.hasSadEntry,
+    required this.longEntryCount,
+    required this.titledEntryCount,
+    required this.maxWeeklyEntryCount,
+    required this.moodDayVarietyCount,
   });
 
   final int totalEntries;
@@ -20,6 +24,10 @@ class JournalStats {
   final bool hasNightEntry;
   final bool hasLongEntry;
   final bool hasSadEntry;
+  final int longEntryCount;
+  final int titledEntryCount;
+  final int maxWeeklyEntryCount;
+  final int moodDayVarietyCount;
 
   factory JournalStats.fromEntries(List<JournalEntry> entries) {
     final moodLabels = <String>{};
@@ -28,6 +36,10 @@ class JournalStats {
     var hasNightEntry = false;
     var hasLongEntry = false;
     var hasSadEntry = false;
+    var longEntryCount = 0;
+    var titledEntryCount = 0;
+    final weeklyEntryCounts = <DateTime, int>{};
+    final moodDays = <String>{};
     DateTime? lastEntryDate;
 
     for (final entry in entries) {
@@ -35,9 +47,20 @@ class JournalStats {
       totalWords += wordCount;
       moodLabels.add(entry.moodLabel);
       hasLongEntry = hasLongEntry || wordCount >= 200;
+      if (wordCount >= 100) {
+        longEntryCount++;
+      }
       hasSadEntry = hasSadEntry || entry.moodLabel == 'Hüzünlü';
+      if (entry.title?.trim().isNotEmpty == true) {
+        titledEntryCount++;
+      }
 
       final localDate = entry.createdAt.toLocal();
+      final weekStart = _startOfWeek(localDate);
+      weeklyEntryCounts[weekStart] = (weeklyEntryCounts[weekStart] ?? 0) + 1;
+      moodDays.add(
+        '${localDate.year}-${localDate.month}-${localDate.day}:${entry.moodLabel}',
+      );
       hasMorningEntry =
           hasMorningEntry || localDate.hour >= 6 && localDate.hour < 12;
       hasNightEntry =
@@ -57,6 +80,13 @@ class JournalStats {
       hasNightEntry: hasNightEntry,
       hasLongEntry: hasLongEntry,
       hasSadEntry: hasSadEntry,
+      longEntryCount: longEntryCount,
+      titledEntryCount: titledEntryCount,
+      maxWeeklyEntryCount: weeklyEntryCounts.values.fold(
+        0,
+        (highest, count) => count > highest ? count : highest,
+      ),
+      moodDayVarietyCount: moodDays.length,
     );
   }
 
@@ -67,5 +97,10 @@ class JournalStats {
     }
 
     return trimmed.split(RegExp(r'\s+')).length;
+  }
+
+  static DateTime _startOfWeek(DateTime dateTime) {
+    final day = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    return day.subtract(Duration(days: day.weekday - 1));
   }
 }

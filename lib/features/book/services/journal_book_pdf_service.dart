@@ -740,7 +740,7 @@ class _PdfBookStyle {
   factory _PdfBookStyle.forAgeGroup(AgeGroup ageGroup) {
     return switch (ageGroup) {
       AgeGroup.sixToEight => _PdfBookStyle.young(),
-      AgeGroup.nineToEleven => _PdfBookStyle.older(),
+      AgeGroup.nineToTwelve => _PdfBookStyle.older(),
     };
   }
 

@@ -2,51 +2,109 @@ import 'package:flutter/material.dart' hide Badge;
 
 import '../../core/theme/app_theme.dart';
 import '../journal/data/journal_repository.dart';
+import '../premium/services/premium_service.dart';
 import '../streak/services/streak_service.dart';
 import 'models/badge.dart';
 import 'models/journal_stats.dart';
 import 'services/badge_service.dart';
+import 'services/reward_activity_service.dart';
 
 class RewardsPage extends StatelessWidget {
   const RewardsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    const repository = JournalRepository();
-    const badgeService = BadgeService();
-    const streakService = StreakService();
-
     return Scaffold(
       appBar: AppBar(title: const Text('Rozetlerim')),
       body: SafeArea(
-        child: FutureBuilder<List<Badge>>(
-          future: repository.loadEntries().then((entries) {
-            return badgeService.evaluate(
-              JournalStats.fromEntries(entries),
-              streakStats: streakService.calculate(entries),
-            );
-          }),
+        child: FutureBuilder<_RewardsData>(
+          future: _loadRewards(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final badges = snapshot.data ?? const <Badge>[];
-            return GridView.builder(
+            final data = snapshot.data ?? const _RewardsData.empty();
+            return ListView(
               padding: const EdgeInsets.all(20),
-              itemCount: badges.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                mainAxisExtent: 188,
-              ),
-              itemBuilder: (context, index) {
-                return _BadgeCard(badge: badges[index]);
-              },
+              children: [
+                _BadgeSummary(data: data),
+                const SizedBox(height: 16),
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: data.badges.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    mainAxisExtent: 218,
+                  ),
+                  itemBuilder: (context, index) {
+                    return _BadgeCard(badge: data.badges[index]);
+                  },
+                ),
+              ],
             );
           },
         ),
+      ),
+    );
+  }
+
+  Future<_RewardsData> _loadRewards() async {
+    const repository = JournalRepository();
+    const badgeService = BadgeService();
+    const streakService = StreakService();
+    const premiumService = PremiumService();
+    const activityService = RewardActivityService();
+
+    final entries = await repository.loadEntries();
+    final isPremiumUnlocked = await premiumService.isPremiumUnlocked();
+    final activityStats = await activityService.loadStats();
+    final badges = badgeService.evaluate(
+      JournalStats.fromEntries(entries),
+      streakStats: streakService.calculate(entries),
+      activityStats: activityStats,
+      isPremiumUnlocked: isPremiumUnlocked,
+    );
+
+    return _RewardsData(badges: badges, isPremiumUnlocked: isPremiumUnlocked);
+  }
+}
+
+class _BadgeSummary extends StatelessWidget {
+  const _BadgeSummary({required this.data});
+
+  final _RewardsData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final unlockedCount = data.badges.where((badge) => badge.isUnlocked).length;
+    final premiumCount = data.badges.where((badge) => badge.isPremium).length;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.pastelYellow, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$unlockedCount / ${data.badges.length} rozet açıldı',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            data.isPremiumUnlocked
+                ? '$premiumCount Premium rozet de gelişimine dahil.'
+                : '$premiumCount Premium rozet seni bekliyor.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
       ),
     );
   }
@@ -61,10 +119,11 @@ class _BadgeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final isUnlocked = badge.isUnlocked;
+    final isPremiumLocked = badge.isPremium && !isUnlocked;
 
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 220),
-      opacity: isUnlocked ? 1 : 0.48,
+      opacity: isUnlocked ? 1 : 0.62,
       child: Card(
         elevation: 0,
         color: isUnlocked ? Colors.white : AppTheme.cream,
@@ -75,64 +134,79 @@ class _BadgeCard extends StatelessWidget {
             width: isUnlocked ? 2 : 1,
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                isUnlocked ? badge.emoji : '🔒',
-                style: const TextStyle(fontSize: 36),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                badge.title,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w800,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: isPremiumLocked
+              ? () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Bu rozet Premium ile açılır. Bir ebeveynden yardım isteyebilirsin.',
+                      ),
+                    ),
+                  );
+                }
+              : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (badge.isPremium) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.softBlue.withValues(alpha: 0.28),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Premium',
+                      style: textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                ],
+                Text(
+                  isUnlocked ? badge.emoji : '🔒',
+                  style: const TextStyle(fontSize: 34),
                 ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                isUnlocked
-                    ? _shortUnlockedDescription(badge)
-                    : _lockedDescription(badge),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.bodySmall?.copyWith(height: 1.25),
-              ),
-            ],
+                const SizedBox(height: 7),
+                Text(
+                  badge.title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  badge.description,
+                  textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.bodySmall?.copyWith(height: 1.2),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  String _lockedDescription(Badge badge) {
-    return switch (badge.id) {
-      'three_day_streak' => '3 gün üst üste yazınca açılacak.',
-      'week_writer' => '7 gün üst üste yazınca açılacak.',
-      'gunbi_friend' => '30 gün üst üste yazınca açılacak.',
-      _ => 'Biraz daha yazınca açılacak.',
-    };
-  }
+class _RewardsData {
+  const _RewardsData({required this.badges, required this.isPremiumUnlocked});
 
-  String _shortUnlockedDescription(Badge badge) {
-    return switch (badge.id) {
-      'first_seed' => 'İlk yazını ekledin.',
-      'rainy_day' => 'Hüzünlü bir günde yazdın.',
-      'colorful' => 'Farklı duygularla yazdın.',
-      'writer' => '10 yazı biriktirdin.',
-      'night_owl' => 'Gece yazısı yazdın.',
-      'morning_writer' => 'Sabah yazısı yazdın.',
-      'long_letter' => 'Uzun bir yazı yazdın.',
-      'three_day_streak' => '3 gün üst üste yazdın.',
-      'week_writer' => '7 gün üst üste yazdın.',
-      'gunbi_friend' => '30 gün üst üste yazdın.',
-      _ => badge.description,
-    };
-  }
+  const _RewardsData.empty() : badges = const [], isPremiumUnlocked = false;
+
+  final List<Badge> badges;
+  final bool isPremiumUnlocked;
 }

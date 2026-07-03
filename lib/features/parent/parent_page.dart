@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../../core/data/app_reset_service.dart';
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../journal/models/journal_entry.dart';
+import '../journal/services/advanced_writing_review_service.dart';
+import '../journal/services/advanced_writing_review_settings_service.dart';
+import '../onboarding/onboarding_flow.dart';
+import '../premium/premium_page.dart';
+import '../premium/services/premium_service.dart';
 import '../rewards/models/journal_stats.dart';
 import '../streak/services/streak_service.dart';
 import '../weekly_summary/services/weekly_summary_service.dart';
+import 'services/parent_pin_service.dart';
 
 class ParentPage extends StatefulWidget {
   const ParentPage({
@@ -29,29 +35,146 @@ class _ParentPageState extends State<ParentPage> {
   final StreakService _streakService = const StreakService();
   final WeeklySummaryService _weeklySummaryService =
       const WeeklySummaryService();
+  final ParentPinService _parentPinService = const ParentPinService();
+  final AppResetService _resetService = const AppResetService();
+  final TextEditingController _pinController = TextEditingController();
 
   bool _isVerified = false;
+  bool _isResetting = false;
+  String? _pinErrorText;
 
-  Future<void> _verifyAnswer() async {
-    final verified = await showAdultVerificationDialog(
-      context: context,
-      title: 'Ebeveyn doğrulaması',
-      question: 'Ebeveyn alanına geçmek için işlemi cevaplayın: 5 + 3 = ?',
-      expectedAnswer: '8',
-      wrongAnswerMessage: 'Bu alan ebeveynler içindir.',
-    );
-    if (!context.mounted) {
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verifyPin() async {
+    if (_isResetting) {
       return;
     }
-    if (verified) {
-      setState(() => _isVerified = true);
+
+    final verified = await _parentPinService.verifyPin(_pinController.text);
+    if (!mounted) {
+      return;
     }
+
+    if (verified) {
+      setState(() {
+        _isVerified = true;
+        _pinErrorText = null;
+      });
+      return;
+    }
+
+    setState(() => _pinErrorText = 'Şifre hatalı. Lütfen tekrar deneyin.');
+  }
+
+  Future<void> _startForgotPinResetFlow() async {
+    final shouldContinue = await _showForgotPinInfoDialog();
+    if (shouldContinue != true || !mounted) {
+      return;
+    }
+
+    final shouldReset = await _showForgotPinResetConfirmDialog();
+    if (shouldReset != true || !mounted) {
+      return;
+    }
+
+    setState(() => _isResetting = true);
+
+    try {
+      // Bu şifre sıfırlama akışı güçlü kimlik doğrulama yerine geçmez.
+      // Uygulamada hesap/sunucu olmadığı için şifre unutma durumunda yerel
+      // veriler silinerek ebeveyn şifresi varsayılan değere döndürülür.
+      await _resetService.clearAllLocalData();
+      if (!mounted) {
+        return;
+      }
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute<void>(
+          builder: (_) => const OnboardingFlow(
+            initialMessage: 'Veriler bu cihazdan silindi.',
+          ),
+        ),
+        (_) => false,
+      );
+    } catch (error, stackTrace) {
+      debugPrint('Forgot parent PIN reset failed: $error\n$stackTrace');
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isResetting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Veriler silinirken bir sorun oluştu. Lütfen tekrar deneyin.',
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<bool?> _showForgotPinInfoDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Ebeveyn şifresini sıfırla'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Ebeveyn şifresini sıfırlamak için uygulamadaki tüm yerel verilerin silinmesi gerekir. Bu işlem günlük yazılarını, profil bilgilerini, rozet ilerlemesini, kitap başlığını ve yerel ayarları siler. Premium satın alma varsa Google Play üzerinden tekrar geri yüklenebilir.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Devam et'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool?> _showForgotPinResetConfirmDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Tüm veriler silinsin mi?'),
+        content: const SingleChildScrollView(
+          child: Text(
+            'Bu işlem geri alınamaz. Devam edersen ebeveyn şifresi 1234 olarak sıfırlanır ve uygulama ilk kurulum ekranına döner.',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Vazgeç'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Tüm verileri sil ve sıfırla'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     if (!_isVerified) {
-      return _ParentGate(onVerify: _verifyAnswer);
+      return _ParentGate(
+        pinController: _pinController,
+        errorText: _pinErrorText,
+        onVerify: _verifyPin,
+        onForgotPin: _startForgotPinResetFlow,
+        isBusy: _isResetting,
+      );
     }
 
     return Scaffold(
@@ -95,10 +218,18 @@ class _ParentPageState extends State<ParentPage> {
                   isSoftBlue: true,
                 ),
                 const SizedBox(height: 18),
+                const _TrustOverviewPanel(),
+                const SizedBox(height: 18),
                 if (summary.totalEntries == 0)
                   const _EmptyParentSummary()
                 else
                   _SummaryGrid(summary: summary),
+                const SizedBox(height: 18),
+                const _PremiumManagementPanel(),
+                const SizedBox(height: 18),
+                const _AdvancedWritingReviewPanel(),
+                const SizedBox(height: 18),
+                const _ParentPinSection(),
                 const SizedBox(height: 18),
                 const _SafetyPrinciples(),
               ],
@@ -155,9 +286,19 @@ class _ParentPageState extends State<ParentPage> {
 }
 
 class _ParentGate extends StatelessWidget {
-  const _ParentGate({required this.onVerify});
+  const _ParentGate({
+    required this.pinController,
+    required this.errorText,
+    required this.onVerify,
+    required this.onForgotPin,
+    required this.isBusy,
+  });
 
+  final TextEditingController pinController;
+  final String? errorText;
   final VoidCallback onVerify;
+  final VoidCallback onForgotPin;
+  final bool isBusy;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +314,7 @@ class _ParentGate extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Ebeveyn alanına geçmek için kısa bir yetişkin doğrulaması yapalım.',
+                    'Bu alan ebeveynler içindir. Devam etmek için ebeveyn şifresini girin.',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.headlineMedium,
                   ),
@@ -184,15 +325,331 @@ class _ParentGate extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   const SizedBox(height: 16),
+                  TextField(
+                    controller: pinController,
+                    enabled: !isBusy,
+                    obscureText: true,
+                    keyboardType: TextInputType.number,
+                    textInputAction: TextInputAction.done,
+                    decoration: InputDecoration(
+                      labelText: 'Şifre',
+                      errorText: errorText,
+                    ),
+                    onSubmitted: (_) => onVerify(),
+                  ),
+                  const SizedBox(height: 16),
                   FilledButton(
-                    onPressed: onVerify,
-                    child: const Text('Devam et'),
+                    onPressed: isBusy ? null : onVerify,
+                    child: Text(isBusy ? 'Sıfırlanıyor...' : 'Giriş yap'),
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: isBusy ? null : onForgotPin,
+                    child: const Text('Şifremi unuttum'),
                   ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _PremiumManagementPanel extends StatelessWidget {
+  const _PremiumManagementPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.pastelYellow, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Premium', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          Text(
+            'Premium satın alma ve geri yükleme işlemleri yalnızca Ebeveyn Alanı üzerinden yönetilir.',
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PremiumPage()),
+              );
+            },
+            icon: const Icon(Icons.workspace_premium_rounded),
+            label: const Text('Premium yönetimi'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AdvancedWritingReviewPanel extends StatefulWidget {
+  const _AdvancedWritingReviewPanel();
+
+  @override
+  State<_AdvancedWritingReviewPanel> createState() =>
+      _AdvancedWritingReviewPanelState();
+}
+
+class _AdvancedWritingReviewPanelState
+    extends State<_AdvancedWritingReviewPanel> {
+  final PremiumService _premiumService = const PremiumService();
+  final AdvancedWritingReviewService _advancedReviewService =
+      const AdvancedWritingReviewService();
+  final AdvancedWritingReviewSettingsService _settingsService =
+      const AdvancedWritingReviewSettingsService();
+
+  late Future<_AdvancedWritingReviewState> _stateFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _stateFuture = _loadState();
+  }
+
+  Future<_AdvancedWritingReviewState> _loadState() async {
+    final isPremiumUnlocked = await _premiumService.isPremiumUnlocked();
+    final isEnabled = await _settingsService.isEnabled();
+    return _AdvancedWritingReviewState(
+      isPremiumUnlocked: isPremiumUnlocked,
+      isApiConfigured: _advancedReviewService.isConfigured,
+      isEnabled:
+          isPremiumUnlocked && _advancedReviewService.isConfigured && isEnabled,
+    );
+  }
+
+  Future<void> _setEnabled(bool value) async {
+    await _settingsService.setEnabled(value);
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _stateFuture = _loadState());
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          value
+              ? 'Gelişmiş Günbi Yazı Kontrolü açıldı.'
+              : 'Gelişmiş Günbi Yazı Kontrolü kapatıldı.',
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<_AdvancedWritingReviewState>(
+      future: _stateFuture,
+      builder: (context, snapshot) {
+        final state =
+            snapshot.data ?? const _AdvancedWritingReviewState.empty();
+        final isLoading = snapshot.connectionState == ConnectionState.waiting;
+
+        return Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: AppTheme.softBlue.withValues(alpha: 0.14),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppTheme.softBlue, width: 1.5),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(Icons.fact_check_rounded, color: AppTheme.cocoa),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Gelişmiş Günbi Yazı Kontrolü',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Premium kapsamındaki bu özellik ebeveyn onayıyla açılır. Günbi çocuğun yerine yazmaz; sadece yazım ve noktalama önerileri sunar.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                state.isApiConfigured
+                    ? 'API bağlantısı yapılandırılmış. Bu ayar açılırsa yazı, yalnızca yazım ve noktalama önerileri için güvenli backend üzerinden kontrol edilir.'
+                    : 'API bağlantısı henüz yapılandırılmadı. Bu yüzden yazılar dış servise gönderilmez ve gelişmiş kontrol açılmaz.',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                value: state.isEnabled,
+                onChanged:
+                    isLoading ||
+                        !state.isPremiumUnlocked ||
+                        !state.isApiConfigured
+                    ? null
+                    : _setEnabled,
+                title: const Text('Ebeveyn onayı'),
+                subtitle: Text(
+                  !state.isPremiumUnlocked
+                      ? 'Bu ayar Premium açılınca kullanılabilir.'
+                      : !state.isApiConfigured
+                      ? 'Backend URL tanımlanınca kullanılabilir.'
+                      : 'Premium açık. Gelişmiş kontrolü açıp kapatabilirsin.',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _AdvancedWritingReviewState {
+  const _AdvancedWritingReviewState({
+    required this.isPremiumUnlocked,
+    required this.isApiConfigured,
+    required this.isEnabled,
+  });
+
+  const _AdvancedWritingReviewState.empty()
+    : isPremiumUnlocked = false,
+      isApiConfigured = false,
+      isEnabled = false;
+
+  final bool isPremiumUnlocked;
+  final bool isApiConfigured;
+  final bool isEnabled;
+}
+
+class _ParentPinSection extends StatefulWidget {
+  const _ParentPinSection();
+
+  @override
+  State<_ParentPinSection> createState() => _ParentPinSectionState();
+}
+
+class _ParentPinSectionState extends State<_ParentPinSection> {
+  final ParentPinService _parentPinService = const ParentPinService();
+  final TextEditingController _currentPinController = TextEditingController();
+  final TextEditingController _newPinController = TextEditingController();
+  final TextEditingController _repeatPinController = TextEditingController();
+
+  String? _errorText;
+
+  @override
+  void dispose() {
+    _currentPinController.dispose();
+    _newPinController.dispose();
+    _repeatPinController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _updatePin() async {
+    // Bu basit ebeveyn kontrolü, güçlü güvenlik veya kullanıcı hesabı yerine
+    // geçmez. Çocukların yanlışlıkla ebeveyn alanına girmesini azaltmak için
+    // kullanılır.
+    final result = await _parentPinService.updatePin(
+      currentPin: _currentPinController.text,
+      newPin: _newPinController.text,
+      repeatedPin: _repeatPinController.text,
+    );
+    if (!mounted) {
+      return;
+    }
+
+    if (result == ParentPinUpdateResult.success) {
+      _currentPinController.clear();
+      _newPinController.clear();
+      _repeatPinController.clear();
+      setState(() => _errorText = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ebeveyn şifresi güncellendi.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _errorText = switch (result) {
+        ParentPinUpdateResult.empty => 'Şifre boş olamaz.',
+        ParentPinUpdateResult.tooShort => 'Şifre en az 4 karakter olmalı.',
+        ParentPinUpdateResult.mismatch => 'Yeni şifreler aynı olmalı.',
+        ParentPinUpdateResult.wrongCurrentPin => 'Mevcut şifre doğru değil.',
+        ParentPinUpdateResult.success => null,
+      };
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.lightOrange, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'Ebeveyn Şifresi',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Varsayılan şifre 1234’tür. İstersen buradan değiştirebilirsin.',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _currentPinController,
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Mevcut şifre'),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _newPinController,
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Yeni şifre'),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _repeatPinController,
+            obscureText: true,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: 'Yeni şifre tekrar',
+              errorText: _errorText,
+            ),
+          ),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: _updatePin,
+            icon: const Icon(Icons.lock_reset_rounded),
+            label: const Text('Şifreyi güncelle'),
+          ),
+        ],
       ),
     );
   }
@@ -233,6 +690,94 @@ class _InfoPanel extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TrustOverviewPanel extends StatelessWidget {
+  const _TrustOverviewPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    const items = [
+      _TrustItem(
+        icon: Icons.lock_rounded,
+        title: 'Ebeveyn şifresi',
+        message:
+            'Bu alan şifreyle açılır. Varsayılan şifre 1234 olarak başlar ve değiştirilebilir.',
+      ),
+      _TrustItem(
+        icon: Icons.child_care_rounded,
+        title: 'Çocuğun mahremiyeti',
+        message: 'Ebeveyn özetinde günlük yazılarının tam metni gösterilmez.',
+      ),
+      _TrustItem(
+        icon: Icons.cloud_off_rounded,
+        title: 'Cihazda saklama',
+        message:
+            'Günlükler, profil bilgileri ve yerel ayarlar bu cihazda tutulur.',
+      ),
+      _TrustItem(
+        icon: Icons.delete_outline_rounded,
+        title: 'Veri kontrolü',
+        message:
+            'Ayarlar bölümünden ebeveyn şifresiyle tüm yerel veriler silinebilir.',
+      ),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.softBlue.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.softBlue, width: 1.4),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Güven Özeti', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 12),
+          for (final item in items) ...[
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(item.icon, color: AppTheme.cocoa, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w800),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        item.message,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (item != items.last) const SizedBox(height: 12),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TrustItem {
+  const _TrustItem({
+    required this.icon,
+    required this.title,
+    required this.message,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
 }
 
 class _EmptyParentSummary extends StatelessWidget {

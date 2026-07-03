@@ -274,8 +274,7 @@ class _AgeGroupStep extends StatelessWidget {
   Widget build(BuildContext context) {
     return _OnboardingStep(
       title: 'Kaç yaş grubundasın?',
-      message:
-          'Günbi sana daha güzel sorular sorabilmek için bunu bilmek istiyor.',
+      message: 'Günbi sana daha uygun yazı önerileri hazırlasın.',
       child: Column(
         children: [
           for (final ageGroup in AgeGroup.values) ...[

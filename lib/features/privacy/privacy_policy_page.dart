@@ -1,10 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
 
 class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
+
+  static const String privacyPolicyUrl =
+      'https://sites.google.com/view/eglenceli-gunluk';
+  static const MethodChannel _channel = MethodChannel(
+    'com.aigrodeve.eglenceligunluk/browser',
+  );
+
+  Future<void> _openPrivacyPolicy(BuildContext context) async {
+    try {
+      await _channel.invokeMethod<void>('openUrl', privacyPolicyUrl);
+    } on PlatformException catch (_) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gizlilik politikası şu anda açılamadı.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +58,10 @@ class PrivacyPolicyPage extends StatelessWidget {
               title: 'Kısa özet',
               items: [
                 'Günlükler cihazda saklanır.',
+                'Ebeveyn şifresi cihazda saklanır ve varsayılan değer 1234’tür.',
                 'Veriler sunucuya gönderilmez.',
                 'Reklam yoktur.',
+                'Abonelik yoktur.',
                 'Konum izni yoktur.',
                 'Çocuklar arası mesajlaşma yoktur.',
               ],
@@ -48,19 +70,48 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _InfoCard(
               title: 'Ebeveynler için',
               message:
-                  'Ebeveynler gelişim özetini uygulama içinden görebilir. Günlük yazılar çocuğa özel kalır.',
+                  'Ebeveyn Alanı şifreyle korunur. Varsayılan şifre 1234’tür ve değiştirilebilir. Ebeveynler gelişim özetini uygulama içinden görebilir. Günlük yazılar çocuğa özel kalır.',
             ),
             const SizedBox(height: 14),
             const _InfoCard(
               title: 'Premium planı',
               message:
-                  'Premium tek seferlik uygulama içi satın alma olarak sunulur. Satın alma işlemleri Google Play tarafından yönetilir; ödeme bilgileri uygulama tarafından saklanmaz.',
+                  'Premium tek seferlik uygulama içi satın alma olarak sunulur ve yalnızca Ebeveyn Alanı üzerinden yönetilir. Satın alma işlemleri Google Play tarafından yönetilir; ödeme bilgileri uygulama tarafından saklanmaz. Premium durumu cihazda lokal tutulabilir; tüm veriler silinirse satın alma Google Play üzerinden geri yüklenebilir.',
+            ),
+            const SizedBox(height: 14),
+            const _InfoCard(
+              title: 'Günbi yazı kontrolü',
+              message:
+                  'Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı bir özellik olarak hazırlanmıştır. Backend bağlantısı yapılandırılıp ebeveyn onayı açılırsa yazı, yalnızca yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir.',
             ),
             const SizedBox(height: 14),
             const _InfoCard(
               title: 'Verilerin silinmesi',
               message:
-                  'Ayarlar bölümünden cihazda saklanan uygulama verileri silinebilir.',
+                  'Ayarlar bölümünden cihazda saklanan uygulama verileri ebeveyn şifresiyle silinebilir. Tüm yerel veriler silinince ebeveyn şifresi de sıfırlanır. Şifre unutulursa, hesap veya sunucu olmadığı için yerel veriler silinerek varsayılan 1234 değerine dönülebilir.',
+            ),
+            const SizedBox(height: 14),
+            _PrivacyCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Web gizlilik politikası',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 8),
+                  SelectableText(
+                    privacyPolicyUrl,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: () => _openPrivacyPolicy(context),
+                    icon: const Icon(Icons.open_in_browser_rounded),
+                    label: const Text('Gizlilik politikasını web’de aç'),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

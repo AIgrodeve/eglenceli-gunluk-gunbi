@@ -3,16 +3,19 @@ import 'package:flutter/foundation.dart';
 import '../../features/journal/data/journal_repository.dart';
 import '../../features/journal/models/journal_entry.dart';
 import '../data/app_preferences.dart';
+import '../data/app_reset_service.dart';
 import '../models/age_group.dart';
 
 class ScreenshotDemoDataSeeder {
   const ScreenshotDemoDataSeeder({
     this.preferences = const AppPreferences(),
     this.repository = const JournalRepository(),
+    this.resetService = const AppResetService(),
   });
 
   final AppPreferences preferences;
   final JournalRepository repository;
+  final AppResetService resetService;
 
   Future<void> seed({bool replaceExisting = false}) async {
     if (!kDebugMode) {
@@ -33,14 +36,13 @@ class ScreenshotDemoDataSeeder {
     }
 
     if (replaceExisting) {
-      await repository.clearAllEntries();
-      await preferences.clearLocalPreferences();
+      await resetService.clearAllLocalData();
     }
 
     await preferences.completeOnboarding(
       childName: 'Meryem',
       childGender: 'Kız',
-      ageGroup: AgeGroup.nineToEleven,
+      ageGroup: AgeGroup.nineToTwelve,
     );
     await preferences.updateBookTitle("Meryem'in Eğlenceli Günlüğü");
 

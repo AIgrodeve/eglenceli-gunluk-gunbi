@@ -5,6 +5,7 @@ class Badge {
     required this.title,
     required this.description,
     required this.isUnlocked,
+    this.isPremium = false,
   });
 
   final String id;
@@ -12,4 +13,5 @@ class Badge {
   final String title;
   final String description;
   final bool isUnlocked;
+  final bool isPremium;
 }

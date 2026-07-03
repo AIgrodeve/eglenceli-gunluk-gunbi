@@ -3,7 +3,7 @@
 ## Demo profil
 
 - Demo çocuk adı: Meryem
-- Yaş grubu: 9-11
+- Yaş grubu: 9-12
 - Cinsiyet: Kız
 
 ## Demo yazılar
@@ -63,7 +63,7 @@ Bu çağrı uygulama koduna kalıcı olarak eklenmemelidir. Ekran görüntüleri
 
 1. Uygulamayı temiz kurulum gibi aç.
 2. Onboarding içinde Meryem profilini oluştur.
-3. 9-11 yaş grubunu ve Kız seçimini kullan.
+3. 9-12 yaş grubunu ve Kız seçimini kullan.
 4. Demo yazıları farklı duygu seçimleriyle ekle.
 5. Ana sayfa, yazı ekranı, yazı koçu, Yazılarım, Rozetlerim, Haftalık Özet ve Günlük Kitabım ekranlarını sırayla yakala.
 6. Gizlilik ve güvenlik vurgusu için Ebeveyn Alanı veya Ayarlar içindeki ilgili ekranı ayrıca yakala.

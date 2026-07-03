@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import 'services/premium_service.dart';
 
@@ -21,6 +20,7 @@ class _PremiumPageState extends State<PremiumPage> {
   StreamSubscription? _purchaseSubscription;
   bool _isPurchaseInProgress = false;
   bool _isRestoring = false;
+  bool _isRetrying = false;
 
   @override
   void initState() {
@@ -65,20 +65,7 @@ class _PremiumPageState extends State<PremiumPage> {
   Future<void> _startPurchase(PremiumStoreState storeState) async {
     final productDetails = storeState.productDetails;
     if (productDetails == null) {
-      _showMessage(
-        'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
-      );
-      return;
-    }
-
-    final verified = await showAdultVerificationDialog(
-      context: context,
-      title: 'Ebeveyn doğrulaması',
-      question: 'Devam etmek için işlemi cevaplayın: 9 + 4 = ?',
-      expectedAnswer: '13',
-      wrongAnswerMessage: 'Bu işlem ebeveynler içindir.',
-    );
-    if (!verified || !mounted) {
+      _showMessage(PremiumService.unavailableMessage);
       return;
     }
 
@@ -103,6 +90,31 @@ class _PremiumPageState extends State<PremiumPage> {
     }
   }
 
+  Future<void> _retryStoreQuery() async {
+    setState(() {
+      _isRetrying = true;
+      _storeFuture = _premiumService.loadStoreState();
+    });
+
+    try {
+      final storeState = await _storeFuture;
+      if (!mounted) {
+        return;
+      }
+
+      setState(() => _isRetrying = false);
+      if (storeState.productDetails != null) {
+        _showMessage('Premium bilgisi güncellendi.');
+      }
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isRetrying = false);
+      _showMessage(PremiumService.unavailableMessage);
+    }
+  }
+
   Future<void> _restorePurchase() async {
     setState(() => _isRestoring = true);
     final wasUnlocked = await _premiumService.isPremiumUnlocked();
@@ -119,7 +131,9 @@ class _PremiumPageState extends State<PremiumPage> {
         _storeFuture = _premiumService.loadStoreState();
       });
 
-      if (!wasUnlocked && !isUnlocked) {
+      if (isUnlocked) {
+        _showMessage('Premium satın alma geri yüklendi.');
+      } else if (!wasUnlocked) {
         _showMessage('Aktif Premium satın alma bulunamadı.');
       }
     } catch (_) {
@@ -188,7 +202,7 @@ class _PremiumPageState extends State<PremiumPage> {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Premium özellikler ebeveyn onayıyla açılır.',
+                  'Premium özellikler yalnızca Ebeveyn Alanı içinde, ebeveyn onayıyla açılır.',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
@@ -198,6 +212,18 @@ class _PremiumPageState extends State<PremiumPage> {
                   productTitle: product?.title,
                   productPrice: product?.price,
                   message: storeState.message,
+                ),
+                const SizedBox(height: 14),
+                const _FeatureCard(
+                  title: 'Satın alma bilgisi',
+                  items: [
+                    'Tek seferlik satın alma',
+                    'Reklam yok',
+                    'Abonelik yok',
+                    'Çocuk ekranlarında satın alma çağrısı yok',
+                    'Satın alma Google Play üzerinden yönetilir',
+                    'Uygulama ödeme bilgisi saklamaz',
+                  ],
                 ),
                 const SizedBox(height: 14),
                 const _FeatureCard(
@@ -217,6 +243,7 @@ class _PremiumPageState extends State<PremiumPage> {
                     'PDF Günlük Kitabı oluşturma',
                     'Tüm rozetler',
                     'Gelişmiş haftalık özet',
+                    'Ebeveyn onaylı gelişmiş Günbi yazı kontrolü altyapısı',
                     'Daha fazla Günbi yazı önerisi',
                     'Gelecekte özel Günbi temaları',
                   ],
@@ -254,13 +281,28 @@ class _PremiumPageState extends State<PremiumPage> {
                 if (product == null && !isLoading) ...[
                   const SizedBox(height: 10),
                   Text(
-                    storeState.message ??
-                        'Premium bilgisi şu anda alınamadı. Lütfen daha sonra tekrar deneyin.',
+                    storeState.message ?? PremiumService.unavailableMessage,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    PremiumService.activationDelayMessage,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
                 ],
                 const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: isLoading || _isRetrying ? null : _retryStoreQuery,
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(
+                    _isRetrying
+                        ? 'Premium bilgisi yenileniyor...'
+                        : 'Tekrar dene',
+                  ),
+                ),
+                const SizedBox(height: 10),
                 OutlinedButton.icon(
                   onPressed: _isRestoring ? null : _restorePurchase,
                   icon: const Icon(Icons.restore_rounded),

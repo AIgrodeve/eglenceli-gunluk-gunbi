@@ -10,6 +10,7 @@ class AppPreferences {
   static const _childGenderKey = 'childGender';
   static const _bookTitleKey = 'bookTitle';
   static const _onboardingCompletedKey = 'onboarding_completed';
+  static const _parentPinKey = 'parentPin';
 
   Future<String?> loadChildName() async {
     final preferences = await SharedPreferences.getInstance();
@@ -73,5 +74,6 @@ class AppPreferences {
     await preferences.remove(_childGenderKey);
     await preferences.remove(_bookTitleKey);
     await preferences.remove(_onboardingCompletedKey);
+    await preferences.remove(_parentPinKey);
   }
 }

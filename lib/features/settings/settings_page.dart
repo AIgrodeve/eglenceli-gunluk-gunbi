@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../core/data/app_reset_service.dart';
 import '../../core/data/app_preferences.dart';
 import '../../core/models/age_group.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/widgets/adult_verification_dialog.dart';
 import '../../core/widgets/mascot_widget.dart';
 import '../journal/data/journal_repository.dart';
 import '../onboarding/onboarding_flow.dart';
-import '../premium/premium_page.dart';
-import '../premium/services/premium_service.dart';
+import '../parent/parent_page.dart';
+import '../parent/services/parent_pin_service.dart';
 import '../privacy/privacy_policy_page.dart';
 import 'about_page.dart';
 
@@ -29,10 +29,12 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final AppPreferences _preferences = const AppPreferences();
   final JournalRepository _repository = const JournalRepository();
-  final PremiumService _premiumService = const PremiumService();
+  final AppResetService _resetService = const AppResetService();
+  final ParentPinService _parentPinService = const ParentPinService();
   late final TextEditingController _nameController;
   late AgeGroup _selectedAgeGroup;
   late Future<int> _entryCountFuture;
+  bool _isResetting = false;
 
   @override
   void initState() {
@@ -87,13 +89,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _startDeleteAllDataFlow() async {
-    final verified = await showAdultVerificationDialog(
-      context: context,
-      title: 'Ebeveyn doğrulaması',
-      question: 'Devam etmek için işlemi cevaplayın: 7 + 5 = ?',
-      expectedAnswer: '12',
-      wrongAnswerMessage: 'Bu işlem ebeveynler içindir.',
-    );
+    final verified = await _showParentPinDialog();
     if (!verified || !mounted) {
       return;
     }
@@ -103,9 +99,25 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
 
-    await _repository.clearAllEntries();
-    await _preferences.clearLocalPreferences();
-    await _premiumService.clearPremiumStatus();
+    setState(() => _isResetting = true);
+
+    try {
+      await _resetService.clearAllLocalData();
+    } catch (error, stackTrace) {
+      debugPrint('App reset failed: $error\n$stackTrace');
+      if (!mounted) {
+        return;
+      }
+      setState(() => _isResetting = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Veriler silinirken bir sorun oluştu. Lütfen tekrar deneyin.',
+          ),
+        ),
+      );
+      return;
+    }
 
     if (!mounted) {
       return;
@@ -148,6 +160,15 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         );
       },
+    );
+
+    return result ?? false;
+  }
+
+  Future<bool> _showParentPinDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (_) => _ParentPinDialog(parentPinService: _parentPinService),
     );
 
     return result ?? false;
@@ -330,7 +351,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Premium özellikler ileride ebeveyn onayıyla açılacak.',
+                      'Premium özellikler Ebeveyn Alanı üzerinden yönetilir.',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 12),
@@ -338,12 +359,15 @@ class _SettingsPageState extends State<SettingsPage> {
                       onPressed: () {
                         Navigator.of(context).push(
                           MaterialPageRoute<void>(
-                            builder: (_) => const PremiumPage(),
+                            builder: (_) => ParentPage(
+                              childName: _displayName,
+                              ageGroup: _selectedAgeGroup,
+                            ),
                           ),
                         );
                       },
-                      icon: const Icon(Icons.workspace_premium_rounded),
-                      label: const Text('Premium bilgisi'),
+                      icon: const Icon(Icons.family_restroom_rounded),
+                      label: const Text('Ebeveyn Alanına Git'),
                     ),
                   ],
                 ),
@@ -371,9 +395,13 @@ class _SettingsPageState extends State<SettingsPage> {
                           vertical: 14,
                         ),
                       ),
-                      onPressed: _startDeleteAllDataFlow,
+                      onPressed: _isResetting ? null : _startDeleteAllDataFlow,
                       icon: const Icon(Icons.delete_outline_rounded),
-                      label: const Text('Tüm verileri sil'),
+                      label: Text(
+                        _isResetting
+                            ? 'Veriler siliniyor...'
+                            : 'Tüm verileri sil',
+                      ),
                     ),
                   ],
                 ),
@@ -388,6 +416,96 @@ class _SettingsPageState extends State<SettingsPage> {
   String get _displayName {
     final name = _nameController.text.trim();
     return name.isEmpty ? widget.childName : name;
+  }
+}
+
+class _ParentPinDialog extends StatefulWidget {
+  const _ParentPinDialog({required this.parentPinService});
+
+  final ParentPinService parentPinService;
+
+  @override
+  State<_ParentPinDialog> createState() => _ParentPinDialogState();
+}
+
+class _ParentPinDialogState extends State<_ParentPinDialog> {
+  final TextEditingController _controller = TextEditingController();
+  String? _errorText;
+  bool _isChecking = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _verify() async {
+    if (_isChecking) {
+      return;
+    }
+
+    setState(() {
+      _isChecking = true;
+      _errorText = null;
+    });
+
+    final verified = await widget.parentPinService.verifyPin(_controller.text);
+    if (!mounted) {
+      return;
+    }
+
+    if (verified) {
+      Navigator.of(context).pop(true);
+      return;
+    }
+
+    setState(() {
+      _isChecking = false;
+      _errorText = 'Şifre hatalı. Lütfen tekrar deneyin.';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Ebeveyn doğrulaması'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Bu işlem ebeveynler içindir. Devam etmek için ebeveyn şifresini girin.',
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: _controller,
+              obscureText: true,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.done,
+              enabled: !_isChecking,
+              decoration: InputDecoration(
+                labelText: 'Şifre',
+                errorText: _errorText,
+              ),
+              onSubmitted: (_) => _verify(),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: _isChecking
+              ? null
+              : () => Navigator.of(context).pop(false),
+          child: const Text('Vazgeç'),
+        ),
+        FilledButton(
+          onPressed: _isChecking ? null : _verify,
+          child: Text(_isChecking ? 'Kontrol ediliyor...' : 'Devam et'),
+        ),
+      ],
+    );
   }
 }
 
