@@ -1,64 +1,63 @@
-# Data Safety Draft
+﻿# Data Safety Draft
 
-Bu dosya Play Console Veri Güvenliği bölümü için taslak not olarak hazırlanmıştır.
+Bu dosya Play Console Veri GÃ¼venliÄŸi bÃ¶lÃ¼mÃ¼ iÃ§in taslak not olarak hazÄ±rlanmÄ±ÅŸtÄ±r.
 
-## Mevcut sürüm için varsayımlar
+## Mevcut sÃ¼rÃ¼m iÃ§in varsayÄ±mlar
 
-- Uygulama adı: Eğlenceli Günlük
+- Uygulama adÄ±: EÄŸlenceli GÃ¼nlÃ¼k
 - Android applicationId: com.aigrodeve.eglenceligunluk
-- Geliştirici: AIgrodeve
-- İletişim: aigrodeve@gmail.com
-- Gizlilik politikası URL’si: https://sites.google.com/view/eglenceli-gunluk
-- Uygulama çocuklara yönelik günlük/yazma alışkanlığı uygulamasıdır.
-- Hedef yaş grupları: 6-8 ve 9-12.
-- Kullanıcıdan çevrim içi hesap alınmaz.
-- Veri sunucuya gönderilmez.
-- Firebase/API/sunucu kullanılmaz.
+- GeliÅŸtirici: AIgrodeve
+- Ä°letiÅŸim: aigrodeve@gmail.com
+- Gizlilik politikasÄ± URLâ€™si: https://aigrodeve.github.io/eglenceli-gunluk-gunbi/
+- Uygulama Ã§ocuklara yÃ¶nelik gÃ¼nlÃ¼k/yazma alÄ±ÅŸkanlÄ±ÄŸÄ± uygulamasÄ±dÄ±r.
+- Hedef yaÅŸ gruplarÄ±: 6-8 ve 9-12.
+- KullanÄ±cÄ±dan Ã§evrim iÃ§i hesap alÄ±nmaz.
+- GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼ Premium ve ebeveyn onayÄ±yla aÃ§Ä±lÄ±rsa yazÄ±, yalnÄ±zca yazÄ±m ve noktalama Ã¶nerileri Ã¼retmek iÃ§in gÃ¼venli API servisine gÃ¶nderilebilir.
+- Firebase tabanlÄ± gÃ¼nlÃ¼k saklama veya bulut yedekleme kullanÄ±lmaz.
 - Bulut yedekleme yoktur.
-- Günlük yazıları cihazda lokal saklanır.
-- Çocuk adı cihazda lokal saklanır.
-- Yaş grubu cihazda lokal saklanır.
-- Cinsiyet bilgisi cihazda lokal saklanır.
-- Duygu seçimleri cihazda lokal saklanır.
-- Yazı başlığı ve yazı metni cihazda lokal saklanır.
-- PDF kitap başlığı cihazda lokal saklanır.
-- Ebeveyn şifresi cihazda lokal saklanır.
+- GÃ¼nlÃ¼k yazÄ±larÄ± cihazda lokal saklanÄ±r.
+- Ã‡ocuk adÄ± cihazda lokal saklanÄ±r.
+- YaÅŸ grubu cihazda lokal saklanÄ±r.
+- Cinsiyet bilgisi cihazda lokal saklanÄ±r.
+- Duygu seÃ§imleri cihazda lokal saklanÄ±r.
+- YazÄ± baÅŸlÄ±ÄŸÄ± ve yazÄ± metni cihazda lokal saklanÄ±r.
+- PDF kitap baÅŸlÄ±ÄŸÄ± cihazda lokal saklanÄ±r.
+- Ebeveyn ÅŸifresi cihazda lokal saklanÄ±r.
 - Lokal Premium durumu cihazda saklanabilir.
-- Çocuk adı, yaş grubu, cinsiyet, duygu seçimi, yazı başlığı, yazı metni, PDF kitap başlığı, ebeveyn şifresi ve lokal Premium durumu cihazda lokal saklanır.
-- PDF oluşturma cihazda yapılır.
+- Ã‡ocuk adÄ±, yaÅŸ grubu, cinsiyet, duygu seÃ§imi, yazÄ± baÅŸlÄ±ÄŸÄ±, yazÄ± metni, PDF kitap baÅŸlÄ±ÄŸÄ±, ebeveyn ÅŸifresi ve lokal Premium durumu cihazda lokal saklanÄ±r.
+- PDF oluÅŸturma cihazda yapÄ±lÄ±r.
 - Reklam SDK yok.
 - Analitik SDK yok.
 - Crash reporting SDK yok.
-- Üçüncü taraf veri paylaşımı yok.
-- Çocuklar arası mesajlaşma yoktur.
-- Herkese açık paylaşım yoktur.
+- ÃœÃ§Ã¼ncÃ¼ taraf veri paylaÅŸÄ±mÄ± yok.
+- Ã‡ocuklar arasÄ± mesajlaÅŸma yoktur.
+- Herkese aÃ§Ä±k paylaÅŸÄ±m yoktur.
 - Konum, kamera, mikrofon ve rehber izni yoktur.
-- Uygulama içindeki Ayarlar bölümünden yerel veriler ebeveyn şifresiyle silinebilir.
-- Tüm yerel veriler silindiğinde ebeveyn şifresi ve lokal Premium durumu da temizlenir.
-- Ebeveyn şifresi unutulursa, hesap/sunucu olmadığı için tüm yerel veriler silinerek varsayılan `1234` şifresine dönülebilir.
-- Uygulama içi satın alma vardır.
-- Satın alma tipi: tek seferlik Premium kilidi.
-- Ürün ID: premium_lifetime
-- Google Play Billing kullanılacaktır.
-- Google Play Billing satın alma ve geri yükleme işlemleri için internet/Play Store bağlantısı kullanılabilir.
-- Ödeme bilgileri uygulama tarafından saklanmayacaktır.
-- Uygulama ödeme kartı veya ödeme bilgisi saklamaz.
-- Satın alma işlemleri Google Play tarafından yönetilecektir.
+- Uygulama iÃ§indeki Ayarlar bÃ¶lÃ¼mÃ¼nden yerel veriler ebeveyn ÅŸifresiyle silinebilir.
+- TÃ¼m yerel veriler silindiÄŸinde ebeveyn ÅŸifresi ve lokal Premium durumu da temizlenir.
+- Ebeveyn ÅŸifresi unutulursa, hesap/sunucu olmadÄ±ÄŸÄ± iÃ§in tÃ¼m yerel veriler silinerek varsayÄ±lan `1234` ÅŸifresine dÃ¶nÃ¼lebilir.
+- Uygulama iÃ§i satÄ±n alma vardÄ±r.
+- SatÄ±n alma tipi: tek seferlik Premium kilidi.
+- ÃœrÃ¼n ID: premium_lifetime
+- Google Play Billing kullanÄ±lacaktÄ±r.
+- Google Play Billing satÄ±n alma ve geri yÃ¼kleme iÅŸlemleri iÃ§in internet/Play Store baÄŸlantÄ±sÄ± kullanÄ±labilir.
+- Ã–deme bilgileri uygulama tarafÄ±ndan saklanmayacaktÄ±r.
+- Uygulama Ã¶deme kartÄ± veya Ã¶deme bilgisi saklamaz.
+- SatÄ±n alma iÅŸlemleri Google Play tarafÄ±ndan yÃ¶netilecektir.
 - Premium durumu cihazda lokal olarak tutulabilir.
-- Tüm verileri sil lokal premium bilgisini temizler; satın alma Google Play üzerinden geri yüklenebilir.
-- Premium satın alma yalnızca Ebeveyn Alanı üzerinden yönetilir.
-- Çocuk ekranlarında agresif satın alma çağrısı yoktur.
-- Ebeveyn Alanı şifreyle korunur.
-- Varsayılan ebeveyn şifresi `1234` değeridir, cihazda lokal saklanır ve değiştirilebilir.
-- Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı özellik olarak hazırlanmıştır.
-- Backend bağlantısı yapılandırılıp ebeveyn onayı açılırsa yazı, yalnızca yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir.
-- Backend bağlantısı yapılandırılmamışsa gelişmiş kontrol çalışmaz ve yazılar dış servise gönderilmez.
-- Play Console Data Safety formu, backend/API bağlantısının aktif edildiği build için bu veri aktarımını belirtecek şekilde kontrol edilmelidir.
-- Reklam kullanılmayacaktır.
+- TÃ¼m verileri sil lokal premium bilgisini temizler; satÄ±n alma Google Play Ã¼zerinden geri yÃ¼klenebilir.
+- Premium satÄ±n alma yalnÄ±zca Ebeveyn AlanÄ± Ã¼zerinden yÃ¶netilir.
+- Ã‡ocuk ekranlarÄ±nda agresif satÄ±n alma Ã§aÄŸrÄ±sÄ± yoktur.
+- Ebeveyn AlanÄ± ÅŸifreyle korunur.
+- VarsayÄ±lan ebeveyn ÅŸifresi `1234` deÄŸeridir, cihazda lokal saklanÄ±r ve deÄŸiÅŸtirilebilir.
+- GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼ Premium ve ebeveyn onaylÄ± Ã¶zellik olarak hazÄ±rlanmÄ±ÅŸtÄ±r.
+- Backend baÄŸlantÄ±sÄ± yapÄ±landÄ±rÄ±lÄ±p ebeveyn onayÄ± aÃ§Ä±lÄ±rsa yazÄ±, yalnÄ±zca yazÄ±m ve noktalama Ã¶nerileri Ã¼retmek iÃ§in gÃ¼venli API servisine gÃ¶nderilebilir.
+- Play Console Data Safety formu, geliÅŸmiÅŸ yazÄ± kontrolÃ¼ iÃ§in metnin gÃ¼venli API servisine gÃ¶nderilebileceÄŸini belirtecek ÅŸekilde kontrol edilmelidir.
+- Reklam kullanÄ±lmayacaktÄ±r.
 - Abonelik yoktur.
-- İlk sürümde satın alma durumu Google Play Billing istemci akışıyla yönetilir. Daha yüksek güvenlik gereksinimlerinde sunucu tarafı doğrulama ayrıca değerlendirilebilir.
+- Ä°lk sÃ¼rÃ¼mde satÄ±n alma durumu Google Play Billing istemci akÄ±ÅŸÄ±yla yÃ¶netilir. Daha yÃ¼ksek gÃ¼venlik gereksinimlerinde sunucu tarafÄ± doÄŸrulama ayrÄ±ca deÄŸerlendirilebilir.
 
-## Kullanılan paketler kontrol edilmeli
+## KullanÄ±lan paketler kontrol edilmeli
 
 Mevcut bilinen paketler:
 
@@ -68,9 +67,16 @@ Mevcut bilinen paketler:
 - rive
 - lottie
 - in_app_purchase
+- package_info_plus
 
-Play Console Veri Güvenliği formu doldurulmadan önce pubspec.yaml ve AndroidManifest izinleri tekrar kontrol edilmelidir.
+Play Console Veri GÃ¼venliÄŸi formu doldurulmadan Ã¶nce pubspec.yaml ve AndroidManifest izinleri tekrar kontrol edilmelidir.
 
 ## Kontrol notu
 
-Bu dosya Play Console formu doldurulmadan önce gerçek kod ve kullanılan paketlerle tekrar kontrol edilmelidir.
+Bu dosya Play Console formu doldurulmadan Ã¶nce gerÃ§ek kod ve kullanÄ±lan paketlerle tekrar kontrol edilmelidir.
+
+
+
+## Günbi Yazı Kontrolü veri notu
+
+Gelişmiş Günbi Yazı Kontrolü yalnızca Premium ve ebeveyn onayıyla çalışır. Bu özellik kullanıldığında başlık ve yazı metni, yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir. Bu işlem herkese açık paylaşım, çocuklar arası mesajlaşma veya bulut günlük yedekleme değildir. Günlük kayıtları cihazda saklanır; API isteği günlük kaydı olarak sunucuda tutulmamalıdır.

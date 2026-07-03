@@ -16,7 +16,7 @@ Gerekli ortam değişkenleri:
 
 ```text
 OPENAI_API_KEY=...
-OPENAI_MODEL=gpt-5.2
+OPENAI_MODEL=gpt-5.5
 PORT=8787
 ```
 
@@ -31,6 +31,7 @@ Content-Type: application/json
 
 ```json
 {
+  "title": "Günluk Deneme",
   "text": "Günluk uygulamasi yazım denetimi nasıl çalışıyor.",
   "ageGroup": "9-12",
   "moodLabel": "Sakin"
@@ -47,7 +48,7 @@ Yanıt:
       "type": "spelling",
       "original": "Günluk",
       "suggestion": "Günlük",
-      "message": "Burada 'Günlük' yazılır."
+      "message": "Başlıkta veya yazıda 'Günlük' yazabilirsin."
     }
   ]
 }
@@ -55,18 +56,24 @@ Yanıt:
 
 ## Flutter bağlantısı
 
-Release build alırken backend URL'si verilmelidir:
+Uygulamada varsayılan endpoint:
 
-```bash
-flutter build appbundle --release --dart-define=GUNBI_REVIEW_API_URL=https://example.com/review
+```text
+https://gunbi-writing-review-api.onrender.com/review
 ```
 
-URL verilmezse uygulama gelişmiş kontrolün henüz bağlanmadığını söyler ve yanıltıcı yerel yazım kontrolü yapmaz.
+Gerekirse release build sırasında farklı backend URL'si verilebilir:
+
+```bash
+flutter build appbundle --release --dart-define=GUNBI_REVIEW_API_URL=https://gunbi-writing-review-api.onrender.com/review
+```
 
 ## Güvenlik notu
 
 - Çocuk yerine yazı üretmez.
 - Günlük metnini yeniden yazmaz.
+- Başlık ve yazıyı yalnızca yazım ve noktalama önerileri için kontrol eder.
 - En fazla 5 kısa öneri döndürür.
 - Sert veya suçlayıcı dil kullanmaz.
-- API bağlantısı canlıya alınmadan önce gizlilik politikası ve Play Console Data Safety beyanları gerçek veri aktarımına göre tekrar güncellenmelidir.
+- OpenAI isteğinde `store:false` kullanılır.
+- Gizlilik politikası ve Play Console Data Safety beyanları, başlık ve yazının güvenli API servisine gönderilebileceğini belirtecek şekilde güncel tutulmalıdır.

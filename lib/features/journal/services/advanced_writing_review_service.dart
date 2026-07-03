@@ -61,7 +61,10 @@ class AdvancedWritingReviewResult {
 
 class AdvancedWritingReviewService {
   const AdvancedWritingReviewService({
-    this.endpointUrl = const String.fromEnvironment('GUNBI_REVIEW_API_URL'),
+    this.endpointUrl = const String.fromEnvironment(
+      'GUNBI_REVIEW_API_URL',
+      defaultValue: 'https://gunbi-writing-review-api.onrender.com/review',
+    ),
   });
 
   final String endpointUrl;
@@ -72,6 +75,7 @@ class AdvancedWritingReviewService {
   }
 
   Future<AdvancedWritingReviewResult> review({
+    String? title,
     required String text,
     required AgeGroup ageGroup,
     required String moodLabel,
@@ -91,6 +95,7 @@ class AdvancedWritingReviewService {
       request.headers.contentType = ContentType.json;
       request.write(
         jsonEncode({
+          'title': title?.trim() ?? '',
           'text': text,
           'ageGroup': ageGroup.storageValue,
           'moodLabel': moodLabel,

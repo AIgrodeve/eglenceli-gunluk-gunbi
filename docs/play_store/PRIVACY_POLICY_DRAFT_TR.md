@@ -1,102 +1,108 @@
-# Eğlenceli Günlük Gizlilik Politikası
+﻿# EÄŸlenceli GÃ¼nlÃ¼k Gizlilik PolitikasÄ±
 
-Son güncelleme tarihi: 15.06.2026
+Son gÃ¼ncelleme tarihi: 15.06.2026
 
-## Uygulama hakkında
+## Uygulama hakkÄ±nda
 
-Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına ve duygularını güvenli bir şekilde ifade etmesine yardımcı olmak için tasarlanmış bir günlük uygulamasıdır.
+EÄŸlenceli GÃ¼nlÃ¼k, Ã§ocuklarÄ±n yazma alÄ±ÅŸkanlÄ±ÄŸÄ± kazanmasÄ±na ve duygularÄ±nÄ± gÃ¼venli bir ÅŸekilde ifade etmesine yardÄ±mcÄ± olmak iÃ§in tasarlanmÄ±ÅŸ bir gÃ¼nlÃ¼k uygulamasÄ±dÄ±r.
 
-Uygulama hedef yaş grupları 6-8 ve 9-12 olarak sınırlandırılmıştır.
+Uygulama hedef yaÅŸ gruplarÄ± 6-8 ve 9-12 olarak sÄ±nÄ±rlandÄ±rÄ±lmÄ±ÅŸtÄ±r.
 
-## Uygulama kimliği
+## Uygulama kimliÄŸi
 
-- Uygulama adı: Eğlenceli Günlük
-- Paket adı: com.aigrodeve.eglenceligunluk
-- Geliştirici: AIgrodeve
-- İletişim: aigrodeve@gmail.com
-- Gizlilik politikası URL’si: https://sites.google.com/view/eglenceli-gunluk
+- Uygulama adÄ±: EÄŸlenceli GÃ¼nlÃ¼k
+- Paket adÄ±: com.aigrodeve.eglenceligunluk
+- GeliÅŸtirici: AIgrodeve
+- Ä°letiÅŸim: aigrodeve@gmail.com
+- Gizlilik politikasÄ± URLâ€™si: https://aigrodeve.github.io/eglenceli-gunluk-gunbi/
 
 ## Hangi bilgiler cihazda saklanır?
 
-Uygulama mevcut sürümde aşağıdaki bilgileri cihaz içinde lokal olarak saklayabilir:
+Uygulama mevcut sÃ¼rÃ¼mde aÅŸaÄŸÄ±daki bilgileri cihaz iÃ§inde lokal olarak saklayabilir:
 
-- Çocuk adı
-- Yaş grubu
+- Ã‡ocuk adÄ±
+- YaÅŸ grubu
 - Cinsiyet bilgisi
-- Seçilen duygu bilgileri
-- Yazı başlığı
-- Yazı metni
-- Yazı önerisi bilgisi
-- Yazı tarihi ve saati
-- PDF kitap başlığı tercihi
-- Ebeveyn şifresi
+- SeÃ§ilen duygu bilgileri
+- YazÄ± baÅŸlÄ±ÄŸÄ±
+- YazÄ± metni
+- YazÄ± Ã¶nerisi bilgisi
+- YazÄ± tarihi ve saati
+- PDF kitap baÅŸlÄ±ÄŸÄ± tercihi
+- Ebeveyn ÅŸifresi
 - Lokal Premium durumu
 
 ## Hangi bilgiler toplanmaz?
 
-Mevcut sürümde aşağıdaki bilgiler toplanmaz:
+Mevcut sÃ¼rÃ¼mde aÅŸaÄŸÄ±daki bilgiler toplanmaz:
 
 - Konum bilgisi
-- Kamera görüntüsü
-- Mikrofon kaydı
-- Rehber veya kişi listesi
-- Çevrim içi hesap bilgisi
-- Sosyal medya hesabı
-- Ödeme bilgisi
+- Kamera gÃ¶rÃ¼ntÃ¼sÃ¼
+- Mikrofon kaydÄ±
+- Rehber veya kiÅŸi listesi
+- Ã‡evrim iÃ§i hesap bilgisi
+- Sosyal medya hesabÄ±
+- Ã–deme bilgisi
 
-Uygulamada hesap oluşturma, bulut yedekleme, Firebase/API/sunucu tabanlı günlük saklama, çocuklar arası mesajlaşma veya herkese açık paylaşım yoktur. Konum, kamera, mikrofon ve rehber izni kullanılmaz.
+Uygulamada hesap oluÅŸturma, bulut yedekleme, Firebase tabanlÄ± gÃ¼nlÃ¼k saklama, Ã§ocuklar arasÄ± mesajlaÅŸma veya herkese aÃ§Ä±k paylaÅŸÄ±m yoktur. Konum, kamera, mikrofon ve rehber izni kullanÄ±lmaz.
 
-## İnternet ve sunucu kullanımı
+## Ä°nternet ve sunucu kullanÄ±mÄ±
 
-Mevcut sürümde günlük yazıları bir sunucuya gönderilmez. Uygulama günlük kayıtlarını cihazda saklar. PDF Günlük Kitabı oluşturma işlemi cihaz üzerinde yapılır.
+GÃ¼nlÃ¼k kayÄ±tlarÄ± cihazda saklanÄ±r. GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼ Premium ve ebeveyn onayÄ±yla aÃ§Ä±lÄ±rsa yazÄ±, yalnÄ±zca yazÄ±m ve noktalama Ã¶nerileri Ã¼retmek iÃ§in gÃ¼venli API servisine gÃ¶nderilebilir. PDF GÃ¼nlÃ¼k KitabÄ± oluÅŸturma iÅŸlemi cihaz Ã¼zerinde yapÄ±lÄ±r.
 
-Çocuk adı, yaş grubu ve cinsiyet bilgisi uygulama deneyimini kişiselleştirmek için cihazda lokal olarak kullanılır; bu bilgiler bir sunucuya gönderilmez.
+Ã‡ocuk adÄ±, yaÅŸ grubu ve cinsiyet bilgisi uygulama deneyimini kiÅŸiselleÅŸtirmek iÃ§in cihazda lokal olarak kullanÄ±lÄ±r; bu bilgiler yazÄ± kontrolÃ¼ API servisine gÃ¶nderilmez.
 
-Çocuk adı, yaş grubu, cinsiyet, duygu seçimi, yazı başlığı, yazı metni, PDF kitap başlığı, ebeveyn şifresi ve lokal Premium durumu cihazda lokal olarak saklanır.
+Ã‡ocuk adÄ±, yaÅŸ grubu, cinsiyet, duygu seÃ§imi, yazÄ± baÅŸlÄ±ÄŸÄ±, yazÄ± metni, PDF kitap baÅŸlÄ±ÄŸÄ±, ebeveyn ÅŸifresi ve lokal Premium durumu cihazda lokal olarak saklanÄ±r.
 
-## Çocukların gizliliği
+## Ã‡ocuklarÄ±n gizliliÄŸi
 
-Eğlenceli Günlük çocukların günlük yazılarını özel kabul eder. Uygulamada çocuklar arası mesajlaşma, herkese açık profil veya herkese açık paylaşım özelliği yoktur.
+EÄŸlenceli GÃ¼nlÃ¼k Ã§ocuklarÄ±n gÃ¼nlÃ¼k yazÄ±larÄ±nÄ± Ã¶zel kabul eder. Uygulamada Ã§ocuklar arasÄ± mesajlaÅŸma, herkese aÃ§Ä±k profil veya herkese aÃ§Ä±k paylaÅŸÄ±m Ã¶zelliÄŸi yoktur.
 
-## Ebeveyn alanı
+## Ebeveyn alanÄ±
 
-Ebeveyn alanı şifreyle korunur ve çocuğun günlük yazılarının içeriğini göstermez. Bu alanda sadece yazma alışkanlığı ve gelişim özeti gibi genel bilgiler yer alır. Varsayılan ebeveyn şifresi `1234` değeridir ve uygulama içinde değiştirilebilir.
+Ebeveyn alanÄ± ÅŸifreyle korunur ve Ã§ocuÄŸun gÃ¼nlÃ¼k yazÄ±larÄ±nÄ±n iÃ§eriÄŸini gÃ¶stermez. Bu alanda sadece yazma alÄ±ÅŸkanlÄ±ÄŸÄ± ve geliÅŸim Ã¶zeti gibi genel bilgiler yer alÄ±r. VarsayÄ±lan ebeveyn ÅŸifresi `1234` deÄŸeridir ve uygulama iÃ§inde deÄŸiÅŸtirilebilir.
 
-Ebeveyn şifresi unutulursa uygulama içinden tüm yerel veriler silinerek şifre varsayılan `1234` değerine sıfırlanabilir. Premium satın alma varsa Google Play üzerinden geri yüklenebilir.
+Ebeveyn ÅŸifresi unutulursa uygulama iÃ§inden tÃ¼m yerel veriler silinerek ÅŸifre varsayÄ±lan `1234` deÄŸerine sÄ±fÄ±rlanabilir. Premium satÄ±n alma varsa Google Play Ã¼zerinden geri yÃ¼klenebilir.
 
-## PDF Günlük Kitabı
+## PDF GÃ¼nlÃ¼k KitabÄ±
 
-PDF Günlük Kitabı özelliği, çocuğun cihazda kayıtlı yazılarından bir kitap önizlemesi ve PDF çıktısı oluşturmak için kullanılır. Bu işlem mevcut sürümde cihaz üzerinde yapılır.
+PDF GÃ¼nlÃ¼k KitabÄ± Ã¶zelliÄŸi, Ã§ocuÄŸun cihazda kayÄ±tlÄ± yazÄ±larÄ±ndan bir kitap Ã¶nizlemesi ve PDF Ã§Ä±ktÄ±sÄ± oluÅŸturmak iÃ§in kullanÄ±lÄ±r. Bu iÅŸlem mevcut sÃ¼rÃ¼mde cihaz Ã¼zerinde yapÄ±lÄ±r.
 
-## Reklam ve üçüncü taraf hizmetler
+## Reklam ve Ã¼Ã§Ã¼ncÃ¼ taraf hizmetler
 
-Mevcut sürümde reklam gösterilmez. Reklam SDK, analitik SDK veya crash reporting SDK kullanılmaz. Üçüncü taraf veri paylaşımı yapılmaz.
+Mevcut sÃ¼rÃ¼mde reklam gÃ¶sterilmez. Reklam SDK, analitik SDK veya crash reporting SDK kullanÄ±lmaz. ÃœÃ§Ã¼ncÃ¼ taraf veri paylaÅŸÄ±mÄ± yapÄ±lmaz.
 
-## Premium özellikler ve ödeme
+## Premium Ã¶zellikler ve Ã¶deme
 
-Uygulama içi satın alma vardır. Satın alma tipi tek seferlik Premium kilididir. Ürün ID: `premium_lifetime`. Satın alma işlemleri Google Play üzerinden yönetilir. Google Play Billing ve `in_app_purchase` satın alma ve geri yükleme işlemleri için internet/Play Store bağlantısı kullanılabilir. Uygulama ödeme kartı veya ödeme bilgisi saklamaz. Premium durumu cihazda lokal olarak tutulabilir. Premium satın alma yalnızca Ebeveyn Alanı üzerinden yönetilir. Çocuk ekranlarında agresif satın alma çağrısı gösterilmez. Reklam ve abonelik kullanılmayacaktır.
+Uygulama iÃ§i satÄ±n alma vardÄ±r. SatÄ±n alma tipi tek seferlik Premium kilididir. ÃœrÃ¼n ID: `premium_lifetime`. SatÄ±n alma iÅŸlemleri Google Play Ã¼zerinden yÃ¶netilir. Google Play Billing ve `in_app_purchase` satÄ±n alma ve geri yÃ¼kleme iÅŸlemleri iÃ§in internet/Play Store baÄŸlantÄ±sÄ± kullanÄ±labilir. Uygulama Ã¶deme kartÄ± veya Ã¶deme bilgisi saklamaz. Premium durumu cihazda lokal olarak tutulabilir. Premium satÄ±n alma yalnÄ±zca Ebeveyn AlanÄ± Ã¼zerinden yÃ¶netilir. Ã‡ocuk ekranlarÄ±nda agresif satÄ±n alma Ã§aÄŸrÄ±sÄ± gÃ¶sterilmez. Reklam ve abonelik kullanÄ±lmayacaktÄ±r.
 
-Tüm verileri sil işlemi lokal premium bilgisini temizler; satın alma Google Play üzerinden geri yüklenebilir.
+TÃ¼m verileri sil iÅŸlemi lokal premium bilgisini temizler; satÄ±n alma Google Play Ã¼zerinden geri yÃ¼klenebilir.
 
-İlk sürümde satın alma durumu Google Play Billing istemci akışıyla yönetilir. Daha yüksek güvenlik gereksinimlerinde sunucu tarafı doğrulama ayrıca değerlendirilebilir.
+Ä°lk sÃ¼rÃ¼mde satÄ±n alma durumu Google Play Billing istemci akÄ±ÅŸÄ±yla yÃ¶netilir. Daha yÃ¼ksek gÃ¼venlik gereksinimlerinde sunucu tarafÄ± doÄŸrulama ayrÄ±ca deÄŸerlendirilebilir.
 
-## Günbi yazı kontrolü
+## GÃ¼nbi yazÄ± kontrolÃ¼
 
-Gelişmiş Günbi Yazı Kontrolü Premium kapsamındaki ebeveyn onaylı bir özellik olarak hazırlanmıştır. Backend bağlantısı yapılandırılıp ebeveyn onayı açılırsa yazı, yalnızca yazım ve noktalama önerileri üretmek amacıyla güvenli API servisine gönderilebilir.
+GeliÅŸmiÅŸ GÃ¼nbi YazÄ± KontrolÃ¼ Premium kapsamÄ±ndaki ebeveyn onaylÄ± bir Ã¶zellik olarak hazÄ±rlanmÄ±ÅŸtÄ±r. Backend baÄŸlantÄ±sÄ± yapÄ±landÄ±rÄ±lÄ±p ebeveyn onayÄ± aÃ§Ä±lÄ±rsa yazÄ±, yalnÄ±zca yazÄ±m ve noktalama Ã¶nerileri Ã¼retmek amacÄ±yla gÃ¼venli API servisine gÃ¶nderilebilir.
 
-Bu özellik çocuğun yerine yazı yazmaz, günlük metnini baştan sona yeniden oluşturmaz ve yalnızca kısa öneriler sunar. Backend bağlantısı yapılandırılmamışsa gelişmiş kontrol çalışmaz ve yazılar dış servise gönderilmez.
+Bu Ã¶zellik Ã§ocuÄŸun yerine yazÄ± yazmaz, gÃ¼nlÃ¼k metnini baÅŸtan sona yeniden oluÅŸturmaz ve yalnÄ±zca kÄ±sa Ã¶neriler sunar.
 
 ## Verilerin silinmesi
 
-Kullanıcı/ebeveyn, uygulama içindeki Ayarlar bölümünden cihazda saklanan günlük yazılarını ve uygulama verilerini silebilir. Tüm verileri sil akışı ebeveyn şifresiyle korunur. Tüm yerel veriler silindiğinde ebeveyn şifresi ve lokal Premium durumu da temizlenir. Ebeveyn şifresi unutulursa, uygulamada hesap veya sunucu olmadığı için Ebeveyn Alanı girişinden tüm yerel veriler silinerek ebeveyn şifresi varsayılan `1234` değerine sıfırlanabilir. Bu işlem cihazdaki yerel verileri temizler ve geri alınamaz. Premium satın alma varsa Google Play üzerinden geri yüklenebilir.
+KullanÄ±cÄ±/ebeveyn, uygulama iÃ§indeki Ayarlar bÃ¶lÃ¼mÃ¼nden cihazda saklanan gÃ¼nlÃ¼k yazÄ±larÄ±nÄ± ve uygulama verilerini silebilir. TÃ¼m verileri sil akÄ±ÅŸÄ± ebeveyn ÅŸifresiyle korunur. TÃ¼m yerel veriler silindiÄŸinde ebeveyn ÅŸifresi ve lokal Premium durumu da temizlenir. Ebeveyn ÅŸifresi unutulursa, uygulamada hesap veya sunucu olmadÄ±ÄŸÄ± iÃ§in Ebeveyn AlanÄ± giriÅŸinden tÃ¼m yerel veriler silinerek ebeveyn ÅŸifresi varsayÄ±lan `1234` deÄŸerine sÄ±fÄ±rlanabilir. Bu iÅŸlem cihazdaki yerel verileri temizler ve geri alÄ±namaz. Premium satÄ±n alma varsa Google Play Ã¼zerinden geri yÃ¼klenebilir.
 
-## İletişim
+## Ä°letiÅŸim
 
-Gizlilik politikası hakkında sorular için:
+Gizlilik politikasÄ± hakkÄ±nda sorular iÃ§in:
 
-- Geliştirici: AIgrodeve
+- GeliÅŸtirici: AIgrodeve
 - E-posta: aigrodeve@gmail.com
 
-## Değişiklikler
+## DeÄŸiÅŸiklikler
 
-Bu gizlilik politikası uygulamadaki özellikler değiştikçe güncellenebilir. Önemli değişiklikler olduğunda politika metni yeniden gözden geçirilmelidir.
+Bu gizlilik politikasÄ± uygulamadaki Ã¶zellikler deÄŸiÅŸtikÃ§e gÃ¼ncellenebilir. Ã–nemli deÄŸiÅŸiklikler olduÄŸunda politika metni yeniden gÃ¶zden geÃ§irilmelidir.
+
+
+
+## Günbi Yazı Kontrolü veri notu
+
+Gelişmiş Günbi Yazı Kontrolü yalnızca Premium ve ebeveyn onayıyla çalışır. Bu özellik kullanıldığında başlık ve yazı metni, yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir. Bu işlem herkese açık paylaşım, çocuklar arası mesajlaşma veya bulut günlük yedekleme değildir. Günlük kayıtları cihazda saklanır; API isteği günlük kaydı olarak sunucuda tutulmamalıdır.

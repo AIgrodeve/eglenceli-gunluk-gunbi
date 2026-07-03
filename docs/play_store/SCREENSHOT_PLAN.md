@@ -1,91 +1,92 @@
-# Screenshot Plan
+﻿# Screenshot Plan
 
 ## Demo profil
 
-- Demo çocuk adı: Meryem
-- Yaş grubu: 9-12
-- Cinsiyet: Kız
+- Demo Ã§ocuk adÄ±: Meryem
+- YaÅŸ grubu: 9-12
+- Cinsiyet: KÄ±z
 
-## Demo yazılar
+## Demo yazÄ±lar
 
 - Tatil
-- Parkta Bir Gün
-- Bugün Kendimi Nasıl Hissettim?
-- Küçük Bir Başarı
+- Parkta Bir GÃ¼n
+- BugÃ¼n Kendimi NasÄ±l Hissettim?
+- KÃ¼Ã§Ã¼k Bir BaÅŸarÄ±
 
 ## Demo duygular
 
 - Mutlu
 - Sakin
 - Enerjik
-- Heyecanlı
+- HeyecanlÄ±
 
-## Demo veriyi oluşturma
+## Demo veriyi oluÅŸturma
 
-Demo veri yalnızca Play Store ekran görüntüsü hazırlığı için kullanılmalıdır. Normal kullanıcı akışında otomatik demo veri oluşturulmaz.
+Demo veri yalnÄ±zca Play Store ekran gÃ¶rÃ¼ntÃ¼sÃ¼ hazÄ±rlÄ±ÄŸÄ± iÃ§in kullanÄ±lmalÄ±dÄ±r. Normal kullanÄ±cÄ± akÄ±ÅŸÄ±nda otomatik demo veri oluÅŸturulmaz.
 
-Kod tarafında `ScreenshotDemoDataSeeder` helper'ı vardır:
+Kod tarafÄ±nda `ScreenshotDemoDataSeeder` helper'Ä± vardÄ±r:
 
 - Dosya: `lib/core/debug/screenshot_demo_data_seeder.dart`
-- Yalnızca `kDebugMode` içinde çalışır.
-- Release build içinde çalıştırılmak istenirse hata verir.
-- Varsayılan olarak mevcut kullanıcı verisi veya profil varsa işlem yapmaz.
-- Sadece ekran görüntüsü için ayrılmış geliştirici cihazında `replaceExisting: true` bilinçli şekilde kullanılmalıdır.
+- YalnÄ±zca `kDebugMode` iÃ§inde Ã§alÄ±ÅŸÄ±r.
+- Release build iÃ§inde Ã§alÄ±ÅŸtÄ±rÄ±lmak istenirse hata verir.
+- VarsayÄ±lan olarak mevcut kullanÄ±cÄ± verisi veya profil varsa iÅŸlem yapmaz.
+- Sadece ekran gÃ¶rÃ¼ntÃ¼sÃ¼ iÃ§in ayrÄ±lmÄ±ÅŸ geliÅŸtirici cihazÄ±nda `replaceExisting: true` bilinÃ§li ÅŸekilde kullanÄ±lmalÄ±dÄ±r.
 
-Örnek geçici debug kullanım fikri:
+Ã–rnek geÃ§ici debug kullanÄ±m fikri:
 
 ```dart
 await const ScreenshotDemoDataSeeder().seed(replaceExisting: true);
 ```
 
-Bu çağrı uygulama koduna kalıcı olarak eklenmemelidir. Ekran görüntüleri alındıktan sonra release build temiz veriyle ayrıca test edilmelidir.
+Bu Ã§aÄŸrÄ± uygulama koduna kalÄ±cÄ± olarak eklenmemelidir. Ekran gÃ¶rÃ¼ntÃ¼leri alÄ±ndÄ±ktan sonra release build temiz veriyle ayrÄ±ca test edilmelidir.
 
-## Demo yazı içerikleri
+## Demo yazÄ± iÃ§erikleri
 
 1. Tatil
    - Duygu: Enerjik
-   - Konu: Bugün yaşadığın en güzel anı detaylarıyla yaz.
-   - Yazı: Bugün okul tatildi. Babam işten erken geldi. Parkta çok vakit geçirdik. Eve dönünce günlüğüme yazmak istediğim güzel anılar birikti.
-2. Parkta Bir Gün
+   - Konu: BugÃ¼n yaÅŸadÄ±ÄŸÄ±n en gÃ¼zel anÄ± detaylarÄ±yla yaz.
+   - YazÄ±: BugÃ¼n okul tatildi. Babam iÅŸten erken geldi. Parkta Ã§ok vakit geÃ§irdik. Eve dÃ¶nÃ¼nce gÃ¼nlÃ¼ÄŸÃ¼me yazmak istediÄŸim gÃ¼zel anÄ±lar birikti.
+2. Parkta Bir GÃ¼n
    - Duygu: Sakin
-   - Konu: Bugün zorlandığın bir şey oldu mu? Nasıl hissettin?
-   - Yazı: Hava çok sıcak olduğu için bazı arkadaşlarım parka gelmedi. Önce biraz üzüldüm ama sonra kitap okuyup salıncakta sallandım. Günüm yine güzel geçti.
-3. Bugün Kendimi Nasıl Hissettim?
+   - Konu: BugÃ¼n zorlandÄ±ÄŸÄ±n bir ÅŸey oldu mu? NasÄ±l hissettin?
+   - YazÄ±: Hava Ã§ok sÄ±cak olduÄŸu iÃ§in bazÄ± arkadaÅŸlarÄ±m parka gelmedi. Ã–nce biraz Ã¼zÃ¼ldÃ¼m ama sonra kitap okuyup salÄ±ncakta sallandÄ±m. GÃ¼nÃ¼m yine gÃ¼zel geÃ§ti.
+3. BugÃ¼n Kendimi NasÄ±l Hissettim?
    - Duygu: Mutlu
-   - Konu: Bugün seni düşündüren bir şey oldu mu?
-   - Yazı: Bugün kendimi mutlu hissettim. Çünkü öğretmenim yazımı beğendi. Yazdıkça kendimi daha iyi anlatabildiğimi fark ettim.
-4. Küçük Bir Başarı
-   - Duygu: Heyecanlı
-   - Konu: Bugün öğrendiğin bir şeyi kendi cümlelerinle anlat.
-   - Yazı: Bugün yeni kelimeler öğrendim. Önce zor sandım ama sonra cümle içinde kullanınca daha kolay oldu. Günbi de bana yazarken yardımcı oldu.
+   - Konu: BugÃ¼n seni dÃ¼ÅŸÃ¼ndÃ¼ren bir ÅŸey oldu mu?
+   - YazÄ±: BugÃ¼n kendimi mutlu hissettim. Ã‡Ã¼nkÃ¼ Ã¶ÄŸretmenim yazÄ±mÄ± beÄŸendi. YazdÄ±kÃ§a kendimi daha iyi anlatabildiÄŸimi fark ettim.
+4. KÃ¼Ã§Ã¼k Bir BaÅŸarÄ±
+   - Duygu: HeyecanlÄ±
+   - Konu: BugÃ¼n Ã¶ÄŸrendiÄŸin bir ÅŸeyi kendi cÃ¼mlelerinle anlat.
+   - YazÄ±: BugÃ¼n yeni kelimeler Ã¶ÄŸrendim. Ã–nce zor sandÄ±m ama sonra cÃ¼mle iÃ§inde kullanÄ±nca daha kolay oldu. GÃ¼nbi de bana yazarken yardÄ±mcÄ± oldu.
 
-## Önerilen akış
+## Ã–nerilen akÄ±ÅŸ
 
-1. Uygulamayı temiz kurulum gibi aç.
-2. Onboarding içinde Meryem profilini oluştur.
-3. 9-12 yaş grubunu ve Kız seçimini kullan.
-4. Demo yazıları farklı duygu seçimleriyle ekle.
-5. Ana sayfa, yazı ekranı, yazı koçu, Yazılarım, Rozetlerim, Haftalık Özet ve Günlük Kitabım ekranlarını sırayla yakala.
-6. Gizlilik ve güvenlik vurgusu için Ebeveyn Alanı veya Ayarlar içindeki ilgili ekranı ayrıca yakala.
+1. UygulamayÄ± temiz kurulum gibi aÃ§.
+2. Onboarding iÃ§inde Meryem profilini oluÅŸtur.
+3. 9-12 yaÅŸ grubunu ve KÄ±z seÃ§imini kullan.
+4. Demo yazÄ±larÄ± farklÄ± duygu seÃ§imleriyle ekle.
+5. Ana sayfa, yazÄ± ekranÄ±, yazÄ± koÃ§u, YazÄ±larÄ±m, Rozetlerim, HaftalÄ±k Ã–zet ve GÃ¼nlÃ¼k KitabÄ±m ekranlarÄ±nÄ± sÄ±rayla yakala.
+6. Gizlilik ve gÃ¼venlik vurgusu iÃ§in Ebeveyn AlanÄ± veya Ayarlar iÃ§indeki ilgili ekranÄ± ayrÄ±ca yakala.
 
-## Ekran görüntüsü alma sırası
+## Ekran gÃ¶rÃ¼ntÃ¼sÃ¼ alma sÄ±rasÄ±
 
-1. Günbi karşılama
+1. GÃ¼nbi karÅŸÄ±lama
 2. Ana sayfa
-3. Bugünü yaz
-4. Günbi'den yardım al
-5. Yazılarım
+3. BugÃ¼nÃ¼ yaz
+4. GÃ¼nbi'den yardÄ±m al
+5. YazÄ±larÄ±m
 6. Rozetlerim
-7. Haftalık Özet
-8. Günlük Kitabım
-9. Gizlilik ve Güvenlik / Ebeveyn Alanı
+7. HaftalÄ±k Ã–zet
+8. GÃ¼nlÃ¼k KitabÄ±m
+9. Gizlilik ve GÃ¼venlik / Ebeveyn AlanÄ±
 
-## Ekran görüntüsü kısa başlıkları
+## Ekran gÃ¶rÃ¼ntÃ¼sÃ¼ kÄ±sa baÅŸlÄ±klarÄ±
 
-- Günbi ile tanış
-- Bugünü yaz
+- GÃ¼nbi ile tanÄ±ÅŸ
+- BugÃ¼nÃ¼ yaz
 - Yazarken destek al
-- Yazdıkça rozet kazan
-- Haftalık gelişimini gör
-- Yazıların kitaba dönüşsün
-- Güvenli ve reklamsız alan
+- YazdÄ±kÃ§a rozet kazan
+- HaftalÄ±k geliÅŸimini gÃ¶r
+- YazÄ±larÄ±n kitaba dÃ¶nÃ¼ÅŸsÃ¼n
+- GÃ¼venli ve reklamsÄ±z alan
+

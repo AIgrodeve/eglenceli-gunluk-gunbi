@@ -60,7 +60,9 @@ class _SettingsPageState extends State<SettingsPage> {
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Günbi seni nasıl çağıracağını bilmek istiyor."),
+          content: Text(
+            "GÃ¼nbi seni nasÄ±l Ã§aÄŸÄ±racaÄŸÄ±nÄ± bilmek istiyor.",
+          ),
         ),
       );
       return;
@@ -73,7 +75,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Adın kaydedildi.')));
+    ).showSnackBar(const SnackBar(content: Text('AdÄ±n kaydedildi.')));
   }
 
   Future<void> _selectAgeGroup(AgeGroup ageGroup) async {
@@ -85,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('Yaş grubu güncellendi.')));
+    ).showSnackBar(const SnackBar(content: Text('YaÅŸ grubu gÃ¼ncellendi.')));
   }
 
   Future<void> _startDeleteAllDataFlow() async {
@@ -112,7 +114,7 @@ class _SettingsPageState extends State<SettingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Veriler silinirken bir sorun oluştu. Lütfen tekrar deneyin.',
+            'Veriler silinirken bir sorun oluÅŸtu. LÃ¼tfen tekrar deneyin.',
           ),
         ),
       );
@@ -141,13 +143,13 @@ class _SettingsPageState extends State<SettingsPage> {
           title: const Text('Tüm veriler silinsin mi?'),
           content: const SingleChildScrollView(
             child: Text(
-              'Bu işlem günlük yazılarını, rozet ilerlemesini, seri bilgilerini, kitap başlığını ve profil bilgilerini bu cihazdan siler. Bu işlem geri alınamaz.',
+              'Bu iÅŸlem gÃ¼nlÃ¼k yazÄ±larÄ±nÄ±, rozet ilerlemesini, seri bilgilerini, kitap baÅŸlÄ±ÄŸÄ±nÄ± ve profil bilgilerini bu cihazdan siler. Bu iÅŸlem geri alÄ±namaz.',
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Vazgeç'),
+              child: const Text('VazgeÃ§'),
             ),
             FilledButton(
               style: FilledButton.styleFrom(
@@ -228,17 +230,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     TextField(
                       controller: _nameController,
                       textCapitalization: TextCapitalization.words,
-                      decoration: const InputDecoration(labelText: 'Çocuk adı'),
+                      decoration: const InputDecoration(
+                        labelText: 'Ã‡ocuk adÄ±',
+                      ),
                     ),
                     const SizedBox(height: 12),
                     FilledButton.icon(
                       onPressed: _saveName,
                       icon: const Icon(Icons.save_rounded),
-                      label: const Text('Adımı kaydet'),
+                      label: const Text('AdÄ±mÄ± kaydet'),
                     ),
                     const SizedBox(height: 18),
                     Text(
-                      'Yaş grubu',
+                      'YaÅŸ grubu',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 10),
@@ -260,20 +264,20 @@ class _SettingsPageState extends State<SettingsPage> {
                   final totalEntries = snapshot.data ?? 0;
 
                   return _SectionCard(
-                    title: 'Uygulama özeti',
+                    title: 'Uygulama Ã¶zeti',
                     child: Column(
                       children: [
-                        _InfoRow(label: 'Çocuk adı', value: _displayName),
+                        _InfoRow(label: 'Ã‡ocuk adÄ±', value: _displayName),
                         _InfoRow(
-                          label: 'Yaş grubu',
+                          label: 'YaÅŸ grubu',
                           value: _selectedAgeGroup.label,
                         ),
-                        _InfoRow(label: 'Toplam yazı', value: '$totalEntries'),
+                        _InfoRow(label: 'Toplam yazÄ±', value: '$totalEntries'),
                         const _InfoRow(
-                          label: 'Uygulama adı',
-                          value: 'Eğlenceli Günlük',
+                          label: 'Uygulama adÄ±',
+                          value: 'EÄŸlenceli GÃ¼nlÃ¼k',
                         ),
-                        const _InfoRow(label: 'Maskot', value: 'Günbi'),
+                        const _InfoRow(label: 'Maskot', value: 'GÃ¼nbi'),
                       ],
                     ),
                   );
@@ -286,7 +290,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const Text(
-                      'Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına yardımcı olmak için tasarlanmıştır.',
+                      'EÄŸlenceli GÃ¼nlÃ¼k, Ã§ocuklarÄ±n yazma alÄ±ÅŸkanlÄ±ÄŸÄ± kazanmasÄ±na yardÄ±mcÄ± olmak iÃ§in tasarlanmÄ±ÅŸtÄ±r.',
                     ),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
@@ -298,37 +302,27 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                       icon: const Icon(Icons.info_outline_rounded),
-                      label: const Text('Hakkında'),
+                      label: const Text('HakkÄ±nda'),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-              const _SectionCard(
-                title: 'Gizlilik Notu',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _PrivacyBullet('Günlük yazıları bu cihazda saklanır.'),
-                    _PrivacyBullet('Herkese açık paylaşım yoktur.'),
-                    _PrivacyBullet('Çocuklar arası mesajlaşma yoktur.'),
-                    _PrivacyBullet('Konum izni kullanılmaz.'),
                   ],
                 ),
               ),
               const SizedBox(height: 14),
               _SectionCard(
-                title: 'Gizlilik ve Güvenlik',
+                title: 'Gizlilik ve GÃ¼venlik',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    const _PrivacyBullet('Günlük kayıtları cihazda saklanır.'),
                     const _PrivacyBullet(
-                      'Günlük yazıları bu cihazda saklanır.',
+                      'Gelişmiş yazı kontrolü açılırsa başlık ve yazı yalnızca öneri üretmek için güvenli API servisine gönderilebilir.',
                     ),
-                    const _PrivacyBullet('Herkese açık paylaşım yoktur.'),
-                    const _PrivacyBullet('Çocuklar arası mesajlaşma yoktur.'),
-                    const _PrivacyBullet('Konum izni kullanılmaz.'),
-                    const _PrivacyBullet('Reklam gösterilmez.'),
+                    const _PrivacyBullet('Herkese aÃ§Ä±k paylaÅŸÄ±m yoktur.'),
+                    const _PrivacyBullet(
+                      'Ã‡ocuklar arasÄ± mesajlaÅŸma yoktur.',
+                    ),
+                    const _PrivacyBullet('Konum izni kullanÄ±lmaz.'),
+                    const _PrivacyBullet('Reklam gÃ¶sterilmez.'),
                     const SizedBox(height: 12),
                     OutlinedButton.icon(
                       onPressed: () {
@@ -339,7 +333,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                       icon: const Icon(Icons.privacy_tip_rounded),
-                      label: const Text('Gizlilik Politikası'),
+                      label: const Text('Gizlilik PolitikasÄ±'),
                     ),
                   ],
                 ),
@@ -351,7 +345,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Premium özellikler Ebeveyn Alanı üzerinden yönetilir.',
+                      'Premium Ã¶zellikler Ebeveyn AlanÄ± Ã¼zerinden yÃ¶netilir.',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 12),
@@ -367,7 +361,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                       icon: const Icon(Icons.family_restroom_rounded),
-                      label: const Text('Ebeveyn Alanına Git'),
+                      label: const Text('Ebeveyn AlanÄ±na Git'),
                     ),
                   ],
                 ),
@@ -379,7 +373,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Günlük yazıların ve uygulama bilgilerin bu cihazda saklanır.',
+                      'GÃ¼nlÃ¼k yazÄ±larÄ±n ve uygulama bilgilerin bu cihazda saklanÄ±r.',
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                     const SizedBox(height: 18),
@@ -400,7 +394,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       label: Text(
                         _isResetting
                             ? 'Veriler siliniyor...'
-                            : 'Tüm verileri sil',
+                            : 'TÃ¼m verileri sil',
                       ),
                     ),
                   ],
@@ -461,21 +455,21 @@ class _ParentPinDialogState extends State<_ParentPinDialog> {
 
     setState(() {
       _isChecking = false;
-      _errorText = 'Şifre hatalı. Lütfen tekrar deneyin.';
+      _errorText = 'Åifre hatalÄ±. LÃ¼tfen tekrar deneyin.';
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Ebeveyn doğrulaması'),
+      title: const Text('Ebeveyn doÄŸrulamasÄ±'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Bu işlem ebeveynler içindir. Devam etmek için ebeveyn şifresini girin.',
+              'Bu iÅŸlem ebeveynler iÃ§indir. Devam etmek iÃ§in ebeveyn ÅŸifresini girin.',
             ),
             const SizedBox(height: 14),
             TextField(
@@ -485,7 +479,7 @@ class _ParentPinDialogState extends State<_ParentPinDialog> {
               textInputAction: TextInputAction.done,
               enabled: !_isChecking,
               decoration: InputDecoration(
-                labelText: 'Şifre',
+                labelText: 'Åifre',
                 errorText: _errorText,
               ),
               onSubmitted: (_) => _verify(),
@@ -498,7 +492,7 @@ class _ParentPinDialogState extends State<_ParentPinDialog> {
           onPressed: _isChecking
               ? null
               : () => Navigator.of(context).pop(false),
-          child: const Text('Vazgeç'),
+          child: const Text('VazgeÃ§'),
         ),
         FilledButton(
           onPressed: _isChecking ? null : _verify,
@@ -636,7 +630,7 @@ class _PrivacyBullet extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('• '),
+          const Text('â€¢ '),
           Expanded(
             child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
           ),

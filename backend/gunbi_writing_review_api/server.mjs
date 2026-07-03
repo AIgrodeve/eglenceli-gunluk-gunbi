@@ -2,8 +2,9 @@ import http from "node:http";
 
 const port = Number(process.env.PORT || 8787);
 const apiKey = process.env.OPENAI_API_KEY;
-const model = process.env.OPENAI_MODEL || "gpt-5.2";
+const model = process.env.OPENAI_MODEL || "gpt-5.5";
 const maxTextLength = 4000;
+const maxTitleLength = 160;
 
 const schema = {
   type: "object",
@@ -63,6 +64,7 @@ const server = http.createServer(async (request, response) => {
     }
 
     const body = await readJsonBody(request);
+    const title = normalizeString(body.title).slice(0, maxTitleLength);
     const text = normalizeString(body.text);
     const ageGroup = normalizeString(body.ageGroup);
     const moodLabel = normalizeString(body.moodLabel);
@@ -77,7 +79,7 @@ const server = http.createServer(async (request, response) => {
       return;
     }
 
-    const review = await reviewWithOpenAI({ text, ageGroup, moodLabel });
+    const review = await reviewWithOpenAI({ title, text, ageGroup, moodLabel });
     sendJson(response, 200, review);
   } catch (error) {
     console.error("Gunbi review API error:", error);
@@ -89,7 +91,7 @@ server.listen(port, () => {
   console.log(`Gunbi writing review API listening on :${port}`);
 });
 
-async function reviewWithOpenAI({ text, ageGroup, moodLabel }) {
+async function reviewWithOpenAI({ title, text, ageGroup, moodLabel }) {
   const openaiResponse = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -104,10 +106,12 @@ async function reviewWithOpenAI({ text, ageGroup, moodLabel }) {
           role: "developer",
           content: [
             "Sen Günbi adlı çocuk dostu bir yazı koçusun.",
+            "Başlık ve günlük yazısı birlikte kontrol edilir.",
             "Sadece Türkçe yazım, Türkçe karakter, noktalama, boşluk ve cümle düzeni önerileri ver.",
             "Çocuğun yerine yazı yazma, metni baştan sona yeniden yazma.",
             "Sert, suçlayıcı veya utandırıcı dil kullanma.",
             "En fazla 5 kısa öneri üret.",
+            "Öneri başlıktaysa mesajda 'Başlıkta' ifadesini kullan.",
             "Soru cümlelerinde nokta yerine soru işareti gerekiyorsa bunu fark et.",
             "Örnek: 'Günluk uygulamasi yazım denetimi nasıl çalışıyor.' cümlesinde 'Günlük', 'uygulaması' ve '?' önerilebilir.",
           ].join(" "),
@@ -117,6 +121,7 @@ async function reviewWithOpenAI({ text, ageGroup, moodLabel }) {
           content: JSON.stringify({
             ageGroup,
             moodLabel,
+            title,
             text,
           }),
         },
@@ -134,7 +139,9 @@ async function reviewWithOpenAI({ text, ageGroup, moodLabel }) {
 
   if (!openaiResponse.ok) {
     const errorText = await openaiResponse.text();
-    throw new Error(`OpenAI request failed: ${openaiResponse.status} ${errorText}`);
+    throw new Error(
+      `OpenAI request failed: ${openaiResponse.status} ${errorText}`,
+    );
   }
 
   const data = await openaiResponse.json();

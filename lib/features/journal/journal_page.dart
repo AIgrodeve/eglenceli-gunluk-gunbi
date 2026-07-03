@@ -105,6 +105,7 @@ class _JournalPageState extends State<JournalPage> {
       );
     } else {
       advancedResult = await _advancedReviewService.review(
+        title: _titleController.text,
         text: _textController.text,
         ageGroup: widget.ageGroup,
         moodLabel: widget.moodLabel,

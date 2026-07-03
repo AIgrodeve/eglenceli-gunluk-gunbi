@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/mascot_widget.dart';
@@ -49,20 +50,30 @@ class _AboutInfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _AboutCard(
-      child: Column(
-        children: [
-          _InfoRow(label: 'Uygulama adı', value: 'Eğlenceli Günlük'),
-          _InfoRow(label: 'Maskot', value: 'Günbi'),
-          _InfoRow(label: 'Geliştirici', value: 'AIgrodeve'),
-          _InfoRow(label: 'İletişim', value: 'aigrodeve@gmail.com'),
-          _InfoRow(label: 'Sürüm', value: '1.0.0'),
-          SizedBox(height: 8),
-          Text(
-            'Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına ve duygularını güvenli bir şekilde ifade etmesine yardımcı olmak için tasarlanmıştır.',
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final packageInfo = snapshot.data;
+        final version = packageInfo == null
+            ? '1.0.0+5'
+            : '${packageInfo.version}+${packageInfo.buildNumber}';
+
+        return _AboutCard(
+          child: Column(
+            children: [
+              const _InfoRow(label: 'Uygulama adı', value: 'Eğlenceli Günlük'),
+              const _InfoRow(label: 'Maskot', value: 'Günbi'),
+              const _InfoRow(label: 'Geliştirici', value: 'AIgrodeve'),
+              const _InfoRow(label: 'İletişim', value: 'aigrodeve@gmail.com'),
+              _InfoRow(label: 'Sürüm', value: version),
+              const SizedBox(height: 8),
+              const Text(
+                'Eğlenceli Günlük, çocukların yazma alışkanlığı kazanmasına ve duygularını güvenli bir şekilde ifade etmesine yardımcı olmak için tasarlanmıştır.',
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -106,7 +117,7 @@ class _SafetyCard extends StatelessWidget {
           _SafetyBullet('Çocuklar arası mesajlaşma yoktur.'),
           _SafetyBullet('Reklam gösterilmez.'),
           _SafetyBullet('Konum izni kullanılmaz.'),
-          _SafetyBullet('Günlük yazıları cihazda saklanır.'),
+          _SafetyBullet('Günlük kayıtları bu cihazda saklanır.'),
         ],
       ),
     );

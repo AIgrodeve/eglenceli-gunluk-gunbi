@@ -1,37 +1,38 @@
-# Store Assets Checklist
+﻿# Store Assets Checklist
 
-## Gerekli Play Store görselleri
+## Gerekli Play Store gÃ¶rselleri
 
 - [ ] Uygulama ikonu: 512 x 512 PNG
-- [ ] Özellik grafiği: 1024 x 500 PNG veya JPG
-- [ ] Telefon ekran görüntüleri
-- [ ] Tablet ekran görüntüleri gerekiyorsa ayrıca hazırlanacak
-- [ ] Gizlilik politikası bağlantısı
-- [ ] Uygulama tanıtım metinleri
+- [ ] Ã–zellik grafiÄŸi: 1024 x 500 PNG veya JPG
+- [ ] Telefon ekran gÃ¶rÃ¼ntÃ¼leri
+- [ ] Tablet ekran gÃ¶rÃ¼ntÃ¼leri gerekiyorsa ayrÄ±ca hazÄ±rlanacak
+- [ ] Gizlilik politikasÄ± baÄŸlantÄ±sÄ±
+- [ ] Uygulama tanÄ±tÄ±m metinleri
 
-## Seçilen görsel kararları
+## SeÃ§ilen gÃ¶rsel kararlarÄ±
 
-- Uygulama ikonu: yazısız Günbi + açık günlük + kalem
-- Özellik grafiği: "Günbi ile yazmak artık oyun gibi" mesajlı 1024 x 500 görsel
+- Uygulama ikonu: yazÄ±sÄ±z GÃ¼nbi + aÃ§Ä±k gÃ¼nlÃ¼k + kalem
+- Ã–zellik grafiÄŸi: "GÃ¼nbi ile yazmak artÄ±k oyun gibi" mesajlÄ± 1024 x 500 gÃ¶rsel
 
-## Önerilen telefon ekran görüntüleri
+## Ã–nerilen telefon ekran gÃ¶rÃ¼ntÃ¼leri
 
-1. Günbi karşılama ekranı
+1. GÃ¼nbi karÅŸÄ±lama ekranÄ±
 2. Ana sayfa
-3. Bugünü yaz ekranı
-4. Günbi'den yardım al / Yazı koçu ekranı
-5. Yazılarım ekranı
-6. Rozetlerim ekranı
-7. Haftalık Özet ekranı
-8. Günlük Kitabım / PDF önizleme ekranı
-9. Ebeveyn Alanı veya Gizlilik ve Güvenlik ekranı
+3. BugÃ¼nÃ¼ yaz ekranÄ±
+4. GÃ¼nbi'den yardÄ±m al / YazÄ± koÃ§u ekranÄ±
+5. YazÄ±larÄ±m ekranÄ±
+6. Rozetlerim ekranÄ±
+7. HaftalÄ±k Ã–zet ekranÄ±
+8. GÃ¼nlÃ¼k KitabÄ±m / PDF Ã¶nizleme ekranÄ±
+9. Ebeveyn AlanÄ± veya Gizlilik ve GÃ¼venlik ekranÄ±
 
-## Görsel mesaj önerileri
+## GÃ¶rsel mesaj Ã¶nerileri
 
-- Günbi ile yazmak daha eğlenceli
-- Bugünü yaz, duygunu anlat
-- Yaşına uygun yazı önerileri
-- Yazdıkça rozetler kazan
-- Haftalık gelişimini gör
-- Yazıların günlük kitabına dönüşsün
-- Güvenli, reklamsız ve çocuk dostu
+- GÃ¼nbi ile yazmak daha eÄŸlenceli
+- BugÃ¼nÃ¼ yaz, duygunu anlat
+- YaÅŸÄ±na uygun yazÄ± Ã¶nerileri
+- YazdÄ±kÃ§a rozetler kazan
+- HaftalÄ±k geliÅŸimini gÃ¶r
+- YazÄ±larÄ±n gÃ¼nlÃ¼k kitabÄ±na dÃ¶nÃ¼ÅŸsÃ¼n
+- GÃ¼venli, reklamsÄ±z ve Ã§ocuk dostu
+

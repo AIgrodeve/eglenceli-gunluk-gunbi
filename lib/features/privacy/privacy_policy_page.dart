@@ -8,7 +8,7 @@ class PrivacyPolicyPage extends StatelessWidget {
   const PrivacyPolicyPage({super.key});
 
   static const String privacyPolicyUrl =
-      'https://sites.google.com/view/eglenceli-gunluk';
+      'https://aigrodeve.github.io/eglenceli-gunluk-gunbi/';
   static const MethodChannel _channel = MethodChannel(
     'com.aigrodeve.eglenceligunluk/browser',
   );
@@ -49,7 +49,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Günbi, günlük yazılarını güvenli ve sade bir alanda tutmayı önemser.',
+              'Günbi, günlük kayıtlarını güvenli ve sade bir alanda tutmayı önemser.',
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
@@ -57,9 +57,10 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _PrivacySummaryCard(
               title: 'Kısa özet',
               items: [
-                'Günlükler cihazda saklanır.',
+                'Günlük kayıtları cihazda saklanır.',
                 'Ebeveyn şifresi cihazda saklanır ve varsayılan değer 1234’tür.',
-                'Veriler sunucuya gönderilmez.',
+                'Gelişmiş yazı kontrolü açılırsa başlık ve yazı yalnızca öneri üretmek için güvenli API servisine gönderilebilir.',
+                'Gelişmiş kontrol isteği günlük kaydı veya herkese açık paylaşım olarak saklanmaz.',
                 'Reklam yoktur.',
                 'Abonelik yoktur.',
                 'Konum izni yoktur.',
@@ -70,7 +71,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _InfoCard(
               title: 'Ebeveynler için',
               message:
-                  'Ebeveyn Alanı şifreyle korunur. Varsayılan şifre 1234’tür ve değiştirilebilir. Ebeveynler gelişim özetini uygulama içinden görebilir. Günlük yazılar çocuğa özel kalır.',
+                  'Ebeveyn Alanı şifreyle korunur. Varsayılan şifre 1234’tür ve değiştirilebilir. Ebeveynler gelişim özetini uygulama içinden görebilir. Günlük yazıların tam metni ebeveyn özetinde gösterilmez.',
             ),
             const SizedBox(height: 14),
             const _InfoCard(
@@ -82,7 +83,7 @@ class PrivacyPolicyPage extends StatelessWidget {
             const _InfoCard(
               title: 'Günbi yazı kontrolü',
               message:
-                  'Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı bir özellik olarak hazırlanmıştır. Backend bağlantısı yapılandırılıp ebeveyn onayı açılırsa yazı, yalnızca yazım ve noktalama önerileri üretmek için güvenli API servisine gönderilebilir.',
+                  'Gelişmiş Günbi Yazı Kontrolü Premium ve ebeveyn onaylı bir özelliktir. Bu özellik açılırsa başlık ve yazı, yalnızca yazım ve noktalama önerileri üretmek amacıyla güvenli API servisine gönderilebilir. Günbi çocuğun yerine yazmaz, metni herkese açık şekilde paylaşmaz ve günlük kaydı olarak sunucuda tutmaz.',
             ),
             const SizedBox(height: 14),
             const _InfoCard(

@@ -146,7 +146,7 @@ void main() {
     test(
       'does not use local fallback when backend is not configured',
       () async {
-        const service = AdvancedWritingReviewService();
+        const service = AdvancedWritingReviewService(endpointUrl: '');
 
         final result = await service.review(
           text: 'Bu uygulamada yen\u0131 surum yayinlandi',
